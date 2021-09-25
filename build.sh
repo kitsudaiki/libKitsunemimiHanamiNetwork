@@ -25,7 +25,7 @@ function build_kitsune_lib_repo () {
     cd $REPO_DIR
 
     # build repo library with qmake
-    /usr/lib/x86_64-linux-gnu/qt5/bin/qmake "$PARENT_DIR/$REPO_NAME/$REPO_NAME.pro" -spec linux-g++ "CONFIG += debug $ADDITIONAL_CONFIGS"
+    /usr/lib/x86_64-linux-gnu/qt5/bin/qmake "$PARENT_DIR/$REPO_NAME/$REPO_NAME.pro" -spec linux-g++ "CONFIG += optimize_full $ADDITIONAL_CONFIGS"
     /usr/bin/make -j$NUMBER_OF_THREADS
 
     # copy build-result and include-files into the result-directory
@@ -51,14 +51,55 @@ function get_required_kitsune_lib_repo () {
 
 #-----------------------------------------------------------------------------------------------------------------
 
+echo ""
+echo "###########################################################################################################"
+echo ""
 get_required_kitsune_lib_repo "libKitsunemimiCommon" "v0.18.0" 4 "staticlib"
-
+echo ""
+echo "###########################################################################################################"
+echo ""
+get_required_kitsune_lib_repo "libKitsunemimiPersistence" "v0.10.2" 4 "staticlib"
+echo ""
+echo "###########################################################################################################"
+echo ""
+get_required_kitsune_lib_repo "libKitsunemimiJson" "v0.10.6" 1 "staticlib"
+echo ""
+echo "###########################################################################################################"
+echo ""
+get_required_kitsune_lib_repo "libKitsunemimiJinja2" "v0.8.1" 1 "staticlib"
+echo ""
+echo "###########################################################################################################"
+echo ""
+get_required_kitsune_lib_repo "libKitsunemimiIni" "v0.4.7" 1 "staticlib"
+echo ""
+echo "###########################################################################################################"
+echo ""
+get_required_kitsune_lib_repo "libKitsunemimiConfig" "v0.2.4" 4 "staticlib"
+echo ""
+echo "###########################################################################################################"
+echo ""
+get_required_kitsune_lib_repo "libKitsunemimiArgs" "master" 4 "staticlib"
+echo ""
+echo "###########################################################################################################"
+echo ""
+get_required_kitsune_lib_repo "libKitsunemimiSakuraLang" "v0.8.0" 1 "staticlib"
+echo ""
+echo "###########################################################################################################"
+echo ""
+get_required_kitsune_lib_repo "libKitsunemimiNetwork" "v0.6.6" 4 "staticlib"
+echo ""
+echo "###########################################################################################################"
+echo ""
+get_required_kitsune_lib_repo "libKitsunemimiSakuraNetwork" "master" 4 "staticlib"
+echo ""
+echo "###########################################################################################################"
+echo ""
 #-----------------------------------------------------------------------------------------------------------------
 
 if [ $1 = "test" ]; then
-    build_kitsune_lib_repo "libKitsunemimiHanamiMessaging" 4 "staticlib run_tests"
+    build_kitsune_lib_repo "libKitsunemimiHanamiMessaging" 1 "staticlib run_tests"
 else
-    build_kitsune_lib_repo "libKitsunemimiHanamiMessaging" 4 "staticlib"
+    build_kitsune_lib_repo "libKitsunemimiHanamiMessaging" 1 "staticlib"
 fi
 
 #-----------------------------------------------------------------------------------------------------------------

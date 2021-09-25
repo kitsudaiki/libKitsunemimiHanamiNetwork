@@ -1,2 +1,48 @@
 # Changelog
 
+## [0.4.1] - 2021-07-30
+
+(only updated requirements and minimal cleanup)
+
+
+## [0.4.0] - 2020-12-06
+
+### Changed
+- reworked all callbacks to make code cleaner and easier to handle
+
+### Fixed
+- added missing validation, which broke some session-creations
+
+
+### Changed
+- reworked all callbacks
+
+## [0.3.0] - 2020-12-01
+
+### Added
+- support for unix-domain-sockets
+- source-code comments
+
+### Changed
+- creating a server is now optional
+- updated callbacks for new session and stream-messages
+- input-values now have to be set as string instead of data-map for easier message-forwaring
+
+
+## [0.2.1] - 2020-10-18
+
+### Added
+- event-queue for incoming trigger-messages to avoid timeouts in the session-layer and to avoid race-conditions while processing multiple messages at once
+
+
+## [0.2.0] - 2020-10-11
+
+### Changed
+- update to handle the results coming from the new libKitsunemimiSakuraLang v0.7.0 and send these results over the network.
+
+
+## [0.1.0] - 2020-10-08
+
+### Added
+- first basic version to trigger sakura-tree over network
+
