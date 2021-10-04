@@ -22,16 +22,16 @@
 
 #include "messaging_event_queue.h"
 
-#include <libKitsunemimiPersistence/logger/logger.h>
+#include <libKitsunemimiCommon/logger.h>
 
 #include <messaging_event.h>
 
 namespace Kitsunemimi
 {
-namespace Sakura
+namespace Hanami
 {
 
-Kitsunemimi::Sakura::MessagingEventQueue* MessagingEventQueue::m_instance = nullptr;
+Kitsunemimi::Hanami::MessagingEventQueue* MessagingEventQueue::m_instance = nullptr;
 
 /**
  * @brief constructor

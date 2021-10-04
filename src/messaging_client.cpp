@@ -31,7 +31,7 @@
 
 namespace Kitsunemimi
 {
-namespace Sakura
+namespace Hanami
 {
 
 /**
@@ -190,7 +190,7 @@ MessagingClient::processResponse(DataMap &result,
 void
 MessagingClient::setStreamMessageCallback(void* receiver,
                                           void (*processStreamData)(void*,
-                                                                    Session*,
+                                                                    Kitsunemimi::Sakura::Session*,
                                                                     const void*,
                                                                     const uint64_t))
 {

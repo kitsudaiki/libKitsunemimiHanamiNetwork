@@ -20,17 +20,14 @@
  *      limitations under the License.
  */
 
-#include <libKitsunemimiPersistence/logger/logger.h>
+#include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiConfig/config_handler.h>
 #include <session_test.h>
 
-using Kitsunemimi::Persistence::initConsoleLogger;
-
-
 int main()
 {
-    initConsoleLogger(true);
+    Kitsunemimi::initConsoleLogger(true);
 
     //Kitsunemimi::Sakura::Session_Test tcpTest("127.0.0.1");
-    Kitsunemimi::Sakura::Session_Test udsTest("/tmp/test.uds");
+    Kitsunemimi::Hanami::Session_Test udsTest("/tmp/test.uds");
 }

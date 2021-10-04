@@ -27,18 +27,18 @@
 
 namespace Kitsunemimi
 {
-namespace Sakura
+namespace Hanami
 {
 class Session_Test;
 
 class TestBlossom
-        : public Blossom
+        : public Kitsunemimi::Sakura::Blossom
 {
 public:
     TestBlossom(Session_Test* sessionTest);
 
 protected:
-    bool runTask(BlossomLeaf &blossomLeaf, std::string &);
+    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf, std::string &);
 
 private:
     Session_Test* m_sessionTest = nullptr;

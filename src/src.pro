@@ -1,7 +1,7 @@
 QT -= qt core gui
 
 TARGET = KitsunemimiHanamiMessaging
-CONFIG += c++14
+CONFIG += c++17
 TEMPLATE = lib
 VERSION = 0.1.0
 
@@ -9,11 +9,6 @@ LIBS += -L../../libKitsunemimiCommon/src -lKitsunemimiCommon
 LIBS += -L../../libKitsunemimiCommon/src/debug -lKitsunemimiCommon
 LIBS += -L../../libKitsunemimiCommon/src/release -lKitsunemimiCommon
 INCLUDEPATH += ../../libKitsunemimiCommon/include
-
-LIBS += -L../../libKitsunemimiPersistence/src -lKitsunemimiPersistence
-LIBS += -L../../libKitsunemimiPersistence/src/debug -lKitsunemimiPersistence
-LIBS += -L../../libKitsunemimiPersistence/src/release -lKitsunemimiPersistence
-INCLUDEPATH += ../../libKitsunemimiPersistence/include
 
 LIBS += -L../../libKitsunemimiJinja2/src -lKitsunemimiJinja2
 LIBS += -L../../libKitsunemimiJinja2/src/debug -lKitsunemimiJinja2
@@ -50,7 +45,7 @@ LIBS += -L../../libKitsunemimiSakuraNetwork/src/debug -lKitsunemimiSakuraNetwork
 LIBS += -L../../libKitsunemimiSakuraNetwork/src/release -lKitsunemimiSakuraNetwork
 INCLUDEPATH += ../../libKitsunemimiSakuraNetwork/include
 
-LIBS +=  -lboost_filesystem -lboost_system -lssl
+LIBS += -lssl
 
 INCLUDEPATH += $$PWD \
                $$PWD/../include

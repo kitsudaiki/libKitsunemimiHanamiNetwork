@@ -27,7 +27,7 @@
 
 namespace Kitsunemimi
 {
-namespace Sakura
+namespace Hanami
 {
 
 class MessagingEventQueue

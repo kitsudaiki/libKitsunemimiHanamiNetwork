@@ -27,9 +27,11 @@
 
 namespace Kitsunemimi
 {
-namespace Sakura
-{
+namespace Sakura {
 class Session;
+}
+namespace Hanami
+{
 
 class MessagingEvent
         : public Event
@@ -37,7 +39,7 @@ class MessagingEvent
 public:
     MessagingEvent(const std::string &treeId,
                    const std::string &inputValues,
-                   Session* session,
+                   Kitsunemimi::Sakura::Session* session,
                    const uint64_t blockerId);
     ~MessagingEvent();
 
@@ -46,7 +48,7 @@ protected:
 
 private:
     uint64_t m_blockerId = 0;
-    Session* m_session = nullptr;
+    Kitsunemimi::Sakura::Session* m_session = nullptr;
 
     std::string m_treeId = "";
     std::string m_inputValues = "";

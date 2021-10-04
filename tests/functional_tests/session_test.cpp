@@ -32,14 +32,14 @@
 #include <libKitsunemimiHanamiMessaging/messaging_controller.h>
 #include <libKitsunemimiHanamiMessaging/messaging_client.h>
 
-#include <libKitsunemimiPersistence/files/text_file.h>
+#include <libKitsunemimiCommon/files/text_file.h>
 
 namespace Kitsunemimi
 {
-namespace Sakura
+namespace Hanami
 {
 
-Kitsunemimi::Sakura::Session_Test* Session_Test::m_instance = nullptr;
+Kitsunemimi::Hanami::Session_Test* Session_Test::m_instance = nullptr;
 
 /**
  * @brief streamDataCallback
@@ -48,7 +48,7 @@ Kitsunemimi::Sakura::Session_Test* Session_Test::m_instance = nullptr;
  */
 void
 streamDataCallback(void*,
-                   Session*,
+                   Kitsunemimi::Sakura::Session*,
                    const void* data,
                    const uint64_t dataSize)
 {
@@ -71,7 +71,7 @@ streamDataCallback(void*,
  * @param client
  */
 void
-sessionCreateCallback(Kitsunemimi::Sakura::MessagingClient* client,
+sessionCreateCallback(Kitsunemimi::Hanami::MessagingClient* client,
                       const std::string identifier)
 {
     Session_Test::m_instance->compare(true,  true);
@@ -129,17 +129,17 @@ Session_Test::initTestCase()
                 "-----#";
 
     TestBlossom* newBlossom = new TestBlossom(this);
-    SakuraLangInterface::getInstance()->addBlossom("test1",
-                                                   "test2",
-                                                   newBlossom);
+    Kitsunemimi::Sakura::SakuraLangInterface::getInstance()->addBlossom("test1",
+                                                                        "test2",
+                                                                        newBlossom);
     std::string errorMessage = "";
-    SakuraLangInterface::getInstance()->addTree("test-tree",
-                                                getTestTree(),
-                                                errorMessage);
-    Kitsunemimi::Persistence::writeFile("/tmp/test-config.conf",
-                                        getTestConfig(),
-                                        errorMessage,
-                                        true);
+    Kitsunemimi::Sakura::SakuraLangInterface::getInstance()->addTree("test-tree",
+                                                                     getTestTree(),
+                                                                     errorMessage);
+    Kitsunemimi::writeFile("/tmp/test-config.conf",
+                           getTestConfig(),
+                           errorMessage,
+                           true);
 }
 
 /**
@@ -238,5 +238,5 @@ Session_Test::getTestConfig()
     return config;
 }
 
-} // namespace Sakura
+} // namespace Hanami
 } // namespace Kitsunemimi
