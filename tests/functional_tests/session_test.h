@@ -30,7 +30,7 @@
 
 namespace Kitsunemimi
 {
-namespace Sakura
+namespace Hanami
 {
 class MessagingClient;
 
@@ -52,7 +52,7 @@ public:
 
     static Session_Test* m_instance;
     std::string m_message = "";
-    Kitsunemimi::Sakura::MessagingClient* m_client = nullptr;
+    Kitsunemimi::Hanami::MessagingClient* m_client = nullptr;
 
     uint32_t m_numberOfTests = 0;
 
@@ -63,7 +63,7 @@ private:
     std::string m_address = "";
 };
 
-} // namespace Sakura
+} // namespace Hanami
 } // namespace Kitsunemimi
 
 #endif // SESSION_TEST_H

@@ -31,12 +31,14 @@
 namespace Kitsunemimi
 {
 struct DataBuffer;
-namespace Sakura
-{
+namespace Sakura {
 class Blossom;
-class MessagingClient;
 class Session;
 class SessionController;
+}
+namespace Hanami
+{
+class MessagingClient;
 
 class MessagingController
 {

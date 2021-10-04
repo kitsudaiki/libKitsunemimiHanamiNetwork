@@ -25,12 +25,12 @@
 
 #include <assert.h>
 
-#include <libKitsunemimiPersistence/logger/logger.h>
+#include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiConfig/config_handler.h>
 
 namespace Kitsunemimi
 {
-namespace Sakura
+namespace Hanami
 {
 
 /**

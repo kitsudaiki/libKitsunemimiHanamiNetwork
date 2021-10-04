@@ -29,9 +29,11 @@ namespace Kitsunemimi
 {
 class DataMap;
 struct DataBuffer;
-namespace Sakura
-{
+namespace Sakura {
 class Session;
+}
+namespace Hanami
+{
 class MessagingController;
 
 class MessagingClient
@@ -53,7 +55,7 @@ public:
 
     void setStreamMessageCallback(void* receiver,
                                   void (*processStreamData)(void*,
-                                                            Session*,
+                                                            Kitsunemimi::Sakura::Session*,
                                                             const void*,
                                                             const uint64_t));
 private:
@@ -61,7 +63,7 @@ private:
 
     MessagingClient();
 
-    Session* m_session = nullptr;
+    Kitsunemimi::Sakura::Session* m_session = nullptr;
     bool m_sessionActive = false;
 
     bool processResponse(DataMap &result,

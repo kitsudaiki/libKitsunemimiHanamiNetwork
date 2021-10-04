@@ -27,7 +27,7 @@
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
 
-#include <libKitsunemimiPersistence/logger/logger.h>
+#include <libKitsunemimiCommon/logger.h>
 
 #include <callbacks.h>
 #include <config.h>
@@ -36,10 +36,10 @@ using Kitsunemimi::Sakura::SessionController;
 
 namespace Kitsunemimi
 {
-namespace Sakura
+namespace Hanami
 {
 
-Kitsunemimi::Sakura::MessagingController* MessagingController::m_instance = nullptr;
+Kitsunemimi::Hanami::MessagingController* MessagingController::m_instance = nullptr;
 
 /**
  * @brief constructor
@@ -181,7 +181,7 @@ MessagingController::createClient(const std::string &remoteIdentifier,
     const std::regex ipv4Regex("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}"
                                "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
 
-    Session* newSession = nullptr;
+    Kitsunemimi::Sakura::Session* newSession = nullptr;
     if(regex_match(address, ipv4Regex)) {
         newSession = m_instance->m_controller->startTcpSession(address, port, localIdentifier);
     } else {
@@ -205,7 +205,7 @@ MessagingController::createClient(const std::string &remoteIdentifier,
 */
 MessagingClient*
 MessagingController::createClient(const std::string &remoteIdentifier,
-                                  Session* session)
+                                  Kitsunemimi::Sakura::Session* session)
 {
 
     MessagingClient* client = new MessagingClient();

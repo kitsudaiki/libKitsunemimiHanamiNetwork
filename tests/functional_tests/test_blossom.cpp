@@ -22,24 +22,24 @@
 
 #include "test_blossom.h"
 
-#include <libKitsunemimiPersistence/logger/logger.h>
+#include <libKitsunemimiCommon/logger.h>
 #include <session_test.h>
 
 namespace Kitsunemimi
 {
-namespace Sakura
+namespace Hanami
 {
 
 TestBlossom::TestBlossom(Session_Test* sessionTest)
-    : Blossom()
+    : Kitsunemimi::Sakura::Blossom()
 {
     m_sessionTest = sessionTest;
-    registerField("input", INPUT_TYPE, true);
-    registerField("output", OUTPUT_TYPE, true);
+    registerField("input", Kitsunemimi::Sakura::INPUT_TYPE, true);
+    registerField("output", Kitsunemimi::Sakura::OUTPUT_TYPE, true);
 }
 
 bool
-TestBlossom::runTask(BlossomLeaf &blossomLeaf, std::string &)
+TestBlossom::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf, std::string &)
 {
     LOG_DEBUG("TestBlossom");
     DataValue* value = blossomLeaf.input.get("input")->toValue();

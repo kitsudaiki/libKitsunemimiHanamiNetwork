@@ -24,15 +24,17 @@
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiCommon/common_items/data_items.h>
-#include <libKitsunemimiPersistence/logger/logger.h>
+#include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
 #include <libKitsunemimiJson/json_item.h>
 
 #include <message_definitions.h>
 
+using Kitsunemimi::Sakura::SakuraLangInterface;
+
 namespace Kitsunemimi
 {
-namespace Sakura
+namespace Hanami
 {
 
 /**
@@ -45,7 +47,7 @@ namespace Sakura
  */
 MessagingEvent::MessagingEvent(const std::string &treeId,
                                const std::string &inputValues,
-                               Session* session,
+                               Kitsunemimi::Sakura::Session* session,
                                const uint64_t blockerId)
 {
     m_treeId = treeId;
