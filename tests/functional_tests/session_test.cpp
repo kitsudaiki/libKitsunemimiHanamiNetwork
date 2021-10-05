@@ -151,15 +151,15 @@ Session_Test::runTest()
     Config::initConfig("/tmp/test-config.conf");
     std::vector<std::string> groupNames = {"self"};
     m_numberOfTests++;
-    TEST_EQUAL(MessagingController::initializeMessagingController("contr1",
-                                                                  groupNames,
-                                                                  sessionCreateCallback,
-                                                                  sessionCloseCallback), true);
+    TEST_EQUAL(MessagingController::getInstance()->initialize("contr1",
+                                                               groupNames,
+                                                               sessionCreateCallback,
+                                                               sessionCloseCallback), true);
     m_numberOfTests++;
-    TEST_EQUAL(MessagingController::initializeMessagingController("contr1",
-                                                                  groupNames,
-                                                                  sessionCreateCallback,
-                                                                  sessionCloseCallback), false);
+    TEST_EQUAL(MessagingController::getInstance()->initialize("contr1",
+                                                              groupNames,
+                                                              sessionCreateCallback,
+                                                              sessionCloseCallback), false);
 
     const bool isNullptr = m_client == nullptr;
     m_numberOfTests++;

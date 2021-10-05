@@ -39,7 +39,7 @@ namespace Kitsunemimi
 namespace Hanami
 {
 
-Kitsunemimi::Hanami::MessagingController* MessagingController::m_instance = nullptr;
+MessagingController* MessagingController::m_messagingController = new MessagingController();
 
 /**
  * @brief constructor
@@ -71,23 +71,22 @@ MessagingController::~MessagingController()
  * @return true, if successful, else false
  */
 bool
-MessagingController::initializeMessagingController(const std::string &localIdentifier,
-                                                   const std::vector<std::string> &configGroups,
-                                                   void (*processCreateSession)(MessagingClient*,
-                                                                                const std::string),
-                                                   void (*processCloseSession)(const std::string),
-                                                   const bool createServer)
+MessagingController::initialize(const std::string &localIdentifier,
+                                const std::vector<std::string> &configGroups,
+                                void (*processCreateSession)(MessagingClient*,
+                                                             const std::string),
+                                void (*processCloseSession)(const std::string),
+                                const bool createServer)
 {
     // precheck to avoid double-initializing
-    if(m_instance != nullptr) {
+    if(m_isInit) {
         return false;
     }
 
     // set global values
-    m_instance = new MessagingController();
-    m_instance->m_localIdentifier = localIdentifier;
-    m_instance->m_processCreationSession = processCreateSession;
-    m_instance->m_processClosingSession = processCloseSession;
+    m_localIdentifier = localIdentifier;
+    m_processCreationSession = processCreateSession;
+    m_processClosingSession = processCloseSession;
 
     // check if config-file already initialized
     if(Kitsunemimi::Config::ConfigHandler::m_config == nullptr)
@@ -117,7 +116,7 @@ MessagingController::initializeMessagingController(const std::string &localIdent
             // create tcp-server
             const int port = GET_INT_CONFIG("DEFAULT", "port", success);
             const uint16_t serverPort = static_cast<uint16_t>(port);
-            if(m_instance->m_controller->addTcpServer(serverPort) == 0)
+            if(m_controller->addTcpServer(serverPort) == 0)
             {
                 LOG_ERROR("can't initialize tcp-server on port " + std::to_string(serverPort));
                 return false;
@@ -126,7 +125,7 @@ MessagingController::initializeMessagingController(const std::string &localIdent
         else
         {
             // create uds-server
-            if(m_instance->m_controller->addUnixDomainServer(serverAddress) == 0)
+            if(m_controller->addUnixDomainServer(serverAddress) == 0)
             {
                 LOG_ERROR("can't initialize uds-server on file " + serverAddress);
                 return false;
@@ -139,14 +138,16 @@ MessagingController::initializeMessagingController(const std::string &localIdent
     {
         const std::string address = GET_STRING_CONFIG(groupName, "address", success);
         const uint16_t port = static_cast<uint16_t>(GET_INT_CONFIG(groupName, "port", success));
-        MessagingClient* newClient = m_instance->createClient(groupName,
-                                                              localIdentifier,
-                                                              address,
-                                                              port);
+        MessagingClient* newClient = createClient(groupName,
+                                                  localIdentifier,
+                                                  address,
+                                                  port);
         if(newClient == nullptr) {
             return false;
         }
     }
+
+    m_isInit = true;
 
     return true;
 }
@@ -159,7 +160,7 @@ MessagingController::initializeMessagingController(const std::string &localIdent
 MessagingController*
 MessagingController::getInstance()
 {
-    return m_instance;
+    return m_messagingController;
 }
 
 /**
@@ -183,9 +184,9 @@ MessagingController::createClient(const std::string &remoteIdentifier,
 
     Kitsunemimi::Sakura::Session* newSession = nullptr;
     if(regex_match(address, ipv4Regex)) {
-        newSession = m_instance->m_controller->startTcpSession(address, port, localIdentifier);
+        newSession = m_controller->startTcpSession(address, port, localIdentifier);
     } else {
-        newSession = m_instance->m_controller->startUnixDomainSession(address, localIdentifier);
+        newSession = m_controller->startUnixDomainSession(address, localIdentifier);
     }
 
     if(newSession == nullptr) {
@@ -211,7 +212,7 @@ MessagingController::createClient(const std::string &remoteIdentifier,
     MessagingClient* client = new MessagingClient();
     client->m_session = session;
 
-    m_instance->m_processCreationSession(client, remoteIdentifier);
+    m_processCreationSession(client, remoteIdentifier);
 
     return client;
 }
@@ -224,7 +225,7 @@ MessagingController::createClient(const std::string &remoteIdentifier,
 void
 MessagingController::closeClient(const std::string &remoteIdentifier)
 {
-    m_instance->m_processClosingSession(remoteIdentifier);
+    m_processClosingSession(remoteIdentifier);
 }
 
 }

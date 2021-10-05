@@ -44,15 +44,16 @@ class MessagingController
 {
 
 public:
-    static bool initializeMessagingController(const std::string& identifier,
-                                              const std::vector<std::string> &configGroups,
-                                              void (*processCreateSession)(MessagingClient*,
-                                                                             const std::string),
-                                              void (*processCloseSession)(const std::string),
-                                              const bool createServer = true);
     static MessagingController* getInstance();
 
     ~MessagingController();
+
+    bool initialize(const std::string& identifier,
+                    const std::vector<std::string> &configGroups,
+                    void (*processCreateSession)(MessagingClient*,
+                                                 const std::string),
+                    void (*processCloseSession)(const std::string),
+                    const bool createServer = true);
 
     MessagingClient* createClient(const std::string &clientName,
                                   const std::string &identifier,
@@ -71,11 +72,12 @@ private:
 
     Kitsunemimi::Sakura::SessionController* m_controller = nullptr;
     std::string m_localIdentifier = "";
+    bool m_isInit = false;
 
     void (*m_processCreationSession)(MessagingClient*, const std::string);
     void (*m_processClosingSession)(const std::string);
 
-    static MessagingController* m_instance;
+    static MessagingController* m_messagingController;
 };
 
 }
