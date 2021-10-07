@@ -27,7 +27,7 @@
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiJson/json_item.h>
 
-#include <message_definitions.h>
+#include <message_handling/message_definitions.h>
 
 namespace Kitsunemimi
 {

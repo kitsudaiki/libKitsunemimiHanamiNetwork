@@ -24,7 +24,7 @@
 
 #include <libKitsunemimiCommon/logger.h>
 
-#include <messaging_event.h>
+#include <message_handling/messaging_event.h>
 
 namespace Kitsunemimi
 {

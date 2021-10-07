@@ -28,7 +28,7 @@
 #include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
 #include <libKitsunemimiJson/json_item.h>
 
-#include <message_definitions.h>
+#include <message_handling/message_definitions.h>
 
 using Kitsunemimi::Sakura::SakuraLangInterface;
 

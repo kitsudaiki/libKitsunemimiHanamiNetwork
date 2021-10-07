@@ -27,11 +27,11 @@
 
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 #include <messaging_client.h>
-#include <messaging_event.h>
+#include <message_handling/messaging_event.h>
 #include <internal_client_handler.h>
 
-#include <message_definitions.h>
-#include <messaging_event_queue.h>
+#include <message_handling/message_definitions.h>
+#include <message_handling/messaging_event_queue.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
