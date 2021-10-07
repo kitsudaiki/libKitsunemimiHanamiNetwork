@@ -76,7 +76,8 @@ MessagingEvent::sendResponseMessage(const bool success,
                                     const uint64_t blockerId)
 {
     // allocate memory to fill with the response-message
-    uint32_t responseMessageSize = sizeof(ResponseMessage) + static_cast<uint32_t>(message.size());
+    const uint32_t responseMessageSize = sizeof(ResponseMessage)
+                                         + static_cast<uint32_t>(message.size());
     uint8_t* buffer = new uint8_t[responseMessageSize];
 
     // prepare response-header
@@ -86,13 +87,10 @@ MessagingEvent::sendResponseMessage(const bool success,
 
     uint32_t positionCounter = 0;
 
-    // copy header
+    // copy header and id
     memcpy(buffer, &responseHeader, sizeof(ResponseMessage));
     positionCounter += sizeof(ResponseMessage);
-
-    // copy id
     memcpy(buffer + positionCounter, message.c_str(), message.size());
-    positionCounter += message.size();
 
     // send reponse over the session
     session->sendResponse(buffer, responseMessageSize, blockerId);

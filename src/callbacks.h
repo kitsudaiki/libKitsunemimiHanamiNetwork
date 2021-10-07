@@ -25,8 +25,8 @@
 
 #include <iostream>
 
-#include <libKitsunemimiHanamiMessaging/messaging_controller.h>
-#include <libKitsunemimiHanamiMessaging/messaging_client.h>
+#include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
+#include <messaging_client.h>
 #include <messaging_event.h>
 
 #include <message_definitions.h>
@@ -129,7 +129,7 @@ void
 sessionCreateCallback(Kitsunemimi::Sakura::Session* session,
                       const std::string identifier)
 {
-    MessagingController* controller = MessagingController::getInstance();
+    HanamiMessaging* controller = HanamiMessaging::getInstance();
 
     // set callback for incoming standalone-messages for trigger sakura-files
     session->setStandaloneMessageCallback(nullptr, &standaloneDataCallback);
@@ -149,8 +149,7 @@ void
 sessionCloseCallback(Kitsunemimi::Sakura::Session*,
                       const std::string identifier)
 {
-    MessagingController* controller = MessagingController::getInstance();
-    controller->closeClient(identifier);
+
 }
 
 }

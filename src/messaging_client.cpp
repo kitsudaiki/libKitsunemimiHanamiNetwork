@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <libKitsunemimiHanamiMessaging/messaging_client.h>
+#include <messaging_client.h>
 
 #include <libKitsunemimiCommon/buffer/data_buffer.h>
 #include <libKitsunemimiCommon/common_items/data_items.h>
@@ -64,23 +64,6 @@ MessagingClient::closeSession()
     }
 
     return false;
-}
-
-/**
- * @brief send stream data messages
- *
- * @param data pointer for data to send
- * @param size number of bytes to send
- * @param replyExpected true to expect a reply
- *
- * @return true, if successful, else false
- */
-bool
-MessagingClient::sendStreamData(const void* data,
-                                const uint64_t size,
-                                const bool replyExpected)
-{
-    return m_session->sendStreamData(data, size, replyExpected);
 }
 
 /**
@@ -180,21 +163,6 @@ MessagingClient::processResponse(DataMap &result,
     }
 
     return header->success;
-}
-
-/**
- * @brief set new callback for incoming stream-messages
- *
- * @param processStreamData callback to trigger in case of an incoming stream-messages
- */
-void
-MessagingClient::setStreamMessageCallback(void* receiver,
-                                          void (*processStreamData)(void*,
-                                                                    Kitsunemimi::Sakura::Session*,
-                                                                    const void*,
-                                                                    const uint64_t))
-{
-    m_session->setStreamMessageCallback(receiver, processStreamData);
 }
 
 }

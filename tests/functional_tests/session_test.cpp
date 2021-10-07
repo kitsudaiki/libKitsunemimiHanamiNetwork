@@ -29,10 +29,11 @@
 #include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
 #include <libKitsunemimiSakuraLang/blossom.h>
 
-#include <libKitsunemimiHanamiMessaging/messaging_controller.h>
-#include <libKitsunemimiHanamiMessaging/messaging_client.h>
+#include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 
 #include <libKitsunemimiCommon/files/text_file.h>
+
+using Kitsunemimi::Sakura::SakuraLangInterface;
 
 namespace Kitsunemimi
 {
@@ -40,61 +41,6 @@ namespace Hanami
 {
 
 Kitsunemimi::Hanami::Session_Test* Session_Test::m_instance = nullptr;
-
-/**
- * @brief streamDataCallback
- * @param data
- * @param dataSize
- */
-void
-streamDataCallback(void*,
-                   Kitsunemimi::Sakura::Session*,
-                   const void* data,
-                   const uint64_t dataSize)
-{
-    std::string receivedMessage(static_cast<const char*>(data), dataSize);
-
-    std::cout<<"receive message"<<std::endl;
-    bool ret = false;
-
-    if(dataSize == Session_Test::m_instance->m_message.size())
-    {
-        ret = true;
-        Session_Test::m_instance->compare(receivedMessage, Session_Test::m_instance->m_message);
-    }
-
-    Session_Test::m_instance->compare(ret,  true);
-}
-
-/**
- * @brief sessionCreateCallback
- * @param client
- */
-void
-sessionCreateCallback(Kitsunemimi::Hanami::MessagingClient* client,
-                      const std::string identifier)
-{
-    Session_Test::m_instance->compare(true,  true);
-    if(identifier == "self") {
-        Session_Test::m_instance->compare(identifier,  std::string("self"));
-    } else {
-        Session_Test::m_instance->compare(identifier,  std::string("contr1"));
-    }
-
-    client->setStreamMessageCallback(Session_Test::m_instance, &streamDataCallback);
-    Session_Test::m_instance->m_client = client;
-}
-
-/**
- * @brief sessionCloseCallback
- * @param identifier
- */
-void
-sessionCloseCallback(const std::string identifier)
-{
-    Session_Test::m_instance->compare(true,  true);
-    Session_Test::m_instance->compare(identifier,  std::string("contr1"));
-}
 
 /**
  * @brief Session_Test::Session_Test
@@ -128,14 +74,10 @@ Session_Test::initTestCase()
                 "-------------------------------------------------#----------------------"
                 "-----#";
 
-    TestBlossom* newBlossom = new TestBlossom(this);
-    Kitsunemimi::Sakura::SakuraLangInterface::getInstance()->addBlossom("test1",
-                                                                        "test2",
-                                                                        newBlossom);
     std::string errorMessage = "";
-    Kitsunemimi::Sakura::SakuraLangInterface::getInstance()->addTree("test-tree",
-                                                                     getTestTree(),
-                                                                     errorMessage);
+    TestBlossom* newBlossom = new TestBlossom(this);
+    SakuraLangInterface::getInstance()->addBlossom("test1", "test2", newBlossom);
+    SakuraLangInterface::getInstance()->addTree("test-tree", getTestTree(), errorMessage);
     Kitsunemimi::writeFile("/tmp/test-config.conf",
                            getTestConfig(),
                            errorMessage,
@@ -149,21 +91,11 @@ void
 Session_Test::runTest()
 {
     Config::initConfig("/tmp/test-config.conf");
-    std::vector<std::string> groupNames = {"self"};
+    std::vector<std::string> groupNames = {"target"};
     m_numberOfTests++;
-    TEST_EQUAL(MessagingController::getInstance()->initialize("contr1",
-                                                               groupNames,
-                                                               sessionCreateCallback,
-                                                               sessionCloseCallback), true);
+    TEST_EQUAL(HanamiMessaging::getInstance()->initialize("client", groupNames), true);
     m_numberOfTests++;
-    TEST_EQUAL(MessagingController::getInstance()->initialize("contr1",
-                                                              groupNames,
-                                                              sessionCreateCallback,
-                                                              sessionCloseCallback), false);
-
-    const bool isNullptr = m_client == nullptr;
-    m_numberOfTests++;
-    TEST_EQUAL(isNullptr, false);
+    TEST_EQUAL(HanamiMessaging::getInstance()->initialize("client", groupNames), false);
 
     std::string errorMessage = "";
     DataMap inputValues;
@@ -172,32 +104,29 @@ Session_Test::runTest()
 
     DataMap result;
     m_numberOfTests++;
-    TEST_EQUAL(m_client->triggerSakuraFile(result,
-                                         "test-tree",
-                                         inputValues.toString(),
-                                         errorMessage),
+    TEST_EQUAL(HanamiMessaging::getInstance()->triggerSakuraFile("target",
+                                                                 result,
+                                                                 "test-tree",
+                                                                 inputValues.toString(),
+                                                                 errorMessage),
                true);
     m_numberOfTests++;
-    TEST_EQUAL(m_client->triggerSakuraFile(result,
-                                         "fail",
-                                         inputValues.toString(),
-                                         errorMessage),
+    TEST_EQUAL(HanamiMessaging::getInstance()->triggerSakuraFile("target",
+                                                                 result,
+                                                                 "fail",
+                                                                 inputValues.toString(),
+                                                                 errorMessage),
                false);
 
     m_numberOfTests++;
     TEST_EQUAL(result.get("test_output")->toValue()->getInt(), 42);
 
     m_numberOfTests++;
-    TEST_EQUAL(m_client->sendStreamData(m_message.c_str(), m_message.size()), true);
-    sleep(1);
-
-    m_numberOfTests++;
-    TEST_EQUAL(m_client->closeSession(), true);
+    TEST_EQUAL(HanamiMessaging::getInstance()->closeClient("target"), true);
     sleep(1);
 
 
-    TEST_EQUAL(m_numberOfTests, 19);
-    delete m_client;
+    TEST_EQUAL(m_numberOfTests, 7);
 
     std::cout<<"finish"<<std::endl;
 }
@@ -232,7 +161,7 @@ Session_Test::getTestConfig()
                                "port = 12345\n"
                                "\n"
                                "\n"
-                               "[self]\n"
+                               "[target]\n"
                                "port = 12345\n"
                                "address = \"" + m_address + "\"\n";
     return config;
