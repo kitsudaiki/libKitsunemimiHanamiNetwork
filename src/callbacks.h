@@ -28,6 +28,7 @@
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 #include <messaging_client.h>
 #include <messaging_event.h>
+#include <internal_client_handler.h>
 
 #include <message_definitions.h>
 #include <messaging_event_queue.h>
@@ -129,14 +130,15 @@ void
 sessionCreateCallback(Kitsunemimi::Sakura::Session* session,
                       const std::string identifier)
 {
-    HanamiMessaging* controller = HanamiMessaging::getInstance();
-
     // set callback for incoming standalone-messages for trigger sakura-files
     session->setStandaloneMessageCallback(nullptr, &standaloneDataCallback);
 
     // callback was triggered on server-side, place new session into central list
-    if(session->isClientSide() == false) {
-        controller->createClient(identifier, session);
+    if(session->isClientSide() == false)
+    {
+        MessagingClient* newClient = new MessagingClient();
+        newClient->m_session = session;
+        InternalClientHandler::m_instance->addClient(identifier, newClient);
     }
 }
 
@@ -146,10 +148,12 @@ sessionCreateCallback(Kitsunemimi::Sakura::Session* session,
  * @param identifier identifier of the incoming session
  */
 void
-sessionCloseCallback(Kitsunemimi::Sakura::Session*,
+sessionCloseCallback(Kitsunemimi::Sakura::Session* session,
                       const std::string identifier)
 {
-
+    if(session->isClientSide() == false) {
+        InternalClientHandler::m_instance->removeClient(identifier);
+    }
 }
 
 }

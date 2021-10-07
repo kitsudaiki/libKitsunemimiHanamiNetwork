@@ -52,6 +52,7 @@ INCLUDEPATH += $$PWD \
 
 HEADERS += \
     ../include/libKitsunemimiHanamiMessaging/hanami_messaging.h \
+    internal_client_handler.h \
     message_definitions.h \
     messaging_client.h \
     callbacks.h \
@@ -61,6 +62,7 @@ HEADERS += \
 
 SOURCES += \
     hanami_messaging.cpp \
+    internal_client_handler.cpp \
     messaging_client.cpp \
     messaging_event_queue.cpp \
     messaging_event.cpp

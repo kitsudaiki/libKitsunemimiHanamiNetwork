@@ -217,20 +217,6 @@ HanamiMessaging::createClient(const std::string &remoteIdentifier,
 }
 
 /**
-* @brief create and forward new client
-*
-* @param remoteIdentifier name of the client for later identification
-* @param session session for the new client
-*/
-void
-HanamiMessaging::createClient(const std::string &remoteIdentifier,
-                                  Kitsunemimi::Sakura::Session* session)
-{
-    MessagingClient* newClient = new MessagingClient();
-    newClient->m_session = session;
-}
-
-/**
  * @brief forward callback to close session
  *
 * @param remoteIdentifier name of the client for later identification

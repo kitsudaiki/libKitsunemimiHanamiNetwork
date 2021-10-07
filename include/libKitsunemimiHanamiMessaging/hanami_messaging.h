@@ -61,25 +61,20 @@ public:
 
     bool closeClient(const std::string &remoteIdentifier);
 
-
-    // internally
-    bool createClient(const std::string &clientName,
-                      const std::string &address,
-                      const uint16_t port = 0);
-    void createClient(const std::string &identifier,
-                      Kitsunemimi::Sakura::Session* session);
-
 private:
     HanamiMessaging();
 
     Kitsunemimi::Sakura::SessionController* m_controller = nullptr;
     std::map<std::string, MessagingClient*> m_outgoingClients;
-    std::map<std::string, MessagingClient*> m_incomingClients;
 
     std::string m_localIdentifier = "";
     bool m_isInit = false;
 
     static HanamiMessaging* m_messagingController;
+
+    bool createClient(const std::string &clientName,
+                      const std::string &address,
+                      const uint16_t port = 0);
 };
 
 }
