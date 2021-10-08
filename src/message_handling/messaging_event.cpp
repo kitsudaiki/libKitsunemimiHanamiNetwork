@@ -125,6 +125,15 @@ MessagingEvent::processEvent()
                                          m_treeId,
                                          *newItem.getItemContent()->toMap(),
                                          errorMessage);
+
+        if(ret == false)
+        {
+            ret = langInterface->triggerBlossom(resultingItems,
+                                                m_treeId,
+                                                "special",
+                                                *newItem.getItemContent()->toMap(),
+                                                errorMessage);
+        }
     }
 
     // creating and send reposonse with the result of the event

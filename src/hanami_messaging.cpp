@@ -95,8 +95,7 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
     }
 
     bool success = false;
-    const std::regex ipv4Regex("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}"
-                               "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+    const std::regex ipv4Regex("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
     // init server if requested
     if(createServer)
@@ -195,8 +194,7 @@ HanamiMessaging::createClient(const std::string &remoteIdentifier,
                                   const std::string &address,
                                   const uint16_t port)
 {
-    const std::regex ipv4Regex("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}"
-                               "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+    const std::regex ipv4Regex("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
     Kitsunemimi::Sakura::Session* newSession = nullptr;
     if(regex_match(address, ipv4Regex)) {
