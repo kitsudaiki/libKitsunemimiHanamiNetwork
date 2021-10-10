@@ -31,6 +31,7 @@
 namespace Kitsunemimi
 {
 struct DataBuffer;
+class DataMap;
 namespace Sakura {
 class Blossom;
 class Session;
@@ -40,44 +41,40 @@ namespace Hanami
 {
 class MessagingClient;
 
-class MessagingController
+class HanamiMessaging
 {
 
 public:
-    static MessagingController* getInstance();
+    static HanamiMessaging* getInstance();
 
-    ~MessagingController();
+    ~HanamiMessaging();
 
     bool initialize(const std::string& identifier,
                     const std::vector<std::string> &configGroups,
-                    void (*processCreateSession)(MessagingClient*,
-                                                 const std::string),
-                    void (*processCloseSession)(const std::string),
                     const bool createServer = true);
 
-    MessagingClient* createClient(const std::string &clientName,
-                                  const std::string &identifier,
-                                  const std::string &address,
-                                  const uint16_t port = 0);
+    bool triggerSakuraFile(const std::string &target,
+                           Kitsunemimi::DataMap &result,
+                           const std::string &id,
+                           const std::string &inputValues,
+                           std::string &errorMessage);
 
-
-    // internally
-    MessagingClient* createClient(const std::string &identifier,
-                                  Kitsunemimi::Sakura::Session* session);
-
-    void closeClient(const std::string &remoteIdentifier);
+    bool closeClient(const std::string &remoteIdentifier);
 
 private:
-    MessagingController();
+    HanamiMessaging();
 
     Kitsunemimi::Sakura::SessionController* m_controller = nullptr;
+    std::map<std::string, MessagingClient*> m_outgoingClients;
+
     std::string m_localIdentifier = "";
     bool m_isInit = false;
 
-    void (*m_processCreationSession)(MessagingClient*, const std::string);
-    void (*m_processClosingSession)(const std::string);
+    static HanamiMessaging* m_messagingController;
 
-    static MessagingController* m_messagingController;
+    bool createClient(const std::string &clientName,
+                      const std::string &address,
+                      const uint16_t port = 0);
 };
 
 }

@@ -25,12 +25,13 @@
 
 #include <iostream>
 
-#include <libKitsunemimiHanamiMessaging/messaging_controller.h>
-#include <libKitsunemimiHanamiMessaging/messaging_client.h>
-#include <messaging_event.h>
+#include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
+#include <messaging_client.h>
+#include <message_handling/messaging_event.h>
+#include <internal_client_handler.h>
 
-#include <message_definitions.h>
-#include <messaging_event_queue.h>
+#include <message_handling/message_definitions.h>
+#include <message_handling/messaging_event_queue.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
@@ -56,7 +57,7 @@ standaloneDataCallback(void*,
                        Kitsunemimi::DataBuffer* data)
 {
     LOG_DEBUG("receive sakura-message");
-    if(data->bufferPosition == 0)
+    if(data->usedBufferSize == 0)
     {
         LOG_WARNING("received empty message");
         delete data;
@@ -129,14 +130,15 @@ void
 sessionCreateCallback(Kitsunemimi::Sakura::Session* session,
                       const std::string identifier)
 {
-    MessagingController* controller = MessagingController::getInstance();
-
     // set callback for incoming standalone-messages for trigger sakura-files
     session->setStandaloneMessageCallback(nullptr, &standaloneDataCallback);
 
     // callback was triggered on server-side, place new session into central list
-    if(session->isClientSide() == false) {
-        controller->createClient(identifier, session);
+    if(session->isClientSide() == false)
+    {
+        MessagingClient* newClient = new MessagingClient();
+        newClient->m_session = session;
+        InternalClientHandler::getInstance()->addClient(identifier, newClient);
     }
 }
 
@@ -146,11 +148,12 @@ sessionCreateCallback(Kitsunemimi::Sakura::Session* session,
  * @param identifier identifier of the incoming session
  */
 void
-sessionCloseCallback(Kitsunemimi::Sakura::Session*,
+sessionCloseCallback(Kitsunemimi::Sakura::Session* session,
                       const std::string identifier)
 {
-    MessagingController* controller = MessagingController::getInstance();
-    controller->closeClient(identifier);
+    if(session->isClientSide() == false) {
+        InternalClientHandler::getInstance()->removeClient(identifier);
+    }
 }
 
 }

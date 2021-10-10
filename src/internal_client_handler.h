@@ -1,5 +1,5 @@
 /**
- * @file        messaging_event_queue.h
+ * @file        internal_client_handler.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,32 +20,36 @@
  *      limitations under the License.
  */
 
-#ifndef MESSAGING_EVENT_QUEUE_H
-#define MESSAGING_EVENT_QUEUE_H
+#ifndef INTERNALCLIENTHANDLER_H
+#define INTERNALCLIENTHANDLER_H
 
-#include <libKitsunemimiCommon/threading/thread.h>
+#include <map>
+#include <string>
 
 namespace Kitsunemimi
 {
 namespace Hanami
 {
+class MessagingClient;
 
-class MessagingEventQueue
-        : public Kitsunemimi::Thread
+class InternalClientHandler
 {
-public:  
-    static MessagingEventQueue* getInstance();
+public:
+    static InternalClientHandler* getInstance();
 
-protected:
-    void run();
+    bool addClient(const std::string &identifier,
+                   MessagingClient* newClient);
+
+    bool removeClient(const std::string &identifier);
 
 private:
-    MessagingEventQueue();
+    InternalClientHandler();
 
-    static MessagingEventQueue* m_instance;
+    std::map<std::string, MessagingClient*> m_incomingClients;
+    static InternalClientHandler* m_instance;
 };
 
 }
 }
 
-#endif // MESSAGING_EVENT_QUEUE_H
+#endif // INTERNALCLIENTHANDLER_H

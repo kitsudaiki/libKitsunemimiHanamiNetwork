@@ -34,36 +34,25 @@ class Session;
 }
 namespace Hanami
 {
-class MessagingController;
+class HanamiMessaging;
 
 class MessagingClient
 {
 
 public:
+    MessagingClient();
     ~MessagingClient();
 
     bool closeSession();
-
-    bool sendStreamData(const void* data,
-                        const uint64_t size,
-                        const bool replyExpected = false);
 
     bool triggerSakuraFile(DataMap &result,
                            const std::string &id,
                            const std::string &inputValues,
                            std::string &errorMessage);
 
-    void setStreamMessageCallback(void* receiver,
-                                  void (*processStreamData)(void*,
-                                                            Kitsunemimi::Sakura::Session*,
-                                                            const void*,
-                                                            const uint64_t));
-private:
-    friend MessagingController;
-
-    MessagingClient();
-
     Kitsunemimi::Sakura::Session* m_session = nullptr;
+
+private:
     bool m_sessionActive = false;
 
     bool processResponse(DataMap &result,
