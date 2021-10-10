@@ -140,7 +140,7 @@ Session_Test::getTestTree()
 {
     const std::string tree = "[\"test\"]\n"
                              "- input = \"{{}}\"\n"
-                             "- test_output = \"\"\n"
+                             "- test_output = >>\n"
                              "\n"
                              "test1(\"this is a test\")\n"
                              "->test2:\n"

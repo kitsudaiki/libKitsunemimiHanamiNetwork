@@ -136,7 +136,7 @@ MessagingClient::processResponse(DataMap &result,
                                  std::string &errorMessage)
 {
     // precheck
-    if(response->bufferPosition == 0
+    if(response->usedBufferSize == 0
             || response->data == nullptr)
     {
         // TODO: create error-message

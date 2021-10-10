@@ -57,7 +57,7 @@ standaloneDataCallback(void*,
                        Kitsunemimi::DataBuffer* data)
 {
     LOG_DEBUG("receive sakura-message");
-    if(data->bufferPosition == 0)
+    if(data->usedBufferSize == 0)
     {
         LOG_WARNING("received empty message");
         delete data;
@@ -138,7 +138,7 @@ sessionCreateCallback(Kitsunemimi::Sakura::Session* session,
     {
         MessagingClient* newClient = new MessagingClient();
         newClient->m_session = session;
-        InternalClientHandler::m_instance->addClient(identifier, newClient);
+        InternalClientHandler::getInstance()->addClient(identifier, newClient);
     }
 }
 
@@ -152,7 +152,7 @@ sessionCloseCallback(Kitsunemimi::Sakura::Session* session,
                       const std::string identifier)
 {
     if(session->isClientSide() == false) {
-        InternalClientHandler::m_instance->removeClient(identifier);
+        InternalClientHandler::getInstance()->removeClient(identifier);
     }
 }
 

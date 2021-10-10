@@ -29,9 +29,23 @@ namespace Kitsunemimi
 namespace Hanami
 {
 
-InternalClientHandler* InternalClientHandler::m_instance = new InternalClientHandler();
+InternalClientHandler* InternalClientHandler::m_instance = nullptr;
 
 InternalClientHandler::InternalClientHandler() {}
+
+/**
+ * @brief static methode to get instance of the interface
+ *
+ * @return pointer to the static instance
+ */
+InternalClientHandler*
+InternalClientHandler::getInstance()
+{
+    if(m_instance == nullptr) {
+        m_instance = new InternalClientHandler();
+    }
+    return m_instance;
+}
 
 /**
  * @brief InternalClientHandler::addClient

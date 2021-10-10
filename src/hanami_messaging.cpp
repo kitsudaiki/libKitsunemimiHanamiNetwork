@@ -39,7 +39,7 @@ namespace Kitsunemimi
 namespace Hanami
 {
 
-HanamiMessaging* HanamiMessaging::m_messagingController = new HanamiMessaging();
+HanamiMessaging* HanamiMessaging::m_messagingController = nullptr;
 
 /**
  * @brief constructor
@@ -177,6 +177,9 @@ HanamiMessaging::triggerSakuraFile(const std::string &target,
 HanamiMessaging*
 HanamiMessaging::getInstance()
 {
+    if(m_messagingController == nullptr) {
+        m_messagingController = new HanamiMessaging();
+    }
     return m_messagingController;
 }
 

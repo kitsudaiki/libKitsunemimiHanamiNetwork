@@ -40,7 +40,7 @@ protected:
     void run();
 
 private:
-    MessagingEventQueue();
+    MessagingEventQueue(const std::string &threadName);
 
     static MessagingEventQueue* m_instance;
 };

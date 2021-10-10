@@ -35,9 +35,7 @@ class MessagingClient;
 class InternalClientHandler
 {
 public:
-    static InternalClientHandler* m_instance;
-
-    InternalClientHandler();
+    static InternalClientHandler* getInstance();
 
     bool addClient(const std::string &identifier,
                    MessagingClient* newClient);
@@ -45,7 +43,10 @@ public:
     bool removeClient(const std::string &identifier);
 
 private:
+    InternalClientHandler();
+
     std::map<std::string, MessagingClient*> m_incomingClients;
+    static InternalClientHandler* m_instance;
 };
 
 }

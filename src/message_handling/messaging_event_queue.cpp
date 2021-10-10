@@ -36,8 +36,8 @@ Kitsunemimi::Hanami::MessagingEventQueue* MessagingEventQueue::m_instance = null
 /**
  * @brief constructor
  */
-MessagingEventQueue::MessagingEventQueue()
-    : Kitsunemimi::Thread()
+MessagingEventQueue::MessagingEventQueue(const std::string &threadName)
+    : Kitsunemimi::Thread(threadName)
 {}
 
 /**
@@ -50,7 +50,7 @@ MessagingEventQueue::getInstance()
 {
     if(m_instance == nullptr)
     {
-        m_instance = new MessagingEventQueue();
+        m_instance = new MessagingEventQueue("MessagingEventQueue");
         m_instance->startThread();
     }
 
