@@ -84,12 +84,14 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
     // check if config-file already initialized
     if(Kitsunemimi::Config::ConfigHandler::m_config == nullptr)
     {
-        LOG_ERROR("config-file not initilized");
+        Kitsunemimi::ErrorContainer error;
+        error.errorMessage = "config-file not initilized";
+        LOG_ERROR(error);
         return false;
     }
 
     // init config-options
-    registerConfigs(configGroups);
+    registerBasicConfigs(configGroups);
     if(checkConfigs(configGroups, createServer) == false) {
         return false;
     }
@@ -110,7 +112,9 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
             const uint16_t serverPort = static_cast<uint16_t>(port);
             if(m_controller->addTcpServer(serverPort) == 0)
             {
-                LOG_ERROR("can't initialize tcp-server on port " + std::to_string(serverPort));
+                Kitsunemimi::ErrorContainer error;
+                error.errorMessage = "can't initialize tcp-server on port " + std::to_string(serverPort);
+                LOG_ERROR(error);
                 return false;
             }
         }
@@ -119,7 +123,9 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
             // create uds-server
             if(m_controller->addUnixDomainServer(serverAddress) == 0)
             {
-                LOG_ERROR("can't initialize uds-server on file " + serverAddress);
+                Kitsunemimi::ErrorContainer error;
+                error.errorMessage = "can't initialize uds-server on file " + serverAddress;
+                LOG_ERROR(error);
                 return false;
             }
         }
@@ -153,6 +159,7 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
 bool
 HanamiMessaging::triggerSakuraFile(const std::string &target,
                                    DataMap &result,
+                                   HttpType httpType,
                                    const std::string &id,
                                    const std::string &inputValues,
                                    std::string &errorMessage)
@@ -163,7 +170,11 @@ HanamiMessaging::triggerSakuraFile(const std::string &target,
     if(it != m_outgoingClients.end())
     {
         MessagingClient* client = it->second;
-        return client->triggerSakuraFile(result, id, inputValues, errorMessage);
+        return client->triggerSakuraFile(result,
+                                         httpType,
+                                         id,
+                                         inputValues,
+                                         errorMessage);
     }
 
     return false;

@@ -39,7 +39,7 @@ namespace Hanami
  * @param configGroups list of groups to register network-connections
  */
 void
-registerConfigs(const std::vector<std::string> &configGroups)
+registerBasicConfigs(const std::vector<std::string> &configGroups)
 {
     REGISTER_INT_CONFIG("DEFAULT", "port", 0);
     REGISTER_STRING_CONFIG("DEFAULT", "address", "");
@@ -68,7 +68,9 @@ checkConfigs(const std::string &groupName)
     assert(success);
     if(address == "")
     {
-        LOG_ERROR("address in group " + groupName + " was not set in config-file");
+        Kitsunemimi::ErrorContainer error;
+        error.errorMessage = "address in group " + groupName + " was not set in config-file";
+        LOG_ERROR(error);
         return false;
     }
     // TODO: check if address is valid ip

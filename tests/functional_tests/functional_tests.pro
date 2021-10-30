@@ -59,6 +59,11 @@ LIBS += -L../../../libKitsunemimiIni/src/debug -lKitsunemimiIni
 LIBS += -L../../../libKitsunemimiIni/src/release -lKitsunemimiIni
 INCLUDEPATH += ../../../libKitsunemimiIni/include
 
+LIBS += -L../../../libKitsunemimiHanamiCommon/src -lKitsunemimiHanamiCommon
+LIBS += -L../../../libKitsunemimiHanamiCommon/src/debug -lKitsunemimiHanamiCommon
+LIBS += -L../../../libKitsunemimiHanamiCommon/src/release -lKitsunemimiHanamiCommon
+INCLUDEPATH += ../../../libKitsunemimiHanamiCommon/include
+
 LIBS +=  -lssl -lcrypt
 
 SOURCES += \

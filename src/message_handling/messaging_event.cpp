@@ -113,8 +113,11 @@ MessagingEvent::processEvent()
 
     // parse json-formated input values
     bool ret = newItem.parse(m_inputValues, errorMessage);
-    if(ret == false) {
-        LOG_ERROR(errorMessage);
+    if(ret == false)
+    {
+        Kitsunemimi::ErrorContainer error;
+        error.errorMessage = errorMessage;
+        LOG_ERROR(error);
     }
 
     // if input-values are valid json, use them together with the id and tigger the tree

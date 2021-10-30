@@ -24,6 +24,12 @@
 #define KITSUNEMIMI_SAKURA_MESSAGING_MESSAGE_DEFINITIONS_H
 
 #include <stdint.h>
+#include <libKitsunemimiHanamiCommon/enums.h>
+
+namespace Kitsunemimi
+{
+namespace Hanami
+{
 
 enum MessageTypes
 {
@@ -37,6 +43,7 @@ enum MessageTypes
 struct SakuraTriggerMessage
 {
     uint8_t type = SAKURA_TRIGGER_MESSAGE;
+    HttpType httpType = GET_TYPE;
     uint32_t idSize = 0;
     uint32_t inputValuesSize = 0;
 };
@@ -68,5 +75,8 @@ struct ResponseMessage
     uint8_t success = 0;
     uint32_t messageSize = 0;
 };
+
+}
+}
 
 #endif // KITSUNEMIMI_SAKURA_MESSAGING_MESSAGE_DEFINITIONS_H

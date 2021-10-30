@@ -78,6 +78,7 @@ MessagingClient::closeSession()
  */
 bool
 MessagingClient::triggerSakuraFile(DataMap &result,
+                                   HttpType httpType,
                                    const std::string &id,
                                    const std::string &inputValues,
                                    std::string &errorMessage)
@@ -89,6 +90,7 @@ MessagingClient::triggerSakuraFile(DataMap &result,
     // prepare header
     SakuraTriggerMessage header;
     header.idSize = static_cast<uint32_t>(id.size());
+    header.httpType = httpType;
     header.inputValuesSize = static_cast<uint32_t>(inputValues.size());
 
     uint32_t positionCounter = 0;
@@ -103,7 +105,6 @@ MessagingClient::triggerSakuraFile(DataMap &result,
 
     // copy input-values
     memcpy(buffer + positionCounter, inputValues.c_str(), inputValues.size());
-    positionCounter += inputValues.size();
 
     // send
     // TODO: make timeout-time configurable

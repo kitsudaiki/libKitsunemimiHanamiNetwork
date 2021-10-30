@@ -28,6 +28,8 @@
 #include <vector>
 #include <regex>
 
+#include <libKitsunemimiHanamiCommon/enums.h>
+
 namespace Kitsunemimi
 {
 struct DataBuffer;
@@ -55,6 +57,7 @@ public:
 
     bool triggerSakuraFile(const std::string &target,
                            Kitsunemimi::DataMap &result,
+                           HttpType httpType,
                            const std::string &id,
                            const std::string &inputValues,
                            std::string &errorMessage);

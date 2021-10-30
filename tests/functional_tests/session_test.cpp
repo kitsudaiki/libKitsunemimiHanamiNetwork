@@ -31,6 +31,7 @@
 
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 
+#include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiCommon/files/text_file.h>
 
 using Kitsunemimi::Sakura::SakuraLangInterface;
@@ -106,6 +107,7 @@ Session_Test::runTest()
     m_numberOfTests++;
     TEST_EQUAL(HanamiMessaging::getInstance()->triggerSakuraFile("target",
                                                                  result,
+                                                                 GET_TYPE,
                                                                  "test-tree",
                                                                  inputValues.toString(),
                                                                  errorMessage),
@@ -113,6 +115,7 @@ Session_Test::runTest()
     m_numberOfTests++;
     TEST_EQUAL(HanamiMessaging::getInstance()->triggerSakuraFile("target",
                                                                  result,
+                                                                 GET_TYPE,
                                                                  "fail",
                                                                  inputValues.toString(),
                                                                  errorMessage),

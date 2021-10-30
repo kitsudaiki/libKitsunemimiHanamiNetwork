@@ -24,6 +24,7 @@
 #define KITSUNEMIMI_SAKURA_MESSAGING_DATA_CLIENT_H
 
 #include <iostream>
+#include <libKitsunemimiHanamiCommon/enums.h>
 
 namespace Kitsunemimi
 {
@@ -46,6 +47,7 @@ public:
     bool closeSession();
 
     bool triggerSakuraFile(DataMap &result,
+                           HttpType httpType,
                            const std::string &id,
                            const std::string &inputValues,
                            std::string &errorMessage);

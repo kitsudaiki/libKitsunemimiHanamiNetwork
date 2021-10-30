@@ -107,15 +107,22 @@ errorCallback(Kitsunemimi::Sakura::Session* session,
               const uint8_t,
               const std::string message)
 {
-    LOG_ERROR(message);
+    Kitsunemimi::ErrorContainer error;
+    error.errorMessage = message;
+    LOG_ERROR(error);
 
     // end session
     const bool ret = session->closeSession();
 
     // check if close session was successful
-    if(ret == false) {
-        LOG_ERROR("failed to close session after connection-error");
-    } else {
+    if(ret == false)
+    {
+        Kitsunemimi::ErrorContainer error;
+        error.errorMessage = "failed to close session after connection-error";
+        LOG_ERROR(error);
+    }
+    else
+    {
         delete session;
     }
 }
