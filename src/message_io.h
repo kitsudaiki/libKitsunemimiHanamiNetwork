@@ -49,7 +49,7 @@ namespace Hanami
 bool
 processResponse(ResponseMessage& response,
                 const DataBuffer* responseData,
-                std::string &errorMessage)
+                std::string &)
 {
     // precheck
     if(responseData->usedBufferSize == 0
@@ -65,19 +65,7 @@ processResponse(ResponseMessage& response,
     const uint32_t pos = sizeof (ResponseHeader);
     const std::string messageContent(&message[pos], header->messageSize);
     response.type = header->responseType;
-    if(response.type != 0)
-    {
-        response.respnseContent = new DataValue(messageContent);
-        return true;
-    }
-
-    // handle result
-    Kitsunemimi::Json::JsonItem newItem;
-    if(newItem.parse(messageContent, errorMessage) == false) {
-        return false;
-    }
-
-    response.respnseContent = newItem.getItemContent()->copy();
+    response.respnseContent = messageContent;
 
     return true;
 }
