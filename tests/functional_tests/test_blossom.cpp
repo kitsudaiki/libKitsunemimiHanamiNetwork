@@ -23,6 +23,7 @@
 #include "test_blossom.h"
 
 #include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiHanamiCommon/enums.h>
 #include <session_test.h>
 
 namespace Kitsunemimi
@@ -39,12 +40,14 @@ TestBlossom::TestBlossom(Session_Test* sessionTest)
 }
 
 bool
-TestBlossom::runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf, std::string &)
+TestBlossom::runTask(Sakura::BlossomLeaf &blossomLeaf, uint64_t &status, std::string &)
 {
     LOG_DEBUG("TestBlossom");
     DataValue* value = blossomLeaf.input.get("input")->toValue();
     m_sessionTest->compare(value->getInt(), 42);
     blossomLeaf.output.insert("output", new Kitsunemimi::DataValue(42));
+
+    status = OK_RESPONE;
     return true;
 }
 }

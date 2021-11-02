@@ -38,7 +38,7 @@ public:
     TestBlossom(Session_Test* sessionTest);
 
 protected:
-    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf, std::string &);
+    bool runTask(Sakura::BlossomLeaf &blossomLeaf, uint64_t &status, std::string &);
 
 private:
     Session_Test* m_sessionTest = nullptr;

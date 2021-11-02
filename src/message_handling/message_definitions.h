@@ -42,29 +42,29 @@ enum MessageTypes
 
 struct SakuraTriggerMessage
 {
-    uint8_t type = SAKURA_TRIGGER_MESSAGE;
-    HttpType httpType = GET_TYPE;
+    const uint8_t type = SAKURA_TRIGGER_MESSAGE;
+    HttpRequestType requestType = GET_TYPE;
     uint32_t idSize = 0;
     uint32_t inputValuesSize = 0;
 };
 
 struct SakuraFileMessage
 {
-    uint8_t type = SAKURA_FILE_MESSAGE;
+    const uint8_t type = SAKURA_FILE_MESSAGE;
     uint32_t idSize = 0;
     uint32_t sakuraStringSize = 0;
 };
 
 struct NormalFileMessage
 {
-    uint8_t type = NORMAL_FILE_MESSAGE;
+    const uint8_t type = NORMAL_FILE_MESSAGE;
     uint32_t idSize = 0;
     uint64_t fileSize = 0;
 };
 
 struct TemplateFileMessage
 {
-    uint8_t type = TEMPLATE_FILE_MESSAGE;
+    const uint8_t type = TEMPLATE_FILE_MESSAGE;
     uint32_t idSize = 0;
     uint32_t templateStringSize = 0;
 };
@@ -72,7 +72,7 @@ struct TemplateFileMessage
 struct ResponseMessage
 {
     uint8_t type = RESPONSE_MESSAGE;
-    uint8_t success = 0;
+    HttpResponseTypes responseType = OK_RESPONE;
     uint32_t messageSize = 0;
 };
 

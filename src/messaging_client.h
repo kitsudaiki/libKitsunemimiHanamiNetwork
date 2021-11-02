@@ -36,6 +36,7 @@ class Session;
 namespace Hanami
 {
 class HanamiMessaging;
+struct MessageResponse;
 
 class MessagingClient
 {
@@ -46,8 +47,8 @@ public:
 
     bool closeSession();
 
-    bool triggerSakuraFile(DataMap &result,
-                           HttpType httpType,
+    bool triggerSakuraFile(MessageResponse &response,
+                           HttpRequestType httpType,
                            const std::string &id,
                            const std::string &inputValues,
                            std::string &errorMessage);
@@ -57,8 +58,8 @@ public:
 private:
     bool m_sessionActive = false;
 
-    bool processResponse(DataMap &result,
-                         DataBuffer* response,
+    bool processResponse(MessageResponse &response,
+                         const DataBuffer* responseData,
                          std::string &errorMessage);
 };
 

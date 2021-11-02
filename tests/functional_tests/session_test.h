@@ -59,6 +59,7 @@ public:
 private:
     const std::string getTestTree();
     const std::string getTestConfig();
+    const std::string getTestEndpoints();
 
     std::string m_address = "";
 };

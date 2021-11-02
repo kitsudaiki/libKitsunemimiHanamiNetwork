@@ -41,6 +41,7 @@ class SessionController;
 }
 namespace Hanami
 {
+struct MessageResponse;
 class MessagingClient;
 
 class HanamiMessaging
@@ -55,9 +56,9 @@ public:
                     const std::vector<std::string> &configGroups,
                     const bool createServer = true);
 
-    bool triggerSakuraFile(const std::string &target,
-                           Kitsunemimi::DataMap &result,
-                           HttpType httpType,
+    bool triggerSakuraFile(MessageResponse& response,
+                           const std::string &target,
+                           const HttpRequestType httpType,
                            const std::string &id,
                            const std::string &inputValues,
                            std::string &errorMessage);
@@ -67,7 +68,7 @@ public:
 private:
     HanamiMessaging();
 
-    Kitsunemimi::Sakura::SessionController* m_controller = nullptr;
+    Kitsunemimi::Sakura::SessionController* m_sessionController = nullptr;
     std::map<std::string, MessagingClient*> m_outgoingClients;
 
     std::string m_localIdentifier = "";

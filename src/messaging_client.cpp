@@ -29,6 +29,8 @@
 
 #include <message_handling/message_definitions.h>
 
+#include <libKitsunemimiHanamiCommon/structs.h>
+
 namespace Kitsunemimi
 {
 namespace Hanami
@@ -77,8 +79,8 @@ MessagingClient::closeSession()
  * @return true, if successful, else false
  */
 bool
-MessagingClient::triggerSakuraFile(DataMap &result,
-                                   HttpType httpType,
+MessagingClient::triggerSakuraFile(MessageResponse& response,
+                                   HttpRequestType httpType,
                                    const std::string &id,
                                    const std::string &inputValues,
                                    std::string &errorMessage)
@@ -86,14 +88,13 @@ MessagingClient::triggerSakuraFile(DataMap &result,
     // create buffer
     const uint64_t totalSize = sizeof(SakuraTriggerMessage) + id.size() + inputValues.size();
     uint8_t* buffer = new uint8_t[totalSize];
+    uint32_t positionCounter = 0;
 
     // prepare header
     SakuraTriggerMessage header;
     header.idSize = static_cast<uint32_t>(id.size());
-    header.httpType = httpType;
+    header.requestType = httpType;
     header.inputValuesSize = static_cast<uint32_t>(inputValues.size());
-
-    uint32_t positionCounter = 0;
 
     // copy header
     memcpy(buffer, &header, sizeof(SakuraTriggerMessage));
@@ -108,16 +109,16 @@ MessagingClient::triggerSakuraFile(DataMap &result,
 
     // send
     // TODO: make timeout-time configurable
-    DataBuffer* response = m_session->sendRequest(buffer, totalSize, 0);
-    if(response == nullptr)
+    DataBuffer* responseData = m_session->sendRequest(buffer, totalSize, 0);
+    if(responseData == nullptr)
     {
         errorMessage = "timeout while triggering sakura-file with id: " + id;
         return false;
     }
 
-    const bool ret = processResponse(result, response, errorMessage);
+    const bool ret = processResponse(response, responseData, errorMessage);
 
-    delete response;
+    delete responseData;
 
     return ret;
 }
@@ -132,38 +133,39 @@ MessagingClient::triggerSakuraFile(DataMap &result,
  * @return false, if message is invalid or process was not successful, else true
  */
 bool
-MessagingClient::processResponse(DataMap &result,
-                                 DataBuffer* response,
+MessagingClient::processResponse(MessageResponse& response,
+                                 const DataBuffer* responseData,
                                  std::string &errorMessage)
 {
     // precheck
-    if(response->usedBufferSize == 0
-            || response->data == nullptr)
+    if(responseData->usedBufferSize == 0
+            || responseData->data == nullptr)
     {
         // TODO: create error-message
         return false;
     }
 
     // transform incoming message
-    const ResponseMessage* header = static_cast<const ResponseMessage*>(response->data);
-    const char* message = static_cast<const char*>(response->data);
+    const ResponseMessage* header = static_cast<const ResponseMessage*>(responseData->data);
+    const char* message = static_cast<const char*>(responseData->data);
     const uint32_t pos = sizeof (ResponseMessage);
     const std::string messageContent(&message[pos], header->messageSize);
+    response.type = header->responseType;
+    if(response.type != 0)
+    {
+        response.respnseContent = new DataValue(messageContent);
+        return true;
+    }
 
     // handle result
-    if(header->success)
-    {
-        Kitsunemimi::Json::JsonItem newItem;
-        assert(newItem.parse(messageContent, errorMessage));
-        assert(newItem.getItemContent()->isMap());
-        result = *newItem.getItemContent()->toMap();
-    }
-    else
-    {
-        errorMessage = messageContent;
+    Kitsunemimi::Json::JsonItem newItem;
+    if(newItem.parse(messageContent, errorMessage) == false) {
+        return false;
     }
 
-    return header->success;
+    response.respnseContent = newItem.getItemContent()->copy();
+
+    return true;
 }
 
 }

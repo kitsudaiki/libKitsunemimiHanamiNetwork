@@ -45,10 +45,16 @@ LIBS += -L../../libKitsunemimiSakuraNetwork/src/debug -lKitsunemimiSakuraNetwork
 LIBS += -L../../libKitsunemimiSakuraNetwork/src/release -lKitsunemimiSakuraNetwork
 INCLUDEPATH += ../../libKitsunemimiSakuraNetwork/include
 
+LIBS += -L../../libKitsunemimiHanamiEndpoints/src -lKitsunemimiHanamiEndpoints
+LIBS += -L../../libKitsunemimiHanamiEndpoints/src/debug -lKitsunemimiHanamiEndpoints
+LIBS += -L../../libKitsunemimiHanamiEndpoints/src/release -lKitsunemimiHanamiEndpoints
+INCLUDEPATH += ../../libKitsunemimiHanamiEndpoints/include
+
 LIBS += -L../../libKitsunemimiHanamiCommon/src -lKitsunemimiHanamiCommon
 LIBS += -L../../libKitsunemimiHanamiCommon/src/debug -lKitsunemimiHanamiCommon
 LIBS += -L../../libKitsunemimiHanamiCommon/src/release -lKitsunemimiHanamiCommon
 INCLUDEPATH += ../../libKitsunemimiHanamiCommon/include
+
 
 LIBS += -lssl
 
@@ -61,7 +67,6 @@ HEADERS += \
     message_handling/message_definitions.h \
     messaging_client.h \
     callbacks.h \
-    config.h \
     message_handling/messaging_event_queue.h \
     message_handling/messaging_event.h
 

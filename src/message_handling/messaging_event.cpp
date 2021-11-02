@@ -30,6 +30,8 @@
 
 #include <message_handling/message_definitions.h>
 
+#include <libKitsunemimiHanamiEndpoints/endpoint.h>
+
 using Kitsunemimi::Sakura::SakuraLangInterface;
 
 namespace Kitsunemimi
@@ -45,11 +47,13 @@ namespace Hanami
  * @param session pointer to session to send the response back
  * @param blockerId blocker-id for the response
  */
-MessagingEvent::MessagingEvent(const std::string &treeId,
+MessagingEvent::MessagingEvent(const HttpRequestType httpType,
+                               const std::string &treeId,
                                const std::string &inputValues,
                                Kitsunemimi::Sakura::Session* session,
                                const uint64_t blockerId)
 {
+    m_httpType = httpType;
     m_treeId = treeId;
     m_inputValues = inputValues;
     m_session = session;
@@ -70,7 +74,7 @@ MessagingEvent::~MessagingEvent() {}
  * @param blockerId blocker-id for the response
  */
 void
-MessagingEvent::sendResponseMessage(const bool success,
+MessagingEvent::sendResponseMessage(const HttpResponseTypes responseType,
                                     const std::string &message,
                                     Kitsunemimi::Sakura::Session* session,
                                     const uint64_t blockerId)
@@ -82,7 +86,7 @@ MessagingEvent::sendResponseMessage(const bool success,
 
     // prepare response-header
     ResponseMessage responseHeader;
-    responseHeader.success = success;
+    responseHeader.responseType = responseType;
     responseHeader.messageSize =  static_cast<uint32_t>(message.size());
 
     uint32_t positionCounter = 0;
@@ -112,50 +116,75 @@ MessagingEvent::processEvent()
     Kitsunemimi::Json::JsonItem newItem;
 
     // parse json-formated input values
-    bool ret = newItem.parse(m_inputValues, errorMessage);
-    if(ret == false)
+    if(newItem.parse(m_inputValues, errorMessage) == false)
     {
         Kitsunemimi::ErrorContainer error;
         error.errorMessage = errorMessage;
         LOG_ERROR(error);
+        sendResponseMessage(BAD_REQUEST_RESPONE,
+                            error.errorMessage,
+                            m_session,
+                            m_blockerId);
+        return false;
     }
 
-    // if input-values are valid json, use them together with the id and tigger the tree
-    if(ret)
-    {
-        SakuraLangInterface* langInterface = SakuraLangInterface::getInstance();
-        ret = langInterface->triggerTree(resultingItems,
-                                         m_treeId,
-                                         *newItem.getItemContent()->toMap(),
-                                         errorMessage);
+    // get global instances
+    Endpoint* endpoints = Endpoint::getInstance();
+    SakuraLangInterface* langInterface = SakuraLangInterface::getInstance();
 
-        if(ret == false)
-        {
-            ret = langInterface->triggerBlossom(resultingItems,
-                                                m_treeId,
-                                                "special",
-                                                *newItem.getItemContent()->toMap(),
-                                                errorMessage);
-        }
+    EndpointEntry entry;
+    bool ret = endpoints->mapEndpoint(entry, m_treeId, m_httpType);
+    if(ret == false)
+    {
+        Kitsunemimi::ErrorContainer error;
+        error.errorMessage = "endpoint not found for id "
+                             + m_treeId
+                             + " and type "
+                             + std::to_string(m_httpType);
+        LOG_ERROR(error);
+        sendResponseMessage(NOT_IMPLEMENTED_RESPONE,
+                            error.errorMessage,
+                            m_session,
+                            m_blockerId);
+        return false;
+    }
+
+    uint64_t status = 0;
+    if(entry.type == TREE_TYPE)
+    {
+        ret = langInterface->triggerTree(resultingItems,
+                                         entry.path,
+                                         *newItem.getItemContent()->toMap(),
+                                         status,
+                                         errorMessage);
+    }
+    else
+    {
+        ret = langInterface->triggerBlossom(resultingItems,
+                                            entry.path,
+                                            "special",
+                                            *newItem.getItemContent()->toMap(),
+                                            status,
+                                            errorMessage);
     }
 
     // creating and send reposonse with the result of the event
     if(ret)
     {
-        sendResponseMessage(true,
+        sendResponseMessage(static_cast<HttpResponseTypes>(status),
                             resultingItems.toString(),
                             m_session,
                             m_blockerId);
     }
     else
     {
-        sendResponseMessage(false,
+        sendResponseMessage(static_cast<HttpResponseTypes>(status),
                             errorMessage,
                             m_session,
                             m_blockerId);
     }
 
-    return ret;
+    return true;
 }
 
 

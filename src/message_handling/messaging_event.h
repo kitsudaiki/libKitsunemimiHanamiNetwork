@@ -24,6 +24,7 @@
 #define MESSAGING_EVENT_H
 
 #include <libKitsunemimiCommon/threading/event.h>
+#include <libKitsunemimiHanamiCommon/structs.h>
 
 namespace Kitsunemimi
 {
@@ -37,7 +38,8 @@ class MessagingEvent
         : public Event
 {
 public:
-    MessagingEvent(const std::string &treeId,
+    MessagingEvent(const HttpRequestType httpType,
+                   const std::string &treeId,
                    const std::string &inputValues,
                    Kitsunemimi::Sakura::Session* session,
                    const uint64_t blockerId);
@@ -52,9 +54,10 @@ private:
 
     std::string m_treeId = "";
     std::string m_inputValues = "";
+    HttpRequestType m_httpType = GET_TYPE;
 
     void
-    sendResponseMessage(const bool success,
+    sendResponseMessage(const HttpResponseTypes responseType,
                         const std::string &message,
                         Kitsunemimi::Sakura::Session* session,
                         const uint64_t blockerId);

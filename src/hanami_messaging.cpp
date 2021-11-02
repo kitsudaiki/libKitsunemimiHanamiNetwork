@@ -27,10 +27,13 @@
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
 
+#include <libKitsunemimiHanamiCommon/config.h>
+#include <libKitsunemimiHanamiCommon/structs.h>
+
 #include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiConfig/config_handler.h>
 
 #include <callbacks.h>
-#include <config.h>
 
 using Kitsunemimi::Sakura::SessionController;
 
@@ -46,7 +49,7 @@ HanamiMessaging* HanamiMessaging::m_messagingController = nullptr;
  */
 HanamiMessaging::HanamiMessaging()
 {
-    m_controller = new SessionController(&sessionCreateCallback,
+    m_sessionController = new SessionController(&sessionCreateCallback,
                                          &sessionCloseCallback,
                                          &errorCallback);
 }
@@ -56,7 +59,7 @@ HanamiMessaging::HanamiMessaging()
  */
 HanamiMessaging::~HanamiMessaging()
 {
-    delete m_controller;
+    delete m_sessionController;
 }
 
 /**
@@ -110,10 +113,11 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
             // create tcp-server
             const int port = GET_INT_CONFIG("DEFAULT", "port", success);
             const uint16_t serverPort = static_cast<uint16_t>(port);
-            if(m_controller->addTcpServer(serverPort) == 0)
+            if(m_sessionController->addTcpServer(serverPort) == 0)
             {
                 Kitsunemimi::ErrorContainer error;
-                error.errorMessage = "can't initialize tcp-server on port " + std::to_string(serverPort);
+                error.errorMessage = "can't initialize tcp-server on port "
+                                     + std::to_string(serverPort);
                 LOG_ERROR(error);
                 return false;
             }
@@ -121,7 +125,7 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
         else
         {
             // create uds-server
-            if(m_controller->addUnixDomainServer(serverAddress) == 0)
+            if(m_sessionController->addUnixDomainServer(serverAddress) == 0)
             {
                 Kitsunemimi::ErrorContainer error;
                 error.errorMessage = "can't initialize uds-server on file " + serverAddress;
@@ -157,9 +161,9 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
  * @return
  */
 bool
-HanamiMessaging::triggerSakuraFile(const std::string &target,
-                                   DataMap &result,
-                                   HttpType httpType,
+HanamiMessaging::triggerSakuraFile(MessageResponse& response,
+                                   const std::string &target,
+                                   const HttpRequestType httpType,
                                    const std::string &id,
                                    const std::string &inputValues,
                                    std::string &errorMessage)
@@ -170,7 +174,7 @@ HanamiMessaging::triggerSakuraFile(const std::string &target,
     if(it != m_outgoingClients.end())
     {
         MessagingClient* client = it->second;
-        return client->triggerSakuraFile(result,
+        return client->triggerSakuraFile(response,
                                          httpType,
                                          id,
                                          inputValues,
@@ -212,9 +216,9 @@ HanamiMessaging::createClient(const std::string &remoteIdentifier,
 
     Kitsunemimi::Sakura::Session* newSession = nullptr;
     if(regex_match(address, ipv4Regex)) {
-        newSession = m_controller->startTcpSession(address, port, m_localIdentifier);
+        newSession = m_sessionController->startTcpSession(address, port, m_localIdentifier);
     } else {
-        newSession = m_controller->startUnixDomainSession(address, m_localIdentifier);
+        newSession = m_sessionController->startUnixDomainSession(address, m_localIdentifier);
     }
 
     if(newSession == nullptr) {

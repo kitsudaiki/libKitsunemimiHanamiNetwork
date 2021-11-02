@@ -85,7 +85,8 @@ standaloneDataCallback(void*,
                   + "\n  and input-values: " + inputValues);
 
         // create new event and place it within the event-queue
-        MessagingEvent* event = new MessagingEvent(id,
+        MessagingEvent* event = new MessagingEvent(header->requestType,
+                                                   id,
                                                    inputValues,
                                                    session,
                                                    blockerId);
