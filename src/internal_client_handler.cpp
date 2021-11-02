@@ -22,7 +22,7 @@
 
 #include "internal_client_handler.h"
 
-#include <messaging_client.h>
+#include <libKitsunemimiSakuraNetwork/session.h>
 
 namespace Kitsunemimi
 {
@@ -55,9 +55,9 @@ InternalClientHandler::getInstance()
  */
 bool
 InternalClientHandler::addClient(const std::string &identifier,
-                                 MessagingClient* newClient)
+                                 Sakura::Session* newClient)
 {
-    std::map<std::string, MessagingClient*>::const_iterator it;
+    std::map<std::string, Sakura::Session*>::const_iterator it;
     it = m_incomingClients.find(identifier);
 
     if(it != m_incomingClients.end()) {
@@ -77,7 +77,7 @@ InternalClientHandler::addClient(const std::string &identifier,
 bool
 InternalClientHandler::removeClient(const std::string &identifier)
 {
-    std::map<std::string, MessagingClient*>::const_iterator it;
+    std::map<std::string, Sakura::Session*>::const_iterator it;
     it = m_incomingClients.find(identifier);
 
     if(it != m_incomingClients.end())

@@ -26,7 +26,6 @@
 #include <iostream>
 
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
-#include <messaging_client.h>
 #include <message_handling/messaging_event.h>
 #include <internal_client_handler.h>
 
@@ -142,11 +141,8 @@ sessionCreateCallback(Kitsunemimi::Sakura::Session* session,
     session->setStandaloneMessageCallback(nullptr, &standaloneDataCallback);
 
     // callback was triggered on server-side, place new session into central list
-    if(session->isClientSide() == false)
-    {
-        MessagingClient* newClient = new MessagingClient();
-        newClient->m_session = session;
-        InternalClientHandler::getInstance()->addClient(identifier, newClient);
+    if(session->isClientSide() == false) {
+        InternalClientHandler::getInstance()->addClient(identifier, session);
     }
 }
 

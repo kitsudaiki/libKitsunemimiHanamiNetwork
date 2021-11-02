@@ -43,7 +43,6 @@ namespace Hanami
 {
 struct ResponseMessage;
 struct RequestMessage;
-class MessagingClient;
 
 class HanamiMessaging
 {
@@ -68,7 +67,7 @@ private:
     HanamiMessaging();
 
     Kitsunemimi::Sakura::SessionController* m_sessionController = nullptr;
-    std::map<std::string, MessagingClient*> m_outgoingClients;
+    std::map<std::string, Sakura::Session*> m_outgoingClients;
 
     std::string m_localIdentifier = "";
     bool m_isInit = false;

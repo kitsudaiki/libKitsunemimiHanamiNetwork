@@ -28,6 +28,9 @@
 
 namespace Kitsunemimi
 {
+namespace Sakura {
+class Session;
+}
 namespace Hanami
 {
 class MessagingClient;
@@ -38,14 +41,14 @@ public:
     static InternalClientHandler* getInstance();
 
     bool addClient(const std::string &identifier,
-                   MessagingClient* newClient);
+                   Sakura::Session* newClient);
 
     bool removeClient(const std::string &identifier);
 
 private:
     InternalClientHandler();
 
-    std::map<std::string, MessagingClient*> m_incomingClients;
+    std::map<std::string, Sakura::Session*> m_incomingClients;
     static InternalClientHandler* m_instance;
 };
 

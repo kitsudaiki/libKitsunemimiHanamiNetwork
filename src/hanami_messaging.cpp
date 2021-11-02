@@ -21,7 +21,7 @@
  */
 
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
-#include <messaging_client.h>
+#include <message_io.h>
 
 #include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
 #include <libKitsunemimiSakuraNetwork/session.h>
@@ -166,15 +166,13 @@ HanamiMessaging::triggerSakuraFile(const std::string &target,
                                    const RequestMessage &request,
                                    std::string &errorMessage)
 {
-    std::map<std::string, MessagingClient*>::const_iterator it;
+    std::map<std::string, Sakura::Session*>::const_iterator it;
     it = m_outgoingClients.find(target);
 
     if(it != m_outgoingClients.end())
     {
-        MessagingClient* client = it->second;
-        return client->triggerSakuraFile(response,
-                                         request,
-                                         errorMessage);
+        Sakura::Session* client = it->second;
+        return createRequest(client, response, request, errorMessage);
     }
 
     return false;
@@ -205,8 +203,8 @@ HanamiMessaging::getInstance()
  */
 bool
 HanamiMessaging::createClient(const std::string &remoteIdentifier,
-                                  const std::string &address,
-                                  const uint16_t port)
+                              const std::string &address,
+                              const uint16_t port)
 {
     const std::regex ipv4Regex("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
@@ -221,9 +219,7 @@ HanamiMessaging::createClient(const std::string &remoteIdentifier,
         return false;
     }
 
-    MessagingClient* newClient = new MessagingClient();
-    newClient->m_session = newSession;
-    m_outgoingClients.insert(std::make_pair(remoteIdentifier, newClient));
+    m_outgoingClients.insert(std::make_pair(remoteIdentifier, newSession));
 
     return true;
 }
@@ -236,7 +232,7 @@ HanamiMessaging::createClient(const std::string &remoteIdentifier,
 bool
 HanamiMessaging::closeClient(const std::string &remoteIdentifier)
 {
-    std::map<std::string, MessagingClient*>::const_iterator it;
+    std::map<std::string, Sakura::Session*>::const_iterator it;
     it = m_outgoingClients.find(remoteIdentifier);
 
     if(it != m_outgoingClients.end())

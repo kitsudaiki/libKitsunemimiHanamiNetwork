@@ -65,7 +65,7 @@ HEADERS += \
     ../include/libKitsunemimiHanamiMessaging/hanami_messaging.h \
     internal_client_handler.h \
     message_handling/message_definitions.h \
-    messaging_client.h \
+    message_io.h \
     callbacks.h \
     message_handling/messaging_event_queue.h \
     message_handling/messaging_event.h
@@ -73,7 +73,6 @@ HEADERS += \
 SOURCES += \
     hanami_messaging.cpp \
     internal_client_handler.cpp \
-    messaging_client.cpp \
     message_handling/messaging_event_queue.cpp \
     message_handling/messaging_event.cpp
 
