@@ -161,11 +161,9 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
  * @return
  */
 bool
-HanamiMessaging::triggerSakuraFile(MessageResponse& response,
-                                   const std::string &target,
-                                   const HttpRequestType httpType,
-                                   const std::string &id,
-                                   const std::string &inputValues,
+HanamiMessaging::triggerSakuraFile(const std::string &target,
+                                   ResponseMessage& response,
+                                   const RequestMessage &request,
                                    std::string &errorMessage)
 {
     std::map<std::string, MessagingClient*>::const_iterator it;
@@ -175,9 +173,7 @@ HanamiMessaging::triggerSakuraFile(MessageResponse& response,
     {
         MessagingClient* client = it->second;
         return client->triggerSakuraFile(response,
-                                         httpType,
-                                         id,
-                                         inputValues,
+                                         request,
                                          errorMessage);
     }
 

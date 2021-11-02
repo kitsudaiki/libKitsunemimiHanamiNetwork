@@ -70,11 +70,11 @@ standaloneDataCallback(void*,
     if(type == SAKURA_TRIGGER_MESSAGE)
     {
         // prepare message
-        const SakuraTriggerMessage* header = static_cast<const SakuraTriggerMessage*>(data->data);
+        const SakuraTriggerHeader* header = static_cast<const SakuraTriggerHeader*>(data->data);
         const char* message = static_cast<const char*>(data->data);
 
         // get id
-        uint32_t pos = sizeof (SakuraTriggerMessage);
+        uint32_t pos = sizeof (SakuraTriggerHeader);
         const std::string id(&message[pos], header->idSize);
 
         // get input-values

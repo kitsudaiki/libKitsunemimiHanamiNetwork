@@ -41,7 +41,8 @@ class SessionController;
 }
 namespace Hanami
 {
-struct MessageResponse;
+struct ResponseMessage;
+struct RequestMessage;
 class MessagingClient;
 
 class HanamiMessaging
@@ -52,15 +53,13 @@ public:
 
     ~HanamiMessaging();
 
-    bool initialize(const std::string& identifier,
+    bool initialize(const std::string &identifier,
                     const std::vector<std::string> &configGroups,
                     const bool createServer = true);
 
-    bool triggerSakuraFile(MessageResponse& response,
-                           const std::string &target,
-                           const HttpRequestType httpType,
-                           const std::string &id,
-                           const std::string &inputValues,
+    bool triggerSakuraFile(const std::string &target,
+                           ResponseMessage &response,
+                           const RequestMessage &request,
                            std::string &errorMessage);
 
     bool closeClient(const std::string &remoteIdentifier);

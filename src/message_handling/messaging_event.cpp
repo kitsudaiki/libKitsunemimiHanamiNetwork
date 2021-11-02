@@ -80,20 +80,20 @@ MessagingEvent::sendResponseMessage(const HttpResponseTypes responseType,
                                     const uint64_t blockerId)
 {
     // allocate memory to fill with the response-message
-    const uint32_t responseMessageSize = sizeof(ResponseMessage)
+    const uint32_t responseMessageSize = sizeof(ResponseHeader)
                                          + static_cast<uint32_t>(message.size());
     uint8_t* buffer = new uint8_t[responseMessageSize];
 
     // prepare response-header
-    ResponseMessage responseHeader;
+    ResponseHeader responseHeader;
     responseHeader.responseType = responseType;
     responseHeader.messageSize =  static_cast<uint32_t>(message.size());
 
     uint32_t positionCounter = 0;
 
     // copy header and id
-    memcpy(buffer, &responseHeader, sizeof(ResponseMessage));
-    positionCounter += sizeof(ResponseMessage);
+    memcpy(buffer, &responseHeader, sizeof(ResponseHeader));
+    positionCounter += sizeof(ResponseHeader);
     memcpy(buffer + positionCounter, message.c_str(), message.size());
 
     // send reponse over the session

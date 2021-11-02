@@ -79,40 +79,40 @@ MessagingClient::closeSession()
  * @return true, if successful, else false
  */
 bool
-MessagingClient::triggerSakuraFile(MessageResponse& response,
-                                   HttpRequestType httpType,
-                                   const std::string &id,
-                                   const std::string &inputValues,
+MessagingClient::triggerSakuraFile(ResponseMessage& response,
+                                   const RequestMessage &request,
                                    std::string &errorMessage)
 {
     // create buffer
-    const uint64_t totalSize = sizeof(SakuraTriggerMessage) + id.size() + inputValues.size();
+    const uint64_t totalSize = sizeof(SakuraTriggerHeader)
+                               + request.id.size()
+                               + request.inputValues.size();
     uint8_t* buffer = new uint8_t[totalSize];
     uint32_t positionCounter = 0;
 
     // prepare header
-    SakuraTriggerMessage header;
-    header.idSize = static_cast<uint32_t>(id.size());
-    header.requestType = httpType;
-    header.inputValuesSize = static_cast<uint32_t>(inputValues.size());
+    SakuraTriggerHeader header;
+    header.idSize = static_cast<uint32_t>(request.id.size());
+    header.requestType = request.httpType;
+    header.inputValuesSize = static_cast<uint32_t>(request.inputValues.size());
 
     // copy header
-    memcpy(buffer, &header, sizeof(SakuraTriggerMessage));
-    positionCounter += sizeof(SakuraTriggerMessage);
+    memcpy(buffer, &header, sizeof(SakuraTriggerHeader));
+    positionCounter += sizeof(SakuraTriggerHeader);
 
     // copy id
-    memcpy(buffer + positionCounter, id.c_str(), id.size());
-    positionCounter += id.size();
+    memcpy(buffer + positionCounter, request.id.c_str(), request.id.size());
+    positionCounter += request.id.size();
 
     // copy input-values
-    memcpy(buffer + positionCounter, inputValues.c_str(), inputValues.size());
+    memcpy(buffer + positionCounter, request.inputValues.c_str(), request.inputValues.size());
 
     // send
     // TODO: make timeout-time configurable
     DataBuffer* responseData = m_session->sendRequest(buffer, totalSize, 0);
     if(responseData == nullptr)
     {
-        errorMessage = "timeout while triggering sakura-file with id: " + id;
+        errorMessage = "timeout while triggering sakura-file with id: " + request.id;
         return false;
     }
 
@@ -133,7 +133,7 @@ MessagingClient::triggerSakuraFile(MessageResponse& response,
  * @return false, if message is invalid or process was not successful, else true
  */
 bool
-MessagingClient::processResponse(MessageResponse& response,
+MessagingClient::processResponse(ResponseMessage& response,
                                  const DataBuffer* responseData,
                                  std::string &errorMessage)
 {
@@ -146,9 +146,9 @@ MessagingClient::processResponse(MessageResponse& response,
     }
 
     // transform incoming message
-    const ResponseMessage* header = static_cast<const ResponseMessage*>(responseData->data);
+    const ResponseHeader* header = static_cast<const ResponseHeader*>(responseData->data);
     const char* message = static_cast<const char*>(responseData->data);
-    const uint32_t pos = sizeof (ResponseMessage);
+    const uint32_t pos = sizeof (ResponseHeader);
     const std::string messageContent(&message[pos], header->messageSize);
     response.type = header->responseType;
     if(response.type != 0)

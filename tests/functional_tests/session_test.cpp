@@ -111,13 +111,15 @@ Session_Test::runTest()
     inputValues.insert("input", new DataValue(42));
     inputValues.insert("test_output", new DataValue(""));
 
-    MessageResponse response;
+    ResponseMessage response;
+    RequestMessage request;
+    request.id = "path/test2";
+    request.httpType = GET_TYPE;
+    request.inputValues = inputValues.toString();
     m_numberOfTests++;
-    TEST_EQUAL(messaging->triggerSakuraFile(response,
-                                            "target",
-                                            GET_TYPE,
-                                            "path/test2",
-                                            inputValues.toString(),
+    TEST_EQUAL(messaging->triggerSakuraFile("target",
+                                            response,
+                                            request,
                                             errorMessage),
                true);
     m_numberOfTests++;
@@ -126,11 +128,10 @@ Session_Test::runTest()
     TEST_EQUAL(response.respnseContent->get("test_output")->toValue()->getInt(), 42);
 
     m_numberOfTests++;
-    TEST_EQUAL(messaging->triggerSakuraFile(response,
-                                            "target",
-                                            GET_TYPE,
-                                            "fail",
-                                            inputValues.toString(),
+    request.id = "fail";
+    TEST_EQUAL(messaging->triggerSakuraFile("target",
+                                            response,
+                                            request,
                                             errorMessage),
                true);
 
