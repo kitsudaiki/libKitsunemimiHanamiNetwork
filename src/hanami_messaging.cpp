@@ -28,7 +28,6 @@
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
 
 #include <libKitsunemimiHanamiCommon/config.h>
-#include <libKitsunemimiHanamiCommon/structs.h>
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiConfig/config_handler.h>
@@ -50,8 +49,8 @@ HanamiMessaging* HanamiMessaging::m_messagingController = nullptr;
 HanamiMessaging::HanamiMessaging()
 {
     m_sessionController = new SessionController(&sessionCreateCallback,
-                                         &sessionCloseCallback,
-                                         &errorCallback);
+                                                &sessionCloseCallback,
+                                                &errorCallback);
 }
 
 /**
@@ -94,7 +93,7 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
     }
 
     // init config-options
-    registerBasicConfigs(configGroups);
+    registerBasicConnectionConfigs(configGroups);
     if(checkConfigs(configGroups, createServer) == false) {
         return false;
     }

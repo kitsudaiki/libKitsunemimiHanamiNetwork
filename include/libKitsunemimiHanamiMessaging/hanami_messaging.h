@@ -29,6 +29,7 @@
 #include <regex>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
+#include <libKitsunemimiHanamiCommon/structs.h>
 
 namespace Kitsunemimi
 {
@@ -41,8 +42,6 @@ class SessionController;
 }
 namespace Hanami
 {
-struct ResponseMessage;
-struct RequestMessage;
 
 class HanamiMessaging
 {
