@@ -28,8 +28,10 @@
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
 
 #include <libKitsunemimiHanamiCommon/config.h>
+#include <libKitsunemimiHanamiEndpoints/endpoint.h>
 
 #include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiCommon/files/text_file.h>
 #include <libKitsunemimiConfig/config_handler.h>
 
 #include <callbacks.h>
@@ -93,8 +95,8 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
     }
 
     // init config-options
-    registerBasicConnectionConfigs(configGroups);
-    if(checkConfigs(configGroups, createServer) == false) {
+    registerBasicConnectionConfigs(configGroups, createServer);
+    if(Kitsunemimi::Config::ConfigHandler::m_config->isConfigValid() == false) {
         return false;
     }
 
@@ -104,7 +106,18 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
     // init server if requested
     if(createServer)
     {
+        std::string errorMessage = "";
+
         const std::string serverAddress = GET_STRING_CONFIG("DEFAULT", "address", success);
+        const std::string endpointPath = GET_STRING_CONFIG("DEFAULT", "endpoints", success);
+        Endpoint* endpoints = Endpoint::getInstance();
+        std::string endpointContent;
+        if(Kitsunemimi::readFile(endpointContent, endpointPath, errorMessage) == false) {
+            return false;
+        }
+        if(endpoints->parse(endpointContent, errorMessage) == false) {
+            return false;
+        }
 
         // init server based on the type of the address in the config
         if(regex_match(serverAddress, ipv4Regex))
@@ -165,6 +178,8 @@ HanamiMessaging::triggerSakuraFile(const std::string &target,
                                    const RequestMessage &request,
                                    std::string &errorMessage)
 {
+    LOG_DEBUG("trigger sakura-file \'" + request.id + "\' on target \'" + target + "\'");
+
     std::map<std::string, Sakura::Session*>::const_iterator it;
     it = m_outgoingClients.find(target);
 

@@ -25,6 +25,7 @@
 
 #include <libKitsunemimiCommon/buffer/data_buffer.h>
 #include <libKitsunemimiCommon/common_items/data_items.h>
+#include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiJson/json_item.h>
 
@@ -49,13 +50,16 @@ namespace Hanami
 bool
 processResponse(ResponseMessage& response,
                 const DataBuffer* responseData,
-                std::string &)
+                std::string &errorMessage)
 {
     // precheck
     if(responseData->usedBufferSize == 0
             || responseData->data == nullptr)
     {
-        // TODO: create error-message
+        ErrorContainer error;
+        errorMessage = "missing message-content";
+        error.errorMessage = errorMessage;
+        LOG_ERROR(error);
         return false;
     }
 
@@ -65,7 +69,9 @@ processResponse(ResponseMessage& response,
     const uint32_t pos = sizeof (ResponseHeader);
     const std::string messageContent(&message[pos], header->messageSize);
     response.type = header->responseType;
-    response.respnseContent = messageContent;
+    response.responseContent = messageContent;
+
+    LOG_DEBUG("received message with content: \'" + response.responseContent + "\'");
 
     return true;
 }

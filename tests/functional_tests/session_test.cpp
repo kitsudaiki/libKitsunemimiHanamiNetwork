@@ -125,7 +125,7 @@ Session_Test::runTest()
     m_numberOfTests++;
     TEST_EQUAL(response.type, 0);
     m_numberOfTests++;
-    TEST_EQUAL(response.respnseContent, "{\"test_output\":42}");
+    TEST_EQUAL(response.responseContent, "{\"test_output\":42}");
 
     m_numberOfTests++;
     request.id = "fail";
