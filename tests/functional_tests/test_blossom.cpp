@@ -47,7 +47,7 @@ TestBlossom::runTask(Sakura::BlossomLeaf &blossomLeaf, uint64_t &status, std::st
     m_sessionTest->compare(value->getInt(), 42);
     blossomLeaf.output.insert("output", new Kitsunemimi::DataValue(42));
 
-    status = OK_RESPONE;
+    status = OK_RTYPE;
     return true;
 }
 }

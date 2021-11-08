@@ -136,7 +136,7 @@ Session_Test::runTest()
                true);
 
     m_numberOfTests++;
-    TEST_EQUAL(response.type, NOT_IMPLEMENTED_RESPONE);
+    TEST_EQUAL(response.type, NOT_IMPLEMENTED_RTYPE);
 
     m_numberOfTests++;
     TEST_EQUAL(HanamiMessaging::getInstance()->closeClient("target"), true);

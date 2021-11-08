@@ -121,7 +121,7 @@ MessagingEvent::processEvent()
         Kitsunemimi::ErrorContainer error;
         error.errorMessage = errorMessage;
         LOG_ERROR(error);
-        sendResponseMessage(BAD_REQUEST_RESPONE,
+        sendResponseMessage(BAD_REQUEST_RTYPE,
                             error.errorMessage,
                             m_session,
                             m_blockerId);
@@ -142,7 +142,7 @@ MessagingEvent::processEvent()
                              + " and type "
                              + std::to_string(m_httpType);
         LOG_ERROR(error);
-        sendResponseMessage(NOT_IMPLEMENTED_RESPONE,
+        sendResponseMessage(NOT_IMPLEMENTED_RTYPE,
                             error.errorMessage,
                             m_session,
                             m_blockerId);
