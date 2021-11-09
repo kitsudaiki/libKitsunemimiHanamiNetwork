@@ -62,6 +62,7 @@ INCLUDEPATH += $$PWD \
                $$PWD/../include
 
 HEADERS += \
+    ../include/libKitsunemimiHanamiMessaging/hanami_blossom.h \
     ../include/libKitsunemimiHanamiMessaging/hanami_messaging.h \
     internal_client_handler.h \
     message_handling/message_definitions.h \
@@ -71,6 +72,7 @@ HEADERS += \
     message_handling/messaging_event.h
 
 SOURCES += \
+    hanami_blossom.cpp \
     hanami_messaging.cpp \
     internal_client_handler.cpp \
     message_handling/messaging_event_queue.cpp \

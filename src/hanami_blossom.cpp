@@ -1,5 +1,5 @@
 /**
- * @file        test_blossom.cpp
+ * @file        hanami_blossom.cpp
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,35 +20,17 @@
  *      limitations under the License.
  */
 
-#include "test_blossom.h"
-
-#include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiHanamiCommon/enums.h>
-#include <session_test.h>
+#include <libKitsunemimiHanamiMessaging/hanami_blossom.h>
 
 namespace Kitsunemimi
 {
 namespace Hanami
 {
 
-TestBlossom::TestBlossom(Session_Test* sessionTest)
-    : Kitsunemimi::Sakura::Blossom()
+HanamiBlossom::HanamiBlossom(const bool requireToken)
 {
-    m_sessionTest = sessionTest;
-    registerInputField("input", true);
-    registerOutputField("output", true);
+    registerInputField("token", requireToken);
 }
 
-bool
-TestBlossom::runTask(Sakura::BlossomLeaf &blossomLeaf, uint64_t &status, std::string &)
-{
-    LOG_DEBUG("TestBlossom");
-    DataValue* value = blossomLeaf.input.get("input")->toValue();
-    m_sessionTest->compare(value->getInt(), 42);
-    blossomLeaf.output.insert("output", new Kitsunemimi::DataValue(42));
-
-    status = OK_RTYPE;
-    return true;
-}
 }
 }
