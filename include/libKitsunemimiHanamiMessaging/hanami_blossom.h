@@ -38,7 +38,7 @@ public:
 
 protected:
     virtual bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
-                         uint64_t &status,
+                         Sakura::BlossomStatus &status,
                          std::string &errorMessage) = 0;
 };
 

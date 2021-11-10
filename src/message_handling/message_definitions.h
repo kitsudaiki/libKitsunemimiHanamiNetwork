@@ -72,6 +72,7 @@ struct TemplateFileHeader
 struct ResponseHeader
 {
     uint8_t type = RESPONSE_MESSAGE;
+    bool success = true;
     HttpResponseTypes responseType = OK_RTYPE;
     uint32_t messageSize = 0;
 };

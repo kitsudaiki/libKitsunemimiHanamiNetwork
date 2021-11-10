@@ -57,7 +57,8 @@ private:
     HttpRequestType m_httpType = GET_TYPE;
 
     void
-    sendResponseMessage(const HttpResponseTypes responseType,
+    sendResponseMessage(const bool success,
+                        const HttpResponseTypes responseType,
                         const std::string &message,
                         Kitsunemimi::Sakura::Session* session,
                         const uint64_t blockerId);

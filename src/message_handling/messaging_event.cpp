@@ -23,6 +23,7 @@
 #include "messaging_event.h"
 
 #include <libKitsunemimiSakuraNetwork/session.h>
+#include <libKitsunemimiSakuraLang/blossom.h>
 #include <libKitsunemimiCommon/common_items/data_items.h>
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
@@ -74,7 +75,8 @@ MessagingEvent::~MessagingEvent() {}
  * @param blockerId blocker-id for the response
  */
 void
-MessagingEvent::sendResponseMessage(const HttpResponseTypes responseType,
+MessagingEvent::sendResponseMessage(const bool success,
+                                    const HttpResponseTypes responseType,
                                     const std::string &message,
                                     Kitsunemimi::Sakura::Session* session,
                                     const uint64_t blockerId)
@@ -86,6 +88,7 @@ MessagingEvent::sendResponseMessage(const HttpResponseTypes responseType,
 
     // prepare response-header
     ResponseHeader responseHeader;
+    responseHeader.success = success;
     responseHeader.responseType = responseType;
     responseHeader.messageSize =  static_cast<uint32_t>(message.size());
 
@@ -121,7 +124,8 @@ MessagingEvent::processEvent()
         Kitsunemimi::ErrorContainer error;
         error.errorMessage = errorMessage;
         LOG_ERROR(error);
-        sendResponseMessage(BAD_REQUEST_RTYPE,
+        sendResponseMessage(false,
+                            BAD_REQUEST_RTYPE,
                             error.errorMessage,
                             m_session,
                             m_blockerId);
@@ -142,14 +146,15 @@ MessagingEvent::processEvent()
                              + " and type "
                              + std::to_string(m_httpType);
         LOG_ERROR(error);
-        sendResponseMessage(NOT_IMPLEMENTED_RTYPE,
+        sendResponseMessage(false,
+                            NOT_IMPLEMENTED_RTYPE,
                             error.errorMessage,
                             m_session,
                             m_blockerId);
         return false;
     }
 
-    uint64_t status = 0;
+    Sakura::BlossomStatus status;
     if(entry.type == TREE_TYPE)
     {
         ret = langInterface->triggerTree(resultingItems,
@@ -171,15 +176,17 @@ MessagingEvent::processEvent()
     // creating and send reposonse with the result of the event
     if(ret)
     {
-        sendResponseMessage(static_cast<HttpResponseTypes>(status),
+        sendResponseMessage(true,
+                            static_cast<HttpResponseTypes>(status.statusCode),
                             resultingItems.toString(),
                             m_session,
                             m_blockerId);
     }
     else
     {
-        sendResponseMessage(static_cast<HttpResponseTypes>(status),
-                            errorMessage,
+        sendResponseMessage(false,
+                            static_cast<HttpResponseTypes>(status.statusCode),
+                            status.errorMessage,
                             m_session,
                             m_blockerId);
     }

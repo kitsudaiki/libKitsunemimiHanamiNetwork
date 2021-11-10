@@ -68,6 +68,7 @@ processResponse(ResponseMessage& response,
     const char* message = static_cast<const char*>(responseData->data);
     const uint32_t pos = sizeof (ResponseHeader);
     const std::string messageContent(&message[pos], header->messageSize);
+    response.success = header->success;
     response.type = header->responseType;
     response.responseContent = messageContent;
 
