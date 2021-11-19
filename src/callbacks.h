@@ -108,17 +108,16 @@ errorCallback(Kitsunemimi::Sakura::Session* session,
               const std::string message)
 {
     Kitsunemimi::ErrorContainer error;
-    error.errorMessage = message;
+    error.addMeesage(message);
     LOG_ERROR(error);
 
     // end session
-    const bool ret = session->closeSession();
+    const bool ret = session->closeSession(error);
 
     // check if close session was successful
     if(ret == false)
     {
-        Kitsunemimi::ErrorContainer error;
-        error.errorMessage = "failed to close session after connection-error";
+        error.addMeesage("failed to close session after connection-error");
         LOG_ERROR(error);
     }
     else
@@ -138,7 +137,7 @@ sessionCreateCallback(Kitsunemimi::Sakura::Session* session,
                       const std::string identifier)
 {
     // set callback for incoming standalone-messages for trigger sakura-files
-    session->setStandaloneMessageCallback(nullptr, &standaloneDataCallback);
+    session->setRequestCallback(nullptr, &standaloneDataCallback);
 
     // callback was triggered on server-side, place new session into central list
     if(session->isClientSide() == false) {

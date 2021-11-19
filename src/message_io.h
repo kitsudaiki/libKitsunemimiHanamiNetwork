@@ -50,15 +50,13 @@ namespace Hanami
 bool
 processResponse(ResponseMessage& response,
                 const DataBuffer* responseData,
-                std::string &errorMessage)
+                ErrorContainer &error)
 {
     // precheck
     if(responseData->usedBufferSize == 0
             || responseData->data == nullptr)
     {
-        ErrorContainer error;
-        errorMessage = "missing message-content";
-        error.errorMessage = errorMessage;
+        error.addMeesage("missing message-content");
         LOG_ERROR(error);
         return false;
     }
@@ -91,7 +89,7 @@ bool
 createRequest(Kitsunemimi::Sakura::Session* session,
               ResponseMessage& response,
               const RequestMessage &request,
-              std::string &errorMessage)
+              ErrorContainer &error)
 {
     // create buffer
     const uint64_t totalSize = sizeof(SakuraTriggerHeader)
@@ -119,14 +117,14 @@ createRequest(Kitsunemimi::Sakura::Session* session,
 
     // send
     // TODO: make timeout-time configurable
-    DataBuffer* responseData = session->sendRequest(buffer, totalSize, 0);
+    DataBuffer* responseData = session->sendRequest(buffer, totalSize, 0, error);
     if(responseData == nullptr)
     {
-        errorMessage = "timeout while triggering sakura-file with id: " + request.id;
+        error.addMeesage("timeout while triggering sakura-file with id: " + request.id);
         return false;
     }
 
-    const bool ret = processResponse(response, responseData, errorMessage);
+    const bool ret = processResponse(response, responseData, error);
 
     delete responseData;
 

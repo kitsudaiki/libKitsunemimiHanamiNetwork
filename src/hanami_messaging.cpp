@@ -75,6 +75,7 @@ HanamiMessaging::~HanamiMessaging()
 bool
 HanamiMessaging::initialize(const std::string &localIdentifier,
                             const std::vector<std::string> &configGroups,
+                            ErrorContainer &error,
                             const bool createServer)
 {
     // precheck to avoid double-initializing
@@ -88,14 +89,13 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
     // check if config-file already initialized
     if(Kitsunemimi::Config::ConfigHandler::m_config == nullptr)
     {
-        Kitsunemimi::ErrorContainer error;
-        error.errorMessage = "config-file not initilized";
+        error.addMeesage("config-file not initilized");
         LOG_ERROR(error);
         return false;
     }
 
     // init config-options
-    registerBasicConnectionConfigs(configGroups, createServer);
+    registerBasicConnectionConfigs(configGroups, createServer, error);
     if(Kitsunemimi::Config::ConfigHandler::m_config->isConfigValid() == false) {
         return false;
     }
@@ -106,16 +106,18 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
     // init server if requested
     if(createServer)
     {
-        std::string errorMessage = "";
-
         const std::string serverAddress = GET_STRING_CONFIG("DEFAULT", "address", success);
         const std::string endpointPath = GET_STRING_CONFIG("DEFAULT", "endpoints", success);
         Endpoint* endpoints = Endpoint::getInstance();
         std::string endpointContent;
-        if(Kitsunemimi::readFile(endpointContent, endpointPath, errorMessage) == false) {
+        if(Kitsunemimi::readFile(endpointContent, endpointPath, error) == false)
+        {
+            LOG_ERROR(error);
             return false;
         }
-        if(endpoints->parse(endpointContent, errorMessage) == false) {
+        if(endpoints->parse(endpointContent, error) == false)
+        {
+            LOG_ERROR(error);
             return false;
         }
 
@@ -125,11 +127,10 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
             // create tcp-server
             const int port = GET_INT_CONFIG("DEFAULT", "port", success);
             const uint16_t serverPort = static_cast<uint16_t>(port);
-            if(m_sessionController->addTcpServer(serverPort) == 0)
+            if(m_sessionController->addTcpServer(serverPort, error) == 0)
             {
-                Kitsunemimi::ErrorContainer error;
-                error.errorMessage = "can't initialize tcp-server on port "
-                                     + std::to_string(serverPort);
+                error.addMeesage("can't initialize tcp-server on port "
+                                 + std::to_string(serverPort));
                 LOG_ERROR(error);
                 return false;
             }
@@ -137,10 +138,9 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
         else
         {
             // create uds-server
-            if(m_sessionController->addUnixDomainServer(serverAddress) == 0)
+            if(m_sessionController->addUnixDomainServer(serverAddress, error) == 0)
             {
-                Kitsunemimi::ErrorContainer error;
-                error.errorMessage = "can't initialize uds-server on file " + serverAddress;
+                error.addMeesage("can't initialize uds-server on file " + serverAddress);
                 LOG_ERROR(error);
                 return false;
             }
@@ -152,7 +152,7 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
     {
         const std::string address = GET_STRING_CONFIG(groupName, "address", success);
         const uint16_t port = static_cast<uint16_t>(GET_INT_CONFIG(groupName, "port", success));
-        const bool ret = createClient(groupName, address, port);
+        const bool ret = createClient(groupName, address, error, port);
         if(ret == false) {
             return false;
         }
@@ -176,18 +176,21 @@ bool
 HanamiMessaging::triggerSakuraFile(const std::string &target,
                                    ResponseMessage& response,
                                    const RequestMessage &request,
-                                   std::string &errorMessage)
+                                   ErrorContainer &error)
 {
     LOG_DEBUG("trigger sakura-file \'" + request.id + "\' on target \'" + target + "\'");
 
     std::map<std::string, Sakura::Session*>::const_iterator it;
     it = m_outgoingClients.find(target);
-
     if(it != m_outgoingClients.end())
     {
         Sakura::Session* client = it->second;
-        return createRequest(client, response, request, errorMessage);
+        return createRequest(client, response, request, error);
     }
+
+    response.success = false;
+    response.type = NOT_FOUND_RTYPE;
+    response.responseContent = "target \'" + target + "\' not found";
 
     return false;
 }
@@ -218,15 +221,23 @@ HanamiMessaging::getInstance()
 bool
 HanamiMessaging::createClient(const std::string &remoteIdentifier,
                               const std::string &address,
+                              ErrorContainer &error,
                               const uint16_t port)
 {
     const std::regex ipv4Regex("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
     Kitsunemimi::Sakura::Session* newSession = nullptr;
     if(regex_match(address, ipv4Regex)) {
-        newSession = m_sessionController->startTcpSession(address, port, m_localIdentifier);
+        newSession = m_sessionController->startTcpSession(address,
+                                                          port,
+                                                          m_localIdentifier,
+                                                          "HanamiClient",
+                                                          error);
     } else {
-        newSession = m_sessionController->startUnixDomainSession(address, m_localIdentifier);
+        newSession = m_sessionController->startUnixDomainSession(address,
+                                                                 m_localIdentifier,
+                                                                 "HanamiClient",
+                                                                 error);
     }
 
     if(newSession == nullptr) {
@@ -244,7 +255,8 @@ HanamiMessaging::createClient(const std::string &remoteIdentifier,
 * @param remoteIdentifier name of the client for later identification
  */
 bool
-HanamiMessaging::closeClient(const std::string &remoteIdentifier)
+HanamiMessaging::closeClient(const std::string &remoteIdentifier,
+                             ErrorContainer &error)
 {
     std::map<std::string, Sakura::Session*>::const_iterator it;
     it = m_outgoingClients.find(remoteIdentifier);
@@ -253,7 +265,7 @@ HanamiMessaging::closeClient(const std::string &remoteIdentifier)
     {
         if(it->second != nullptr)
         {
-            if(it->second->closeSession() == false) {
+            if(it->second->closeSession(error) == false) {
                 return false;
             }
 

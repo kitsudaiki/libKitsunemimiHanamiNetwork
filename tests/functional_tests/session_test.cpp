@@ -77,14 +77,11 @@ Session_Test::initTestCase()
                 "-------------------------------------------------#----------------------"
                 "-----#";
 
-    std::string errorMessage = "";
+    ErrorContainer error;
     TestBlossom* newBlossom = new TestBlossom(this);
     SakuraLangInterface::getInstance()->addBlossom("test1", "test2", newBlossom);
-    SakuraLangInterface::getInstance()->addTree("test_tree", getTestTree(), errorMessage);
-    Kitsunemimi::writeFile("/tmp/test-config.conf",
-                           getTestConfig(),
-                           errorMessage,
-                           true);
+    SakuraLangInterface::getInstance()->addTree("test_tree", getTestTree(), error);
+    Kitsunemimi::writeFile("/tmp/test-config.conf", getTestConfig(), error, true);
 }
 
 /**
@@ -93,19 +90,20 @@ Session_Test::initTestCase()
 void
 Session_Test::runTest()
 {
-    Config::initConfig("/tmp/test-config.conf");
+    ErrorContainer error;
+    Config::initConfig("/tmp/test-config.conf", error);
     std::vector<std::string> groupNames = {"target"};
     Endpoint* endpoints = Endpoint::getInstance();
     HanamiMessaging* messaging = HanamiMessaging::getInstance();
     std::string errorMessage = "";
 
-    assert(endpoints->parse(getTestEndpoints(), errorMessage));
+    assert(endpoints->parse(getTestEndpoints(), error));
 
 
     m_numberOfTests++;
-    TEST_EQUAL(HanamiMessaging::getInstance()->initialize("client", groupNames), true);
+    TEST_EQUAL(HanamiMessaging::getInstance()->initialize("client", groupNames, error), true);
     m_numberOfTests++;
-    TEST_EQUAL(HanamiMessaging::getInstance()->initialize("client", groupNames), false);
+    TEST_EQUAL(HanamiMessaging::getInstance()->initialize("client", groupNames, error), false);
 
     DataMap inputValues;
     inputValues.insert("input", new DataValue(42));
@@ -117,11 +115,7 @@ Session_Test::runTest()
     request.httpType = GET_TYPE;
     request.inputValues = inputValues.toString();
     m_numberOfTests++;
-    TEST_EQUAL(messaging->triggerSakuraFile("target",
-                                            response,
-                                            request,
-                                            errorMessage),
-               true);
+    TEST_EQUAL(messaging->triggerSakuraFile("target", response, request, error),  true);
     m_numberOfTests++;
     TEST_EQUAL(response.type, 0);
     m_numberOfTests++;
@@ -129,17 +123,13 @@ Session_Test::runTest()
 
     m_numberOfTests++;
     request.id = "fail";
-    TEST_EQUAL(messaging->triggerSakuraFile("target",
-                                            response,
-                                            request,
-                                            errorMessage),
-               true);
+    TEST_EQUAL(messaging->triggerSakuraFile("target", response, request, error), true);
 
     m_numberOfTests++;
     TEST_EQUAL(response.type, NOT_IMPLEMENTED_RTYPE);
 
     m_numberOfTests++;
-    TEST_EQUAL(HanamiMessaging::getInstance()->closeClient("target"), true);
+    TEST_EQUAL(HanamiMessaging::getInstance()->closeClient("target", error), true);
     sleep(1);
 
     m_numberOfTests++;

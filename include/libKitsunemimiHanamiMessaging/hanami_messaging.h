@@ -30,6 +30,7 @@
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
+#include <libKitsunemimiCommon/logger.h>
 
 namespace Kitsunemimi
 {
@@ -53,14 +54,16 @@ public:
 
     bool initialize(const std::string &identifier,
                     const std::vector<std::string> &configGroups,
+                    ErrorContainer &error,
                     const bool createServer = true);
 
     bool triggerSakuraFile(const std::string &target,
                            ResponseMessage &response,
                            const RequestMessage &request,
-                           std::string &errorMessage);
+                           ErrorContainer &error);
 
-    bool closeClient(const std::string &remoteIdentifier);
+    bool closeClient(const std::string &remoteIdentifier,
+                     ErrorContainer &error);
 
 private:
     HanamiMessaging();
@@ -75,6 +78,7 @@ private:
 
     bool createClient(const std::string &clientName,
                       const std::string &address,
+                      ErrorContainer &error,
                       const uint16_t port = 0);
 };
 

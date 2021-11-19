@@ -40,7 +40,7 @@ public:
 protected:
     bool runTask(Sakura::BlossomLeaf &blossomLeaf,
                  Sakura::BlossomStatus &status,
-                 std::string &);
+                 ErrorContainer &);
 
 private:
     Session_Test* m_sessionTest = nullptr;

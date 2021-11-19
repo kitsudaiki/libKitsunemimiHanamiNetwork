@@ -42,7 +42,7 @@ TestBlossom::TestBlossom(Session_Test* sessionTest)
 bool
 TestBlossom::runTask(Sakura::BlossomLeaf &blossomLeaf,
                      Sakura::BlossomStatus &status,
-                     std::string &)
+                     ErrorContainer &)
 {
     LOG_DEBUG("TestBlossom");
     DataValue* value = blossomLeaf.input.get("input")->toValue();

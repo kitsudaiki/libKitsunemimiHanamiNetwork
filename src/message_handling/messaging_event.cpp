@@ -79,7 +79,8 @@ MessagingEvent::sendResponseMessage(const bool success,
                                     const HttpResponseTypes responseType,
                                     const std::string &message,
                                     Kitsunemimi::Sakura::Session* session,
-                                    const uint64_t blockerId)
+                                    const uint64_t blockerId,
+                                    ErrorContainer &error)
 {
     // allocate memory to fill with the response-message
     const uint32_t responseMessageSize = sizeof(ResponseHeader)
@@ -100,7 +101,7 @@ MessagingEvent::sendResponseMessage(const bool success,
     memcpy(buffer + positionCounter, message.c_str(), message.size());
 
     // send reponse over the session
-    session->sendResponse(buffer, responseMessageSize, blockerId);
+    session->sendResponse(buffer, responseMessageSize, blockerId, error);
 
     delete[] buffer;
 }
@@ -115,20 +116,19 @@ MessagingEvent::processEvent()
 {
     // parse input-values
     DataMap resultingItems;
-    std::string errorMessage = "";
+    ErrorContainer error;
     Kitsunemimi::Json::JsonItem newItem;
 
     // parse json-formated input values
-    if(newItem.parse(m_inputValues, errorMessage) == false)
+    if(newItem.parse(m_inputValues, error) == false)
     {
-        Kitsunemimi::ErrorContainer error;
-        error.errorMessage = errorMessage;
         LOG_ERROR(error);
         sendResponseMessage(false,
                             BAD_REQUEST_RTYPE,
-                            error.errorMessage,
+                            error.toString(),
                             m_session,
-                            m_blockerId);
+                            m_blockerId,
+                            error);
         return false;
     }
 
@@ -140,17 +140,17 @@ MessagingEvent::processEvent()
     bool ret = endpoints->mapEndpoint(entry, m_treeId, m_httpType);
     if(ret == false)
     {
-        Kitsunemimi::ErrorContainer error;
-        error.errorMessage = "endpoint not found for id "
-                             + m_treeId
-                             + " and type "
-                             + std::to_string(m_httpType);
+        error.addMeesage("endpoint not found for id "
+                         + m_treeId
+                         + " and type "
+                         + std::to_string(m_httpType));
         LOG_ERROR(error);
         sendResponseMessage(false,
                             NOT_IMPLEMENTED_RTYPE,
-                            error.errorMessage,
+                            error.toString(),
                             m_session,
-                            m_blockerId);
+                            m_blockerId,
+                            error);
         return false;
     }
 
@@ -161,7 +161,7 @@ MessagingEvent::processEvent()
                                          entry.path,
                                          *newItem.getItemContent()->toMap(),
                                          status,
-                                         errorMessage);
+                                         error);
     }
     else
     {
@@ -170,7 +170,7 @@ MessagingEvent::processEvent()
                                             "special",
                                             *newItem.getItemContent()->toMap(),
                                             status,
-                                            errorMessage);
+                                            error);
     }
 
     // creating and send reposonse with the result of the event
@@ -180,15 +180,18 @@ MessagingEvent::processEvent()
                             static_cast<HttpResponseTypes>(status.statusCode),
                             resultingItems.toString(),
                             m_session,
-                            m_blockerId);
+                            m_blockerId,
+                            error);
     }
     else
     {
+        LOG_ERROR(error);
         sendResponseMessage(false,
                             static_cast<HttpResponseTypes>(status.statusCode),
                             status.errorMessage,
                             m_session,
-                            m_blockerId);
+                            m_blockerId,
+                            error);
     }
 
     return true;

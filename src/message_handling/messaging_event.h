@@ -25,6 +25,7 @@
 
 #include <libKitsunemimiCommon/threading/event.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
+#include <libKitsunemimiCommon/logger.h>
 
 namespace Kitsunemimi
 {
@@ -61,7 +62,8 @@ private:
                         const HttpResponseTypes responseType,
                         const std::string &message,
                         Kitsunemimi::Sakura::Session* session,
-                        const uint64_t blockerId);
+                        const uint64_t blockerId,
+                        ErrorContainer &error);
 };
 
 }
