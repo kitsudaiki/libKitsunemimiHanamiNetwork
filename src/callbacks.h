@@ -27,7 +27,6 @@
 
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 #include <message_handling/messaging_event.h>
-#include <internal_client_handler.h>
 
 #include <message_handling/message_definitions.h>
 #include <message_handling/messaging_event_queue.h>
@@ -36,6 +35,8 @@
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
 
 #include <libKitsunemimiCommon/logger.h>
+
+#include <client_handler.h>
 
 namespace Kitsunemimi
 {
@@ -111,18 +112,11 @@ errorCallback(Kitsunemimi::Sakura::Session* session,
     error.addMeesage(message);
     LOG_ERROR(error);
 
-    // end session
-    const bool ret = session->closeSession(error);
-
-    // check if close session was successful
-    if(ret == false)
-    {
-        error.addMeesage("failed to close session after connection-error");
-        LOG_ERROR(error);
-    }
-    else
-    {
-        delete session;
+    // close-session
+    if(session->isClientSide()) {
+        ClientHandler::m_instance->closeClient(session->m_sessionIdentifier, error, false);
+    } else {
+        ClientHandler::m_instance->removeInternalClient(session->m_sessionIdentifier);
     }
 }
 
@@ -141,7 +135,7 @@ sessionCreateCallback(Kitsunemimi::Sakura::Session* session,
 
     // callback was triggered on server-side, place new session into central list
     if(session->isClientSide() == false) {
-        InternalClientHandler::getInstance()->addClient(identifier, session);
+        ClientHandler::m_instance->addInternalClient(identifier, session);
     }
 }
 
@@ -155,7 +149,7 @@ sessionCloseCallback(Kitsunemimi::Sakura::Session* session,
                       const std::string identifier)
 {
     if(session->isClientSide() == false) {
-        InternalClientHandler::getInstance()->removeClient(identifier);
+        ClientHandler::m_instance->removeInternalClient(identifier);
     }
 }
 

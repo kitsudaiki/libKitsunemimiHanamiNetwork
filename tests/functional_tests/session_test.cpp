@@ -93,17 +93,13 @@ Session_Test::runTest()
     ErrorContainer error;
     Config::initConfig("/tmp/test-config.conf", error);
     std::vector<std::string> groupNames = {"target"};
-    Endpoint* endpoints = Endpoint::getInstance();
     HanamiMessaging* messaging = HanamiMessaging::getInstance();
-    std::string errorMessage = "";
-
-    assert(endpoints->parse(getTestEndpoints(), error));
 
 
     m_numberOfTests++;
-    TEST_EQUAL(HanamiMessaging::getInstance()->initialize("client", groupNames, error), true);
+    TEST_EQUAL(messaging->initialize("client", groupNames, error, true, getTestEndpoints()), true);
     m_numberOfTests++;
-    TEST_EQUAL(HanamiMessaging::getInstance()->initialize("client", groupNames, error), false);
+    TEST_EQUAL(messaging->initialize("client", groupNames, error, true, getTestEndpoints()), false);
 
     DataMap inputValues;
     inputValues.insert("input", new DataValue(42));
@@ -166,6 +162,7 @@ Session_Test::getTestConfig()
     const std::string config = "[DEFAULT]\n"
                                "address = \"" + m_address + "\"\n"
                                "port = 12345\n"
+                               "endpoints = \"-\"\n"
                                "\n"
                                "\n"
                                "[target]\n"

@@ -39,7 +39,6 @@ class DataMap;
 namespace Sakura {
 class Blossom;
 class Session;
-class SessionController;
 }
 namespace Hanami
 {
@@ -55,7 +54,8 @@ public:
     bool initialize(const std::string &identifier,
                     const std::vector<std::string> &configGroups,
                     ErrorContainer &error,
-                    const bool createServer = true);
+                    const bool createServer = true,
+                    const std::string &predefinedEndpoints = "");
 
     bool triggerSakuraFile(const std::string &target,
                            ResponseMessage &response,
@@ -68,18 +68,9 @@ public:
 private:
     HanamiMessaging();
 
-    Kitsunemimi::Sakura::SessionController* m_sessionController = nullptr;
-    std::map<std::string, Sakura::Session*> m_outgoingClients;
-
-    std::string m_localIdentifier = "";
     bool m_isInit = false;
 
     static HanamiMessaging* m_messagingController;
-
-    bool createClient(const std::string &clientName,
-                      const std::string &address,
-                      ErrorContainer &error,
-                      const uint16_t port = 0);
 };
 
 }
