@@ -36,6 +36,7 @@ namespace Kitsunemimi
 {
 struct DataBuffer;
 class DataMap;
+struct StackBuffer;
 namespace Sakura {
 class Blossom;
 class Session;
@@ -53,9 +54,20 @@ public:
 
     bool initialize(const std::string &identifier,
                     const std::vector<std::string> &configGroups,
+                    void* receiver,
+                    void (*processStream)(void*, Sakura::Session*, const void*, const uint64_t),
                     ErrorContainer &error,
                     const bool createServer = true,
                     const std::string &predefinedEndpoints = "");
+
+    bool sendStreamMessage(const std::string &target,
+                           StackBuffer &data,
+                           ErrorContainer &error);
+    bool sendStreamMessage(const std::string &target,
+                           const void* data,
+                           const uint64_t dataSize,
+                           const bool replyExpected,
+                           ErrorContainer &error);
 
     bool triggerSakuraFile(const std::string &target,
                            ResponseMessage &response,
@@ -69,6 +81,13 @@ private:
     HanamiMessaging();
 
     bool m_isInit = false;
+
+    void fillSupportOverview();
+    bool initServer(ErrorContainer &error,
+                    const std::string &predefinedEndpoints = "");
+    bool initClients(const std::vector<std::string> &configGroups);
+    bool initEndpoints(ErrorContainer &error,
+                       const std::string &predefinedEndpoints);
 
     static HanamiMessaging* m_messagingController;
 };

@@ -104,7 +104,7 @@ standaloneDataCallback(void*,
  * @brief error-callback
  */
 void
-errorCallback(Kitsunemimi::Sakura::Session* session,
+errorCallback(Sakura::Session* session,
               const uint8_t,
               const std::string message)
 {
@@ -132,6 +132,8 @@ sessionCreateCallback(Kitsunemimi::Sakura::Session* session,
 {
     // set callback for incoming standalone-messages for trigger sakura-files
     session->setRequestCallback(nullptr, &standaloneDataCallback);
+    session->setStreamCallback(ClientHandler::m_instance->streamReceiver,
+                               ClientHandler::m_instance->processStreamData);
 
     // callback was triggered on server-side, place new session into central list
     if(session->isClientSide() == false) {

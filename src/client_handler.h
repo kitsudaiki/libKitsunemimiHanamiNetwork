@@ -51,6 +51,9 @@ public:
 
     bool removeInternalClient(const std::string &identifier);
 
+    void* streamReceiver = nullptr;
+    void (*processStreamData)(void*, Sakura::Session*, const void*, const uint64_t);
+
 protected:
     void run();
 

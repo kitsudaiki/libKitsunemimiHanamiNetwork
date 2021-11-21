@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file       session_test.h
  *
  * @author     Tobias Anker <tobias.anker@kitsunemimi.moe>
@@ -52,6 +52,7 @@ public:
 
     static Session_Test* m_instance;
     std::string m_message = "";
+    const std::string m_streamMessage = "stream-message";
     Kitsunemimi::Hanami::MessagingClient* m_client = nullptr;
 
     uint32_t m_numberOfTests = 0;

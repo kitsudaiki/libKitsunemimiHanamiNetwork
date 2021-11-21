@@ -84,6 +84,16 @@ Session_Test::initTestCase()
     Kitsunemimi::writeFile("/tmp/test-config.conf", getTestConfig(), error, true);
 }
 
+void streamDataCallback(void*,
+                        Sakura::Session*,
+                        const void* data,
+                        const uint64_t dataSize)
+{
+    LOG_DEBUG("TEST: streamDataCallback");
+    const std::string recvMsg(static_cast<const char*>(data), dataSize);
+    Session_Test::m_instance->compare(recvMsg, Session_Test::m_instance->m_streamMessage);
+}
+
 /**
  * @brief runTest
  */
@@ -97,9 +107,21 @@ Session_Test::runTest()
 
 
     m_numberOfTests++;
-    TEST_EQUAL(messaging->initialize("client", groupNames, error, true, getTestEndpoints()), true);
+    TEST_EQUAL(messaging->initialize("client",
+                                     groupNames,
+                                     Session_Test::m_instance,
+                                     &streamDataCallback,
+                                     error,
+                                     true,
+                                     getTestEndpoints()), true);
     m_numberOfTests++;
-    TEST_EQUAL(messaging->initialize("client", groupNames, error, true, getTestEndpoints()), false);
+    TEST_EQUAL(messaging->initialize("client",
+                                     groupNames,
+                                     Session_Test::m_instance,
+                                     &streamDataCallback,
+                                     error,
+                                     true,
+                                     getTestEndpoints()), false);
 
     DataMap inputValues;
     inputValues.insert("input", new DataValue(42));
@@ -124,12 +146,19 @@ Session_Test::runTest()
     m_numberOfTests++;
     TEST_EQUAL(response.type, NOT_IMPLEMENTED_RTYPE);
 
-    m_numberOfTests++;
-    TEST_EQUAL(HanamiMessaging::getInstance()->closeClient("target", error), true);
-    sleep(1);
+    TEST_EQUAL(messaging->sendStreamMessage("target",
+                                            m_streamMessage.c_str(),
+                                            m_streamMessage.size(),
+                                            false,
+                                            error), true);
 
     m_numberOfTests++;
-    TEST_EQUAL(m_numberOfTests, 10);
+    TEST_EQUAL(messaging->closeClient("target", error), true);
+    sleep(1);
+
+    // check that were no tests silently skipped
+    m_numberOfTests++;
+    TEST_EQUAL(m_numberOfTests, 11);
 
     std::cout<<"finish"<<std::endl;
 }
