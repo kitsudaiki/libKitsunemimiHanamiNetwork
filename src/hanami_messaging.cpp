@@ -65,22 +65,22 @@ HanamiMessaging::fillSupportOverview()
 {
     bool success = false;
 
-    if(GET_BOOL_CONFIG("Kyouko", "supported", success)) {
+    if(GET_STRING_CONFIG("Kyouko", "address", success) != "") {
         supportedComponents.support[Kyouko] = true;
     }
-    if(GET_BOOL_CONFIG("Misaka", "supported", success)) {
+    if(GET_STRING_CONFIG("Misaka", "address", success) != "") {
         supportedComponents.support[Misaka] = true;
     }
-    if(GET_BOOL_CONFIG("Azuki", "supported", success)) {
+    if(GET_STRING_CONFIG("Azuki", "address", success) != "") {
         supportedComponents.support[Azuki] = true;
     }
-    if(GET_BOOL_CONFIG("Sagiri", "supported", success)) {
+    if(GET_STRING_CONFIG("Sagiri", "address", success) != "") {
         supportedComponents.support[Sagiri] = true;
     }
-    if(GET_BOOL_CONFIG("Nagato", "supported", success)) {
+    if(GET_STRING_CONFIG("Nagato", "address", success) != "") {
         supportedComponents.support[Nagato] = true;
     }
-    if(GET_BOOL_CONFIG("Izuna", "supported", success)) {
+    if(GET_STRING_CONFIG("Izuna", "address", success) != "") {
         supportedComponents.support[Izuna] = true;
     }
 }
@@ -180,9 +180,12 @@ HanamiMessaging::initClients(const std::vector<std::string> &configGroups)
     for(const std::string& groupName : configGroups)
     {
         const std::string address = GET_STRING_CONFIG(groupName, "address", success);
-        const uint16_t port = static_cast<uint16_t>(GET_INT_CONFIG(groupName, "port", success));
-        if(ClientHandler::m_instance->addOutgoingClient(groupName, address, port) == false) {
-            return false;
+        if(address != "")
+        {
+            const uint16_t port = static_cast<uint16_t>(GET_INT_CONFIG(groupName, "port", success));
+            if(ClientHandler::m_instance->addOutgoingClient(groupName, address, port) == false) {
+                return false;
+            }
         }
     }
 
