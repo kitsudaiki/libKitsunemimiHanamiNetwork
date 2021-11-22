@@ -27,6 +27,9 @@
 
 namespace Kitsunemimi
 {
+namespace Json {
+class JsonItem;
+}
 namespace Hanami
 {
 
@@ -40,6 +43,11 @@ protected:
     virtual bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
                          Sakura::BlossomStatus &status,
                          Kitsunemimi::ErrorContainer &error) = 0;
+
+    bool checkPermission(Kitsunemimi::Json::JsonItem &parsedResult,
+                         const std::string &token,
+                         Kitsunemimi::Sakura::BlossomStatus &status,
+                         Kitsunemimi::ErrorContainer &error);
 };
 
 }

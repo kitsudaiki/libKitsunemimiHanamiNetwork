@@ -21,6 +21,10 @@
  */
 
 #include <libKitsunemimiHanamiMessaging/hanami_blossom.h>
+#include <libKitsunemimiHanamiCommon/structs.h>
+#include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
+
+#include <libKitsunemimiJson/json_item.h>
 
 namespace Kitsunemimi
 {
@@ -30,6 +34,55 @@ namespace Hanami
 HanamiBlossom::HanamiBlossom(const bool requireToken)
 {
     registerInputField("token", requireToken);
+}
+
+/**
+ * @brief HanamiBlossom::checkPermission
+ * @param parsedResult
+ * @param token
+ * @param status
+ * @param error
+ * @return
+ */
+bool
+HanamiBlossom::checkPermission(Kitsunemimi::Json::JsonItem &parsedResult,
+                               const std::string &token,
+                               Sakura::BlossomStatus &status,
+                               Kitsunemimi::ErrorContainer &error)
+{
+    Kitsunemimi::Hanami::RequestMessage requestMsg;
+    Kitsunemimi::Hanami::ResponseMessage responseMsg;
+    Hanami::HanamiMessaging* messaging = Hanami::HanamiMessaging::getInstance();
+
+    requestMsg.id = "auth";
+    requestMsg.httpType = HttpRequestType::GET_TYPE;
+    requestMsg.inputValues = "{\"token\":\"" + token + "\"}";
+
+    if(messaging->triggerSakuraFile("Misaka", responseMsg, requestMsg, error) == false)
+    {
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMeesage("Unable to validate token");
+        return false;
+    }
+
+    // handle failed authentication
+    if(responseMsg.type == Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE
+            || responseMsg.success == false)
+    {
+        status.statusCode = responseMsg.type;
+        status.errorMessage = responseMsg.responseContent;
+        error.addMeesage(responseMsg.responseContent);
+        return false;
+    }
+
+    if(parsedResult.parse(responseMsg.responseContent, error) == false)
+    {
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMeesage("Unable to parse auth-reponse.");
+        return false;
+    }
+
+    return true;
 }
 
 }

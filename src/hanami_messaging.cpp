@@ -24,7 +24,6 @@
 #include <message_io.h>
 #include <client_handler.h>
 
-#include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
 

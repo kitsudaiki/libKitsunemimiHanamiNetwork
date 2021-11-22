@@ -30,6 +30,9 @@
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
+
+#include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
+
 #include <libKitsunemimiCommon/logger.h>
 
 namespace Kitsunemimi
