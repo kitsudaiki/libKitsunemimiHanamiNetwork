@@ -15,6 +15,11 @@ LIBS += -L../../libKitsunemimiJinja2/src/debug -lKitsunemimiJinja2
 LIBS += -L../../libKitsunemimiJinja2/src/release -lKitsunemimiJinja2
 INCLUDEPATH += ../../libKitsunemimiJinja2/include
 
+LIBS += -L../../libKitsunemimiCrypto/src -lKitsunemimiCrypto
+LIBS += -L../../libKitsunemimiCrypto/src/debug -lKitsunemimiCrypto
+LIBS += -L../../libKitsunemimiCrypto/src/release -lKitsunemimiCrypto
+INCLUDEPATH += ../../libKitsunemimiCrypto/include
+
 LIBS += -L../../libKitsunemimiJson/src -lKitsunemimiJson
 LIBS += -L../../libKitsunemimiJson/src/debug -lKitsunemimiJson
 LIBS += -L../../libKitsunemimiJson/src/release -lKitsunemimiJson
@@ -62,7 +67,6 @@ INCLUDEPATH += $$PWD \
                $$PWD/../include
 
 HEADERS += \
-    ../include/libKitsunemimiHanamiMessaging/hanami_blossom.h \
     ../include/libKitsunemimiHanamiMessaging/hanami_messaging.h \
     client_handler.h \
     message_handling/message_definitions.h \
@@ -73,7 +77,6 @@ HEADERS += \
 
 SOURCES += \
     client_handler.cpp \
-    hanami_blossom.cpp \
     hanami_messaging.cpp \
     message_handling/messaging_event_queue.cpp \
     message_handling/messaging_event.cpp

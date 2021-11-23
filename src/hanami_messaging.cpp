@@ -36,7 +36,6 @@
 #include <libKitsunemimiCommon/buffer/stack_buffer.h>
 #include <libKitsunemimiConfig/config_handler.h>
 
-
 using Kitsunemimi::Sakura::SessionController;
 
 namespace Kitsunemimi
@@ -65,22 +64,22 @@ HanamiMessaging::fillSupportOverview()
     bool success = false;
 
     if(GET_STRING_CONFIG("Kyouko", "address", success) != "") {
-        supportedComponents.support[Kyouko] = true;
+        supportedComponents.support[KYOUKO] = true;
     }
     if(GET_STRING_CONFIG("Misaka", "address", success) != "") {
-        supportedComponents.support[Misaka] = true;
+        supportedComponents.support[MISAKA] = true;
     }
     if(GET_STRING_CONFIG("Azuki", "address", success) != "") {
-        supportedComponents.support[Azuki] = true;
+        supportedComponents.support[AZUKI] = true;
     }
     if(GET_STRING_CONFIG("Sagiri", "address", success) != "") {
-        supportedComponents.support[Sagiri] = true;
+        supportedComponents.support[SAGIRI] = true;
     }
     if(GET_STRING_CONFIG("Nagato", "address", success) != "") {
-        supportedComponents.support[Nagato] = true;
+        supportedComponents.support[NAGATO] = true;
     }
     if(GET_STRING_CONFIG("Izuna", "address", success) != "") {
-        supportedComponents.support[Izuna] = true;
+        supportedComponents.support[IZUNA] = true;
     }
 }
 

@@ -36,11 +36,12 @@ TestBlossom::TestBlossom(Session_Test* sessionTest)
 {
     m_sessionTest = sessionTest;
     registerInputField("input", true);
-    registerOutputField("output", true);
+    registerOutputField("output");
 }
 
 bool
 TestBlossom::runTask(Sakura::BlossomLeaf &blossomLeaf,
+                     const DataMap &context,
                      Sakura::BlossomStatus &status,
                      ErrorContainer &)
 {

@@ -39,6 +39,7 @@ public:
 
 protected:
     bool runTask(Sakura::BlossomLeaf &blossomLeaf,
+                 const DataMap &context,
                  Sakura::BlossomStatus &status,
                  ErrorContainer &);
 

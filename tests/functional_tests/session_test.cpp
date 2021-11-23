@@ -126,6 +126,16 @@ Session_Test::runTest()
     DataMap inputValues;
     inputValues.insert("input", new DataValue(42));
     inputValues.insert("test_output", new DataValue(""));
+    inputValues.insert("token", new DataValue("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+                                              ".eyJleHAiOjE2Mzc2MjMwMDYsImdyb3VwcyI"
+                                              "6InRlc3RlciIsImlhdCI6MTYzNzYxOTQwNiw"
+                                              "iaXNfYWRtaW4iOiIxIiwibmFtZSI6InRlc3R"
+                                              "fdXNlciIsIm5iZiI6MTYzNzYxOTQwNiwicHd"
+                                              "faGFzaCI6IjMzMDcyM2M5YWEzNTE4ZGUyNzY"
+                                              "2ZGExZWZkMGI5ZWIxNzE0MDI1MDJkOThmMzl"
+                                              "kN2Y0NmYwYWVhZmVjNzhkNTAiLCJ1dWlkIjo"
+                                              "iNjdiOGRiNmItYmM0NC00YzBmLTg5ZGQtMTYzMGYxY2Y5ZmNhIn0"
+                                              ".KmHwboQt6C6K8ISKXGGX3s-JKmA-ON5AUXCwq1x6IGU"));
 
     ResponseMessage response;
     RequestMessage request;
@@ -192,6 +202,7 @@ Session_Test::getTestConfig()
                                "address = \"" + m_address + "\"\n"
                                "port = 12345\n"
                                "endpoints = \"-\"\n"
+                               "database = \"-\"\n"
                                "\n"
                                "\n"
                                "[target]\n"

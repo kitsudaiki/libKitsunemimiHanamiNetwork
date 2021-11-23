@@ -29,8 +29,12 @@
 
 namespace Kitsunemimi
 {
+namespace Json {
+class JsonItem;
+}
 namespace Sakura {
 class Session;
+struct BlossomStatus;
 }
 namespace Hanami
 {
@@ -64,6 +68,16 @@ private:
                         Kitsunemimi::Sakura::Session* session,
                         const uint64_t blockerId,
                         ErrorContainer &error);
+
+    bool checkPermission(DataMap &context,
+                         const std::string &token,
+                         Kitsunemimi::Sakura::BlossomStatus &status,
+                         Kitsunemimi::ErrorContainer &error);
+
+    bool getJwtTokenPayload(DataMap &context,
+                            const std::string &token,
+                            ErrorContainer &error);
+
 };
 
 }
