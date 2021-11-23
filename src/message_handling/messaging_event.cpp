@@ -49,19 +49,19 @@ namespace Hanami
 /**
  * @brief constructor
  *
- * @param treeId id of the tree to trigger by the event
+ * @param targetId id of target to trigger
  * @param inputValues input-values as string
  * @param session pointer to session to send the response back
  * @param blockerId blocker-id for the response
  */
 MessagingEvent::MessagingEvent(const HttpRequestType httpType,
-                               const std::string &treeId,
+                               const std::string &targetId,
                                const std::string &inputValues,
                                Kitsunemimi::Sakura::Session* session,
                                const uint64_t blockerId)
 {
     m_httpType = httpType;
-    m_treeId = treeId;
+    m_targetId = targetId;
     m_inputValues = inputValues;
     m_session = session;
     m_blockerId = blockerId;
@@ -144,11 +144,11 @@ MessagingEvent::processEvent()
 
     // get real endpoint
     EndpointEntry entry;
-    bool ret = endpoints->mapEndpoint(entry, m_treeId, m_httpType);
+    bool ret = endpoints->mapEndpoint(entry, m_targetId, m_httpType);
     if(ret == false)
     {
         error.addMeesage("endpoint not found for id "
-                         + m_treeId
+                         + m_targetId
                          + " and type "
                          + std::to_string(m_httpType));
         LOG_ERROR(error);
@@ -168,7 +168,9 @@ MessagingEvent::processEvent()
     // token is moved into the context object, so to not break the check of the input-fileds of the
     // blossoms, we have to remove this here again
     // TODO: handle context in a separate field in the messaging
-    newItem.remove("token");
+    if(m_targetId != "auth") {
+        newItem.remove("token");
+    }
 
     if(checkPermission(context, token, status, error))
     {
@@ -230,6 +232,13 @@ MessagingEvent::checkPermission(DataMap &context,
                                 Sakura::BlossomStatus &status,
                                 Kitsunemimi::ErrorContainer &error)
 {
+    // filter actions, which do not need a token in its context
+    if(m_targetId == "auth"
+            || m_targetId == "token")
+    {
+        return true;
+    }
+
     // precheck
     if(token == "")
     {
@@ -238,11 +247,76 @@ MessagingEvent::checkPermission(DataMap &context,
         return false;
     }
 
+    Kitsunemimi::Json::JsonItem parsedResult;
+
     // only get token content without validation, if Misaka is not supported
-    if(supportedComponents.support[MISAKA] == false) {
-        return getJwtTokenPayload(context, token, error);
+    if(supportedComponents.support[MISAKA] == false)
+    {
+        if(getJwtTokenPayload(parsedResult, token, error) == false) {
+            return false;
+        }
+    }
+    else
+    {
+        if(getPermission(parsedResult, token, status, error) == false) {
+            return false;
+        }
     }
 
+    context = *parsedResult.getItemContent()->toMap();
+    context.insert("token", new DataValue(token));
+
+    return true;
+}
+
+/**
+ * @brief HanamiMessaging::getJwtTokenPayload
+ * @param resultPayload
+ * @param token
+ * @param error
+ * @return
+ */
+bool
+MessagingEvent::getJwtTokenPayload(Json::JsonItem &parsedResult,
+                                   const std::string &token,
+                                   ErrorContainer &error)
+{
+    std::vector<std::string> tokenParts;
+    Kitsunemimi::splitStringByDelimiter(tokenParts, token, '.');
+    if(tokenParts.size() != 3)
+    {
+        error.addMeesage("Token is broken");
+        LOG_ERROR(error);
+        return false;
+    }
+
+    std::string payloadString = tokenParts.at(1);
+    Kitsunemimi::Crypto::base64UrlToBase64(payloadString);
+    Kitsunemimi::Crypto::decodeBase64(payloadString, payloadString);
+    if(parsedResult.parse(payloadString, error) == false)
+    {
+        error.addMeesage("Token-payload is broken");
+        LOG_ERROR(error);
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * @brief MessagingEvent::getPermission
+ * @param parsedResult
+ * @param token
+ * @param status
+ * @param error
+ * @return
+ */
+bool
+MessagingEvent::getPermission(Json::JsonItem &parsedResult,
+                              const std::string &token,
+                              Sakura::BlossomStatus &status,
+                              ErrorContainer &error)
+{
     Kitsunemimi::Hanami::RequestMessage requestMsg;
     Kitsunemimi::Hanami::ResponseMessage responseMsg;
     Hanami::HanamiMessaging* messaging = Hanami::HanamiMessaging::getInstance();
@@ -269,55 +343,12 @@ MessagingEvent::checkPermission(DataMap &context,
         return false;
     }
 
-    Kitsunemimi::Json::JsonItem parsedResult;
     if(parsedResult.parse(responseMsg.responseContent, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Unable to parse auth-reponse.");
         return false;
     }
-
-    context = *parsedResult.getItemContent()->toMap();
-    context.insert("token", new DataValue(token));
-
-    return true;
-}
-
-/**
- * @brief HanamiMessaging::getJwtTokenPayload
- * @param resultPayload
- * @param token
- * @param error
- * @return
- */
-bool
-MessagingEvent::getJwtTokenPayload(DataMap &context,
-                                   const std::string &token,
-                                   ErrorContainer &error)
-{
-    std::vector<std::string> tokenParts;
-    Kitsunemimi::splitStringByDelimiter(tokenParts, token, '.');
-    if(tokenParts.size() != 3)
-    {
-        error.addMeesage("Token is broken");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    std::string payloadString = tokenParts.at(1);
-    Kitsunemimi::Crypto::base64UrlToBase64(payloadString);
-    Kitsunemimi::Crypto::decodeBase64(payloadString, payloadString);
-    Kitsunemimi::Json::JsonItem parsedResult;
-    if(parsedResult.parse(payloadString, error) == false)
-    {
-        error.addMeesage("Token-payload is broken");
-        LOG_ERROR(error);
-        return false;
-    }
-
-
-    context = *parsedResult.getItemContent()->toMap();
-    context.insert("token", new DataValue(token));
 
     return true;
 }

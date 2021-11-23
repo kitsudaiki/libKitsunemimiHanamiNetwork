@@ -75,7 +75,7 @@ LIBS += -L../../../libKitsunemimiHanamiEndpoints/src/release -lKitsunemimiHanami
 INCLUDEPATH += ../../../libKitsunemimiHanamiEndpoints/include
 
 
-LIBS +=  -lssl -lcrypt
+LIBS +=  -lssl -lcryptopp
 
 SOURCES += \
     main.cpp \

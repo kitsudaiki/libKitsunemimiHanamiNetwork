@@ -10,7 +10,7 @@ build:
     - echo Working on branch $CI_COMMIT_REF_NAME
     - pwd
     - apt-get update
-    - apt-get install -y libssl-dev   uuid-dev
+    - apt-get install -y libssl-dev   uuid-dev libcrypto++-dev 
     - ./build.sh test
     - mkdir upload
     - cp -r ../result/* upload/
@@ -28,7 +28,7 @@ tests:
   script:
     - ls -l
     - apt-get update
-    - apt-get install -y libssl-dev uuid-dev
+    - apt-get install -y libssl-dev uuid-dev libcrypto++-dev 
     - upload/functional_tests
   dependencies:
     - build

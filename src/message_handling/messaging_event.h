@@ -57,7 +57,7 @@ private:
     uint64_t m_blockerId = 0;
     Kitsunemimi::Sakura::Session* m_session = nullptr;
 
-    std::string m_treeId = "";
+    std::string m_targetId = "";
     std::string m_inputValues = "";
     HttpRequestType m_httpType = GET_TYPE;
 
@@ -74,9 +74,13 @@ private:
                          Kitsunemimi::Sakura::BlossomStatus &status,
                          Kitsunemimi::ErrorContainer &error);
 
-    bool getJwtTokenPayload(DataMap &context,
+    bool getJwtTokenPayload(Json::JsonItem &parsedResult,
                             const std::string &token,
                             ErrorContainer &error);
+    bool getPermission(Json::JsonItem &parsedResult,
+                       const std::string &token,
+                       Kitsunemimi::Sakura::BlossomStatus &status,
+                       Kitsunemimi::ErrorContainer &error);
 
 };
 

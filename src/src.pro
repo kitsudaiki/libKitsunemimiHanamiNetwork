@@ -61,7 +61,7 @@ LIBS += -L../../libKitsunemimiHanamiCommon/src/release -lKitsunemimiHanamiCommon
 INCLUDEPATH += ../../libKitsunemimiHanamiCommon/include
 
 
-LIBS += -lssl
+LIBS += -lssl -lcryptopp
 
 INCLUDEPATH += $$PWD \
                $$PWD/../include

@@ -92,6 +92,7 @@ get_required_kitsune_lib_repo "libKitsunemimiConfig" "master" 8
 echo ""
 echo "###########################################################################################################"
 echo ""
+get_required_private_repo_github "libKitsunemimiCrypto" "master" 8
 echo ""
 echo "###########################################################################################################"
 echo ""
