@@ -177,7 +177,7 @@ MessagingEvent::processEvent()
         if(entry.type == TREE_TYPE)
         {
             ret = langInterface->triggerTree(resultingItems,
-                                             entry.path,
+                                             entry.name,
                                              context,
                                              *newItem.getItemContent()->toMap(),
                                              status,
@@ -186,8 +186,8 @@ MessagingEvent::processEvent()
         else
         {
             ret = langInterface->triggerBlossom(resultingItems,
-                                                entry.path,
-                                                "-",
+                                                entry.name,
+                                                entry.group,
                                                 context,
                                                 *newItem.getItemContent()->toMap(),
                                                 status,
@@ -249,7 +249,7 @@ MessagingEvent::checkPermission(DataMap &context,
 
     Kitsunemimi::Json::JsonItem parsedResult;
 
-    // only get token content without validation, if Misaka is not supported
+    // only get token content without validation, if misaka is not supported
     if(supportedComponents.support[MISAKA] == false)
     {
         if(getJwtTokenPayload(parsedResult, token, error) == false) {
@@ -326,7 +326,7 @@ MessagingEvent::getPermission(Json::JsonItem &parsedResult,
     requestMsg.inputValues = "{\"token\":\"" + token + "\"}";
 
     // send request to misaka
-    if(messaging->triggerSakuraFile("Misaka", responseMsg, requestMsg, error) == false)
+    if(messaging->triggerSakuraFile("misaka", responseMsg, requestMsg, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Unable to validate token");

@@ -63,16 +63,16 @@ HanamiMessaging::fillSupportOverview()
 {
     bool success = false;
 
-    if(GET_STRING_CONFIG("Kyouko", "address", success) != "") {
+    if(GET_STRING_CONFIG("kyouko", "address", success) != "") {
         supportedComponents.support[KYOUKO] = true;
     }
-    if(GET_STRING_CONFIG("Misaka", "address", success) != "") {
+    if(GET_STRING_CONFIG("misaka", "address", success) != "") {
         supportedComponents.support[MISAKA] = true;
     }
-    if(GET_STRING_CONFIG("Azuki", "address", success) != "") {
+    if(GET_STRING_CONFIG("azuki", "address", success) != "") {
         supportedComponents.support[AZUKI] = true;
     }
-    if(GET_STRING_CONFIG("Sagiri", "address", success) != "") {
+    if(GET_STRING_CONFIG("sagiri", "address", success) != "") {
         supportedComponents.support[SAGIRI] = true;
     }
     if(GET_STRING_CONFIG("Nagato", "address", success) != "") {

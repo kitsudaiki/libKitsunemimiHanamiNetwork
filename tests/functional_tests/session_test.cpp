@@ -149,6 +149,15 @@ Session_Test::runTest()
     m_numberOfTests++;
     TEST_EQUAL(response.responseContent, "{\"test_output\":42}");
 
+
+    request.id = "path-test_2/test";
+    request.httpType = GET_TYPE;
+    inputValues.remove("test_output");
+    request.inputValues = inputValues.toString();
+    m_numberOfTests++;
+    TEST_EQUAL(messaging->triggerSakuraFile("target", response, request, error),  true);
+
+
     m_numberOfTests++;
     request.id = "fail";
     TEST_EQUAL(messaging->triggerSakuraFile("target", response, request, error), true);
@@ -168,7 +177,7 @@ Session_Test::runTest()
 
     // check that were no tests silently skipped
     m_numberOfTests++;
-    TEST_EQUAL(m_numberOfTests, 11);
+    TEST_EQUAL(m_numberOfTests, 13);
 
     std::cout<<"finish"<<std::endl;
 }
@@ -222,8 +231,8 @@ Session_Test::getTestEndpoints()
                                   "- GET -> tree : test_tree\n"
                                   "\n"
                                   "path-test_2/test\n"
-                                  "- GET  -> blossom : test_list1_blossom\n"
-                                  "- POST -> tree : test_list2_blossom\n"
+                                  "- GET  -> blossom : test1 : test2\n"
+                                  "- POST -> tree : group1 : test_list2_blossom\n"
                                   "\n";
     return endpoints;
 }
