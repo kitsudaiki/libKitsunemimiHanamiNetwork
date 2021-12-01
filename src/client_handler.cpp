@@ -277,5 +277,5 @@ ClientHandler::run()
     }
 }
 
-}
-}
+}  // namespace Hanami
+}  // namespace Kitsunemimi

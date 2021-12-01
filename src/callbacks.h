@@ -155,7 +155,7 @@ sessionCloseCallback(Kitsunemimi::Sakura::Session* session,
     }
 }
 
-}
-}
+}  // namespace Hanami
+}  // namespace Kitsunemimi
 
 #endif // KITSUNEMIMI_SAKURA_MESSAGING_CALLBACKS_H

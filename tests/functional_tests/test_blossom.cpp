@@ -26,22 +26,23 @@
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <session_test.h>
 
+
 namespace Kitsunemimi
 {
 namespace Hanami
 {
 
 TestBlossom::TestBlossom(Session_Test* sessionTest)
-    : Kitsunemimi::Sakura::Blossom()
+    : Kitsunemimi::Sakura::Blossom("this is a test-blossom")
 {
     m_sessionTest = sessionTest;
-    registerInputField("input", true);
-    registerOutputField("output");
+    registerInputField("input", Kitsunemimi::Sakura::SAKURA_INT_TYPE, true, "test-intput");
+    registerOutputField("output", Kitsunemimi::Sakura::SAKURA_INT_TYPE, "test-output");
 }
 
 bool
 TestBlossom::runTask(Sakura::BlossomLeaf &blossomLeaf,
-                     const DataMap &context,
+                     const DataMap &,
                      Sakura::BlossomStatus &status,
                      ErrorContainer &)
 {
@@ -53,5 +54,6 @@ TestBlossom::runTask(Sakura::BlossomLeaf &blossomLeaf,
     status.statusCode = OK_RTYPE;
     return true;
 }
-}
-}
+
+}  // namespace Hanami
+}  // namespace Kitsunemimi

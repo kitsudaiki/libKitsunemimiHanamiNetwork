@@ -199,7 +199,8 @@ MessagingEvent::processEvent()
     const HttpResponseTypes type = static_cast<HttpResponseTypes>(status.statusCode);
     if(ret)
     {
-        sendResponseMessage(true, type,
+        sendResponseMessage(true,
+                            type,
                             resultingItems.toString(),
                             m_session,
                             m_blockerId,
@@ -208,7 +209,8 @@ MessagingEvent::processEvent()
     else
     {
         LOG_ERROR(error);
-        sendResponseMessage(false, type,
+        sendResponseMessage(false,
+                            type,
                             status.errorMessage,
                             m_session,
                             m_blockerId,
@@ -253,6 +255,7 @@ MessagingEvent::checkPermission(DataMap &context,
     if(supportedComponents.support[MISAKA] == false)
     {
         if(getJwtTokenPayload(parsedResult, token, error) == false) {
+            // TODO: status in error-case
             return false;
         }
     }
@@ -353,5 +356,5 @@ MessagingEvent::getPermission(Json::JsonItem &parsedResult,
     return true;
 }
 
-}
-}
+}  // namespace Hanami
+}  // namespace Kitsunemimi

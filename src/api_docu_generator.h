@@ -1,5 +1,5 @@
 /**
- * @file        messaging_event_queue.h
+ * @file        api_docu_generator.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,32 +20,28 @@
  *      limitations under the License.
  */
 
-#ifndef MESSAGING_EVENT_QUEUE_H
-#define MESSAGING_EVENT_QUEUE_H
+#ifndef APIDOCUGENERATOR_H
+#define APIDOCUGENERATOR_H
 
-#include <libKitsunemimiCommon/threading/thread.h>
+#include <iostream>
+#include <map>
+#include <vector>
+#include <regex>
+
+#include <libKitsunemimiHanamiCommon/enums.h>
 
 namespace Kitsunemimi
 {
+namespace Sakura {
+class Blossom;
+class Session;
+}
 namespace Hanami
 {
 
-class MessagingEventQueue
-        : public Kitsunemimi::Thread
-{
-public:  
-    static MessagingEventQueue* getInstance();
-
-protected:
-    void run();
-
-private:
-    MessagingEventQueue(const std::string &threadName);
-
-    static MessagingEventQueue* m_instance;
-};
+void generateEndpointDocu(std::string &docu);
 
 }  // namespace Hanami
 }  // namespace Kitsunemimi
 
-#endif // MESSAGING_EVENT_QUEUE_H
+#endif // APIDOCUGENERATOR_H

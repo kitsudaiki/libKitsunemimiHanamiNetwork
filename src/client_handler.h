@@ -69,7 +69,7 @@ private:
     std::mutex m_lock;
 };
 
-}
-}
+}  // namespace Hanami
+}  // namespace Kitsunemimi
 
 #endif // CLIENTHANDLER_H

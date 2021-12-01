@@ -84,7 +84,7 @@ private:
 
 };
 
-}
-}
+}  // namespace Hanami
+}  // namespace Kitsunemimi
 
 #endif // MESSAGING_EVENT_H

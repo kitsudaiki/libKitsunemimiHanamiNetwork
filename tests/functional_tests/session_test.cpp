@@ -105,7 +105,6 @@ Session_Test::runTest()
     std::vector<std::string> groupNames = {"target"};
     HanamiMessaging* messaging = HanamiMessaging::getInstance();
 
-
     m_numberOfTests++;
     TEST_EQUAL(messaging->initialize("client",
                                      groupNames,
@@ -122,6 +121,10 @@ Session_Test::runTest()
                                      error,
                                      true,
                                      getTestEndpoints()), false);
+
+    std::string docu = "";
+    messaging->generateDocu(docu);
+    std::cout<<docu<<std::endl;
 
     DataMap inputValues;
     inputValues.insert("input", new DataValue(42));

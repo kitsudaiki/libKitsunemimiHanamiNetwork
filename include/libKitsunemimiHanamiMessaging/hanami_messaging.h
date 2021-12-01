@@ -80,6 +80,8 @@ public:
     bool closeClient(const std::string &remoteIdentifier,
                      ErrorContainer &error);
 
+    void generateDocu(std::string &docu);
+
 private:
     HanamiMessaging();
 
@@ -93,9 +95,10 @@ private:
                        const std::string &predefinedEndpoints);
 
     static HanamiMessaging* m_messagingController;
+    void createBlossomDocu(Sakura::Blossom* blossom, std::string &docu);
 };
 
-}
-}
+}  // namespace Hanami
+}  // namespace Kitsunemimi
 
 #endif // KITSUNEMIMI_SAKURA_MESSAGING_MESSAGING_CONTROLLER_H

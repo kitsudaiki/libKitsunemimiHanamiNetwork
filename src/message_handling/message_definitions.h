@@ -77,7 +77,7 @@ struct ResponseHeader
     uint32_t messageSize = 0;
 };
 
-}
-}
+}  // namespace Hanami
+}  // namespace Kitsunemimi
 
 #endif // KITSUNEMIMI_SAKURA_MESSAGING_MESSAGE_DEFINITIONS_H

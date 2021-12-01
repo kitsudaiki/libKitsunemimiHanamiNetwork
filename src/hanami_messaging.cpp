@@ -23,6 +23,7 @@
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 #include <message_io.h>
 #include <client_handler.h>
+#include <api_docu_generator.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
@@ -75,10 +76,10 @@ HanamiMessaging::fillSupportOverview()
     if(GET_STRING_CONFIG("sagiri", "address", success) != "") {
         supportedComponents.support[SAGIRI] = true;
     }
-    if(GET_STRING_CONFIG("Nagato", "address", success) != "") {
+    if(GET_STRING_CONFIG("nagato", "address", success) != "") {
         supportedComponents.support[NAGATO] = true;
     }
-    if(GET_STRING_CONFIG("Izuna", "address", success) != "") {
+    if(GET_STRING_CONFIG("izuna", "address", success) != "") {
         supportedComponents.support[IZUNA] = true;
     }
 }
@@ -376,6 +377,16 @@ HanamiMessaging::closeClient(const std::string &remoteIdentifier,
 }
 
 /**
+ * @brief HanamiMessaging::generateDocu
+ * @param docu
+ */
+void
+HanamiMessaging::generateDocu(std::string &docu)
+{
+    generateEndpointDocu(docu);
+}
+
+/**
  * @brief get instance, which must be already initialized
  *
  * @return instance-object
@@ -389,5 +400,5 @@ HanamiMessaging::getInstance()
     return m_messagingController;
 }
 
-}
-}
+}  // namespace Hanami
+}  // namespace Kitsunemimi

@@ -131,7 +131,7 @@ createRequest(Kitsunemimi::Sakura::Session* session,
     return ret;
 }
 
-}
-}
+}  // namespace Hanami
+}  // namespace Kitsunemimi
 
 #endif // MESSAGE_IO_H

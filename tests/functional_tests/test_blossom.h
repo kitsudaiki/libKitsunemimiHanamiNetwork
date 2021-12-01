@@ -47,7 +47,7 @@ private:
     Session_Test* m_sessionTest = nullptr;
 };
 
-}
-}
+}  // namespace Hanami
+}  // namespace Kitsunemimi
 
 #endif // TEST_BLOSSOM_H

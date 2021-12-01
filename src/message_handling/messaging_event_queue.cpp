@@ -81,5 +81,5 @@ MessagingEventQueue::run()
     }
 }
 
-}
-}
+}  // namespace Hanami
+}  // namespace Kitsunemimi
