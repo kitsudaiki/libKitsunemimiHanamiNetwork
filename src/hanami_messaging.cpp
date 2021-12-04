@@ -25,8 +25,13 @@
 #include <client_handler.h>
 #include <api_docu_generator.h>
 
+#include <predefined_blossoms/generate_api_docu.h>
+#include <predefined_blossoms/get_thread_mapping.h>
+
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
+#include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
+#include <libKitsunemimiSakuraLang/blossom.h>
 
 #include <libKitsunemimiHanamiCommon/config.h>
 #include <libKitsunemimiHanamiCommon/component_support.h>
@@ -64,23 +69,25 @@ HanamiMessaging::fillSupportOverview()
 {
     bool success = false;
 
+    SupportedComponents* supportedComponents = SupportedComponents::getInstance();
+
     if(GET_STRING_CONFIG("kyouko", "address", success) != "") {
-        supportedComponents.support[KYOUKO] = true;
+        supportedComponents->support[KYOUKO] = true;
     }
     if(GET_STRING_CONFIG("misaka", "address", success) != "") {
-        supportedComponents.support[MISAKA] = true;
+        supportedComponents->support[MISAKA] = true;
     }
     if(GET_STRING_CONFIG("azuki", "address", success) != "") {
-        supportedComponents.support[AZUKI] = true;
+        supportedComponents->support[AZUKI] = true;
     }
     if(GET_STRING_CONFIG("sagiri", "address", success) != "") {
-        supportedComponents.support[SAGIRI] = true;
+        supportedComponents->support[SAGIRI] = true;
     }
     if(GET_STRING_CONFIG("nagato", "address", success) != "") {
-        supportedComponents.support[NAGATO] = true;
+        supportedComponents->support[NAGATO] = true;
     }
     if(GET_STRING_CONFIG("izuna", "address", success) != "") {
-        supportedComponents.support[IZUNA] = true;
+        supportedComponents->support[IZUNA] = true;
     }
 }
 
@@ -195,6 +202,35 @@ HanamiMessaging::initClients(const std::vector<std::string> &configGroups)
 }
 
 /**
+ * @brief HanamiMessaging::initPredefinedBlossoms
+ * @return
+ */
+bool
+HanamiMessaging::initPredefinedBlossoms()
+{
+
+    // init predefined blossoms
+    Sakura::SakuraLangInterface* interface = Sakura::SakuraLangInterface::getInstance();
+    const std::string group = "-";
+    if(interface->addBlossom(group, "get_api_documentation", new GenerateApiDocu()) == false) {
+        return false;
+    }
+
+    // add new endpoints
+    Endpoint* endpoints = Endpoint::getInstance();
+    if(endpoints->addEndpoint("documentation/api",
+                              GET_TYPE,
+                              BLOSSOM_TYPE,
+                              "-",
+                              "get_api_documentation") == false)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+/**
  * @brief create and initialize new messaging-controller
  *
  * @param localIdentifier identifier for outgoing sessions to identify against the servers
@@ -240,11 +276,17 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
         return false;
     }
     fillSupportOverview();
+    SupportedComponents* support = SupportedComponents::getInstance();
+    support->localComponent = localIdentifier;
 
     // init server if requested
     if(createServer)
     {
         if(initServer(error, predefinedEndpoints) == false) {
+            return false;
+        }
+
+        if(initPredefinedBlossoms() == false) {
             return false;
         }
     }

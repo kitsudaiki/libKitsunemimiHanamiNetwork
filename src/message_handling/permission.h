@@ -1,5 +1,5 @@
 /**
- * @file        messaging_event.h
+ * @file        permission.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef MESSAGING_EVENT_H
-#define MESSAGING_EVENT_H
+#ifndef PERMISSION_H
+#define PERMISSION_H
 
 #include <libKitsunemimiCommon/threading/event.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
@@ -33,44 +33,25 @@ namespace Json {
 class JsonItem;
 }
 namespace Sakura {
-class Session;
 struct BlossomStatus;
 }
 namespace Hanami
 {
 
-class MessagingEvent
-        : public Event
-{
-public:
-    MessagingEvent(const HttpRequestType httpType,
-                   const std::string &treeId,
-                   const std::string &inputValues,
-                   Kitsunemimi::Sakura::Session* session,
-                   const uint64_t blockerId);
-    ~MessagingEvent();
+bool checkPermission(DataMap &context,
+                     const std::string &token,
+                     Kitsunemimi::Sakura::BlossomStatus &status,
+                     Kitsunemimi::ErrorContainer &error);
 
-protected:
-    bool processEvent();
-
-private:
-    uint64_t m_blockerId = 0;
-    Kitsunemimi::Sakura::Session* m_session = nullptr;
-
-    std::string m_targetId = "";
-    std::string m_inputValues = "";
-    HttpRequestType m_httpType = GET_TYPE;
-
-    void
-    sendResponseMessage(const bool success,
-                        const HttpResponseTypes responseType,
-                        const std::string &message,
-                        Kitsunemimi::Sakura::Session* session,
-                        const uint64_t blockerId,
+bool getJwtTokenPayload(Json::JsonItem &parsedResult,
+                        const std::string &token,
                         ErrorContainer &error);
-};
+bool getPermission(Json::JsonItem &parsedResult,
+                   const std::string &token,
+                   Kitsunemimi::Sakura::BlossomStatus &status,
+                   Kitsunemimi::ErrorContainer &error);
 
 }  // namespace Hanami
 }  // namespace Kitsunemimi
 
-#endif // MESSAGING_EVENT_H
+#endif // PERMISSION_H

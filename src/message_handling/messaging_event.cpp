@@ -21,6 +21,7 @@
  */
 
 #include "messaging_event.h"
+#include "permission.h"
 
 #include <message_handling/message_definitions.h>
 
@@ -28,14 +29,10 @@
 #include <libKitsunemimiHanamiCommon/component_support.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
-#include <libKitsunemimiSakuraLang/blossom.h>
-#include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
 
 #include <libKitsunemimiCommon/common_items/data_items.h>
-#include <libKitsunemimiCommon/common_methods/string_methods.h>
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiJson/json_item.h>
-#include <libKitsunemimiCrypto/common.h>
 
 #include <libKitsunemimiHanamiEndpoints/endpoint.h>
 
@@ -172,7 +169,10 @@ MessagingEvent::processEvent()
         newItem.remove("token");
     }
 
-    if(checkPermission(context, token, status, error))
+    if(m_targetId == "auth"
+            || m_targetId == "token"
+            || m_session->m_sessionIdentifier != "torii"
+            || checkPermission(context, token, status, error))
     {
         if(entry.type == TREE_TYPE)
         {
@@ -215,142 +215,6 @@ MessagingEvent::processEvent()
                             m_session,
                             m_blockerId,
                             error);
-    }
-
-    return true;
-}
-
-/**
- * @brief MessagingEvent::checkPermission
- * @param parsedResult
- * @param token
- * @param status
- * @param error
- * @return
- */
-bool
-MessagingEvent::checkPermission(DataMap &context,
-                                const std::string &token,
-                                Sakura::BlossomStatus &status,
-                                Kitsunemimi::ErrorContainer &error)
-{
-    // filter actions, which do not need a token in its context
-    if(m_targetId == "auth"
-            || m_targetId == "token")
-    {
-        return true;
-    }
-
-    // precheck
-    if(token == "")
-    {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Token is missing in request");
-        return false;
-    }
-
-    Kitsunemimi::Json::JsonItem parsedResult;
-
-    // only get token content without validation, if misaka is not supported
-    if(supportedComponents.support[MISAKA] == false)
-    {
-        if(getJwtTokenPayload(parsedResult, token, error) == false) {
-            // TODO: status in error-case
-            return false;
-        }
-    }
-    else
-    {
-        if(getPermission(parsedResult, token, status, error) == false) {
-            return false;
-        }
-    }
-
-    context = *parsedResult.getItemContent()->toMap();
-    context.insert("token", new DataValue(token));
-
-    return true;
-}
-
-/**
- * @brief HanamiMessaging::getJwtTokenPayload
- * @param resultPayload
- * @param token
- * @param error
- * @return
- */
-bool
-MessagingEvent::getJwtTokenPayload(Json::JsonItem &parsedResult,
-                                   const std::string &token,
-                                   ErrorContainer &error)
-{
-    std::vector<std::string> tokenParts;
-    Kitsunemimi::splitStringByDelimiter(tokenParts, token, '.');
-    if(tokenParts.size() != 3)
-    {
-        error.addMeesage("Token is broken");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    std::string payloadString = tokenParts.at(1);
-    Kitsunemimi::Crypto::base64UrlToBase64(payloadString);
-    Kitsunemimi::Crypto::decodeBase64(payloadString, payloadString);
-    if(parsedResult.parse(payloadString, error) == false)
-    {
-        error.addMeesage("Token-payload is broken");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    return true;
-}
-
-/**
- * @brief MessagingEvent::getPermission
- * @param parsedResult
- * @param token
- * @param status
- * @param error
- * @return
- */
-bool
-MessagingEvent::getPermission(Json::JsonItem &parsedResult,
-                              const std::string &token,
-                              Sakura::BlossomStatus &status,
-                              ErrorContainer &error)
-{
-    Kitsunemimi::Hanami::RequestMessage requestMsg;
-    Kitsunemimi::Hanami::ResponseMessage responseMsg;
-    Hanami::HanamiMessaging* messaging = Hanami::HanamiMessaging::getInstance();
-
-    requestMsg.id = "auth";
-    requestMsg.httpType = HttpRequestType::GET_TYPE;
-    requestMsg.inputValues = "{\"token\":\"" + token + "\"}";
-
-    // send request to misaka
-    if(messaging->triggerSakuraFile("misaka", responseMsg, requestMsg, error) == false)
-    {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Unable to validate token");
-        return false;
-    }
-
-    // handle failed authentication
-    if(responseMsg.type == Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE
-            || responseMsg.success == false)
-    {
-        status.statusCode = responseMsg.type;
-        status.errorMessage = responseMsg.responseContent;
-        error.addMeesage(responseMsg.responseContent);
-        return false;
-    }
-
-    if(parsedResult.parse(responseMsg.responseContent, error) == false)
-    {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Unable to parse auth-reponse.");
-        return false;
     }
 
     return true;

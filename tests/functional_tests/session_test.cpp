@@ -193,8 +193,12 @@ const std::string
 Session_Test::getTestTree()
 {
     const std::string tree = "[\"test\"]\n"
-                             "- input = \"{{}}\"\n"
-                             "- test_output = >>\n"
+                             "(\"tree-comment\")\n"
+                             "\n"
+                             "- input = ?[int]\n"
+                             "  (\"test-comment1\")\n"
+                             "- test_output = >> [int]\n"
+                             "  (\"test-comment3\")\n"
                              "\n"
                              "test1(\"this is a test\")\n"
                              "->test2:\n"

@@ -93,6 +93,7 @@ private:
     bool initClients(const std::vector<std::string> &configGroups);
     bool initEndpoints(ErrorContainer &error,
                        const std::string &predefinedEndpoints);
+    bool initPredefinedBlossoms();
 
     static HanamiMessaging* m_messagingController;
     void createBlossomDocu(Sakura::Blossom* blossom, std::string &docu);

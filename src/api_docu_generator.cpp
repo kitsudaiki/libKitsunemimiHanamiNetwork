@@ -24,6 +24,7 @@
 
 #include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
 #include <libKitsunemimiSakuraLang/blossom.h>
+#include <libKitsunemimiSakuraLang/structs.h>
 
 #include <libKitsunemimiHanamiEndpoints/endpoint.h>
 
@@ -40,26 +41,23 @@ namespace Hanami
  */
 void
 addFieldDocu(std::string &docu,
-                               const bool isInput,
-                               Sakura::Blossom* blossom)
+             const bool isInput,
+             const std::map<std::string, Sakura::FieldDef>* defMap)
 {
-    std::map<std::string, Sakura::Blossom::BlossomValidDef> validMap = blossom->validationMap;
-
-    const std::string bossomComment = blossom->comment;
-    std::map<std::string, Sakura::Blossom::BlossomValidDef>::iterator it;
-    for(it = validMap.begin();
-        it != validMap.end();
+    std::map<std::string, Sakura::FieldDef>::const_iterator it;
+    for(it = defMap->begin();
+        it != defMap->end();
         it++)
     {
-        const Sakura::Blossom::IO_ValueType ioType = it->second.ioType;
+        const Sakura::FieldDef::IO_ValueType ioType = it->second.ioType;
         if(isInput
-                && ioType == Sakura::Blossom::OUTPUT_TYPE)
+                && ioType == Sakura::FieldDef::OUTPUT_TYPE)
         {
             continue;
         }
 
         if(isInput == false
-                && ioType == Sakura::Blossom::INPUT_TYPE)
+                && ioType == Sakura::FieldDef::INPUT_TYPE)
         {
             continue;
         }
@@ -113,8 +111,17 @@ addFieldDocu(std::string &docu,
  */
 void
 createBlossomDocu(std::string &docu,
-                                    Sakura::Blossom* blossom)
+                  Sakura::SakuraLangInterface* langInterface,
+                  const std::string &groupName,
+                  const std::string &itemName)
 {
+    Sakura::Blossom* blossom = langInterface->getBlossom(groupName, itemName);
+
+    if(blossom == nullptr) {
+        // TODO: handle error
+        return;
+    }
+
     // add comment/describtion
     docu.append(blossom->comment + "\n");
 
@@ -122,13 +129,49 @@ createBlossomDocu(std::string &docu,
     docu.append("\n");
     docu.append("Request-Parameter\n");
     docu.append("~~~~~~~~~~~~~~~~~\n");
-    addFieldDocu(docu, true, blossom);
+    addFieldDocu(docu, true, blossom->getValidationMap());
 
     // add output-fields
     docu.append("\n");
     docu.append("Response-Parameter\n");
     docu.append("~~~~~~~~~~~~~~~~~~\n");
-    addFieldDocu(docu, false, blossom);
+    addFieldDocu(docu, false, blossom->getValidationMap());
+}
+
+/**
+ * @brief createTreeDocu
+ * @param docu
+ * @param langInterface
+ * @param treeId
+ */
+void
+createTreeDocu(std::string &docu,
+               Sakura::SakuraLangInterface* langInterface,
+               const std::string &treeId)
+{
+    // request necessary infos from the tree-item
+    std::map<std::string, Sakura::FieldDef> validationMap;
+    if(langInterface->getTreeValidMap(validationMap, treeId) == false) {
+        // TODO: handle error
+        return;
+    }
+
+    // add comment/describtion
+    std::string comment;
+    langInterface->getTreeComment(comment, treeId);
+    docu.append(comment + "\n");
+
+    // add input-fields
+    docu.append("\n");
+    docu.append("Request-Parameter\n");
+    docu.append("~~~~~~~~~~~~~~~~~\n");
+    addFieldDocu(docu, true, &validationMap);
+
+    // add output-fields
+    docu.append("\n");
+    docu.append("Response-Parameter\n");
+    docu.append("~~~~~~~~~~~~~~~~~~\n");
+    addFieldDocu(docu, false, &validationMap);
 }
 
 /**
@@ -140,6 +183,7 @@ generateEndpointDocu(std::string &docu)
 {
     Endpoint* endpoints = Endpoint::getInstance();
     Sakura::SakuraLangInterface* langInterface = Sakura::SakuraLangInterface::getInstance();
+    docu.append("\n");
 
     std::map<std::string, std::map<HttpRequestType, EndpointEntry>>::iterator it;
     for(it = endpoints->endpointRules.begin();
@@ -172,14 +216,10 @@ generateEndpointDocu(std::string &docu)
                 docu.append("PUT\n^^^\n\n");
             }
 
-            if(ruleIt->second.type == BLOSSOM_TYPE)
-            {
-                createBlossomDocu(docu, langInterface->getBlossom(ruleIt->second.group,
-                                                                  ruleIt->second.name));
-            }
-            else
-            {
-                //TODO tree-type
+            if(ruleIt->second.type == BLOSSOM_TYPE) {
+                createBlossomDocu(docu, langInterface, ruleIt->second.group, ruleIt->second.name);
+            } else {
+                createTreeDocu(docu, langInterface, ruleIt->second.name);
             }
         }
     }
