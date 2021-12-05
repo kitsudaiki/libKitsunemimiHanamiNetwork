@@ -27,6 +27,7 @@
 
 #include <predefined_blossoms/generate_api_docu.h>
 #include <predefined_blossoms/get_thread_mapping.h>
+#include <predefined_blossoms/special_blossoms.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
@@ -226,6 +227,10 @@ HanamiMessaging::initPredefinedBlossoms()
     {
         return false;
     }
+
+    interface->addBlossom(group, "print", new PrintBlossom());
+    interface->addBlossom(group, "assert", new AssertBlossom());
+    interface->addBlossom(group, "item_update", new ItemUpdateBlossom());
 
     return true;
 }

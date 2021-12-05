@@ -77,7 +77,8 @@ HEADERS += \
     message_handling/messaging_event_queue.h \
     message_handling/messaging_event.h \
     predefined_blossoms/generate_api_docu.h \
-    predefined_blossoms/get_thread_mapping.h
+    predefined_blossoms/get_thread_mapping.h \
+    predefined_blossoms/special_blossoms.h
 
 SOURCES += \
     api_docu_generator.cpp \
@@ -87,5 +88,6 @@ SOURCES += \
     message_handling/messaging_event.cpp \
     message_handling/permission.cpp \
     predefined_blossoms/generate_api_docu.cpp \
-    predefined_blossoms/get_thread_mapping.cpp
+    predefined_blossoms/get_thread_mapping.cpp \
+    predefined_blossoms/special_blossoms.cpp
 
