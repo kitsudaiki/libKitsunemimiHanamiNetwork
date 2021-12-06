@@ -51,12 +51,14 @@ bool
 checkPermission(DataMap &context,
                 const std::string &token,
                 Sakura::BlossomStatus &status,
+                const bool skipPermission,
                 Kitsunemimi::ErrorContainer &error)
 {
     // precheck
     if(token == "")
     {
-        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
+        status.errorMessage = "Token is required but missing in the request.";
         error.addMeesage("Token is missing in request");
         return false;
     }
@@ -64,7 +66,8 @@ checkPermission(DataMap &context,
     Kitsunemimi::Json::JsonItem parsedResult;
 
     // only get token content without validation, if misaka is not supported
-    if(SupportedComponents::getInstance()->support[MISAKA] == false)
+    if(skipPermission
+            || SupportedComponents::getInstance()->support[MISAKA] == false)
     {
         if(getJwtTokenPayload(parsedResult, token, error) == false) {
             // TODO: status in error-case
@@ -78,6 +81,7 @@ checkPermission(DataMap &context,
         }
     }
 
+    // fill context-object
     context = *parsedResult.getItemContent()->toMap();
     context.insert("token", new DataValue(token));
 

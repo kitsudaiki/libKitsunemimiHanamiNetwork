@@ -41,6 +41,7 @@ namespace Hanami
 bool checkPermission(DataMap &context,
                      const std::string &token,
                      Kitsunemimi::Sakura::BlossomStatus &status,
+                     const bool skipPermission,
                      Kitsunemimi::ErrorContainer &error);
 
 bool getJwtTokenPayload(Json::JsonItem &parsedResult,

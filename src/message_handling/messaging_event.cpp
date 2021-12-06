@@ -117,12 +117,10 @@ MessagingEvent::sendResponseMessage(const bool success,
 bool
 MessagingEvent::processEvent()
 {
-    // parse input-values
-    DataMap resultingItems;
     ErrorContainer error;
-    Kitsunemimi::Json::JsonItem newItem;
 
     // parse json-formated input values
+    Kitsunemimi::Json::JsonItem newItem;
     if(newItem.parse(m_inputValues, error) == false)
     {
         LOG_ERROR(error);
@@ -159,7 +157,9 @@ MessagingEvent::processEvent()
     }
 
     DataMap context;
+    DataMap resultingItems;
     Sakura::BlossomStatus status;
+
     ret = false;
     const std::string token = newItem["token"].getString();
     // token is moved into the context object, so to not break the check of the input-fileds of the
@@ -169,10 +169,11 @@ MessagingEvent::processEvent()
         newItem.remove("token");
     }
 
+    const bool skipPermission = m_session->m_sessionIdentifier != "torii";
+
     if(m_targetId == "auth"
             || m_targetId == "token"
-            || m_session->m_sessionIdentifier != "torii"
-            || checkPermission(context, token, status, error))
+            || checkPermission(context, token, status, skipPermission, error))
     {
         if(entry.type == TREE_TYPE)
         {

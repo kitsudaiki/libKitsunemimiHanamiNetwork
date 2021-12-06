@@ -37,10 +37,10 @@ public:
     GetThreadMapping();
 
 protected:
-    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
-                 const Kitsunemimi::DataMap &context,
-                 Kitsunemimi::Sakura::BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
+    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &,
+                 const Kitsunemimi::DataMap &,
+                 Kitsunemimi::Sakura::BlossomStatus &,
+                 Kitsunemimi::ErrorContainer &);
 };
 
 }  // namespace Hanami

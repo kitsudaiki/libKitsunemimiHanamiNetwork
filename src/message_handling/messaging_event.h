@@ -56,18 +56,16 @@ protected:
 private:
     uint64_t m_blockerId = 0;
     Kitsunemimi::Sakura::Session* m_session = nullptr;
-
     std::string m_targetId = "";
     std::string m_inputValues = "";
     HttpRequestType m_httpType = GET_TYPE;
 
-    void
-    sendResponseMessage(const bool success,
-                        const HttpResponseTypes responseType,
-                        const std::string &message,
-                        Kitsunemimi::Sakura::Session* session,
-                        const uint64_t blockerId,
-                        ErrorContainer &error);
+    void sendResponseMessage(const bool success,
+                             const HttpResponseTypes responseType,
+                             const std::string &message,
+                             Kitsunemimi::Sakura::Session* session,
+                             const uint64_t blockerId,
+                             ErrorContainer &error);
 };
 
 }  // namespace Hanami

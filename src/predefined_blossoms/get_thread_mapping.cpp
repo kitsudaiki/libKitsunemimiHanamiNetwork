@@ -41,12 +41,12 @@ GetThreadMapping::GetThreadMapping()
  * @brief runTask
  */
 bool
-GetThreadMapping::runTask(BlossomLeaf &blossomLeaf,
-                          const Kitsunemimi::DataMap &context,
-                          BlossomStatus &status,
-                          Kitsunemimi::ErrorContainer &error)
+GetThreadMapping::runTask(BlossomLeaf &,
+                          const Kitsunemimi::DataMap &,
+                          BlossomStatus &,
+                          Kitsunemimi::ErrorContainer &)
 {
-
+    return true;
 }
 
 }  // namespace Hanami

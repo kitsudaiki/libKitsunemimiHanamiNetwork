@@ -228,6 +228,8 @@ HanamiMessaging::initPredefinedBlossoms()
         return false;
     }
 
+    // add special-blossom without endpoint,
+    // because they are only intendet to be used inside of trees
     interface->addBlossom(group, "print", new PrintBlossom());
     interface->addBlossom(group, "assert", new AssertBlossom());
     interface->addBlossom(group, "item_update", new ItemUpdateBlossom());

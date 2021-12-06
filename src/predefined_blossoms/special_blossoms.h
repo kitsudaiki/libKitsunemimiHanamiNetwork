@@ -5,7 +5,7 @@
  *
  * @copyright   Apache License Version 2.0
  *
- *      Copyright 2019 Tobias Anker
+ *      Copyright 2021 Tobias Anker
  *
  *      Licensed under the Apache License, Version 2.0 (the "License");
  *      you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KYOUKOMIND_SPECIAL_BLOSSOMS_H
-#define KYOUKOMIND_SPECIAL_BLOSSOMS_H
+#ifndef KITSUNEMIMI_HANAMI_MESSAGING_SPECIAL_BLOSSOMS_H
+#define KITSUNEMIMI_HANAMI_MESSAGING_SPECIAL_BLOSSOMS_H
 
 #include <libKitsunemimiSakuraLang/blossom.h>
 
@@ -38,7 +38,7 @@ public:
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
                  const Kitsunemimi::DataMap &,
-                 Kitsunemimi::Sakura::BlossomStatus &status,
+                 Kitsunemimi::Sakura::BlossomStatus &,
                  Kitsunemimi::ErrorContainer &error);
 };
 
@@ -55,8 +55,8 @@ public:
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
                  const Kitsunemimi::DataMap &,
-                 Kitsunemimi::Sakura::BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
+                 Kitsunemimi::Sakura::BlossomStatus &,
+                 Kitsunemimi::ErrorContainer &);
 };
 
 //==================================================================================================
@@ -72,8 +72,8 @@ public:
 protected:
     bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
                  const Kitsunemimi::DataMap &,
-                 Kitsunemimi::Sakura::BlossomStatus &status,
-                 Kitsunemimi::ErrorContainer &error);
+                 Kitsunemimi::Sakura::BlossomStatus &,
+                 Kitsunemimi::ErrorContainer &);
 };
 
-#endif // KYOUKOMIND_SPECIAL_BLOSSOMS_H
+#endif // KITSUNEMIMI_HANAMI_MESSAGING_SPECIAL_BLOSSOMS_H

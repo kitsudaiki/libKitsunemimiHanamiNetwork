@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <api/special/special_blossoms.h>
+#include "special_blossoms.h"
 
 #include <libKitsunemimiCommon/common_methods/string_methods.h>
 #include <libKitsunemimiCommon/process_execution.h>
@@ -43,7 +43,7 @@ AssertBlossom::AssertBlossom()
 bool
 AssertBlossom::runTask(BlossomLeaf &blossomLeaf,
                        const Kitsunemimi::DataMap &,
-                       BlossomStatus &status,
+                       BlossomStatus &,
                        Kitsunemimi::ErrorContainer &error)
 {
     std::map<std::string, Kitsunemimi::DataItem*>::iterator it;
@@ -85,8 +85,8 @@ ItemUpdateBlossom::ItemUpdateBlossom()
 bool
 ItemUpdateBlossom::runTask(BlossomLeaf &blossomLeaf,
                            const Kitsunemimi::DataMap &,
-                           BlossomStatus &status,
-                           Kitsunemimi::ErrorContainer &error)
+                           BlossomStatus &,
+                           Kitsunemimi::ErrorContainer &)
 {
     std::map<std::string, Kitsunemimi::DataItem*>::iterator it;
     for(it = blossomLeaf.input.map.begin();
@@ -122,8 +122,8 @@ PrintBlossom::PrintBlossom()
 bool
 PrintBlossom::runTask(BlossomLeaf &blossomLeaf,
                       const Kitsunemimi::DataMap &,
-                      BlossomStatus &status,
-                      Kitsunemimi::ErrorContainer &error)
+                      BlossomStatus &,
+                      Kitsunemimi::ErrorContainer &)
 {
     std::string output = "";
     Kitsunemimi::TableItem tableItem;

@@ -71,7 +71,7 @@ ClientHandler::connectClient(ClientInformation &info,
  */
 bool
 ClientHandler::closeClient(const std::string &remoteIdentifier,
-                           ErrorContainer &error,
+                           ErrorContainer &,
                            const bool earseFromList)
 {
     LOG_DEBUG("close client with remote-identifier \"" + remoteIdentifier + "\"");
