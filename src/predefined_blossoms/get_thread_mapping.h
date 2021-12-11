@@ -37,7 +37,7 @@ public:
     GetThreadMapping();
 
 protected:
-    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &,
+    bool runTask(Kitsunemimi::Sakura::BlossomLeaf &blossomLeaf,
                  const Kitsunemimi::DataMap &,
                  Kitsunemimi::Sakura::BlossomStatus &,
                  Kitsunemimi::ErrorContainer &);

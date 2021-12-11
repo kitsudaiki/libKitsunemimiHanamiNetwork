@@ -209,16 +209,15 @@ HanamiMessaging::initClients(const std::vector<std::string> &configGroups)
 bool
 HanamiMessaging::initPredefinedBlossoms()
 {
-
     // init predefined blossoms
     Sakura::SakuraLangInterface* interface = Sakura::SakuraLangInterface::getInstance();
+    Endpoint* endpoints = Endpoint::getInstance();
     const std::string group = "-";
+
     if(interface->addBlossom(group, "get_api_documentation", new GenerateApiDocu()) == false) {
         return false;
     }
-
     // add new endpoints
-    Endpoint* endpoints = Endpoint::getInstance();
     if(endpoints->addEndpoint("documentation/api",
                               GET_TYPE,
                               BLOSSOM_TYPE,
@@ -227,6 +226,21 @@ HanamiMessaging::initPredefinedBlossoms()
     {
         return false;
     }
+
+    if(interface->addBlossom(group, "get_thread_mapping", new GetThreadMapping()) == false) {
+        return false;
+    }
+
+    // add new endpoints
+    if(endpoints->addEndpoint("get_thread_mapping",
+                              GET_TYPE,
+                              BLOSSOM_TYPE,
+                              "-",
+                              "get_thread_mapping") == false)
+    {
+        return false;
+    }
+
 
     // add special-blossom without endpoint,
     // because they are only intendet to be used inside of trees

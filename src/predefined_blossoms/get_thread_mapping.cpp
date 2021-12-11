@@ -22,6 +22,9 @@
 
 #include "get_thread_mapping.h"
 
+#include <libKitsunemimiCommon/threading/thread.h>
+#include <libKitsunemimiCommon/threading/thread_handler.h>
+
 using namespace Kitsunemimi::Sakura;
 
 namespace Kitsunemimi
@@ -33,7 +36,7 @@ GetThreadMapping::GetThreadMapping()
     : Kitsunemimi::Sakura::Blossom("Collect all thread-names with its acutal mapped core-id's")
 {
     registerOutputField("thread_map",
-                        SAKURA_STRING_TYPE,
+                        SAKURA_MAP_TYPE,
                         "Map with all thread-names and its core-id as json-string.");
 }
 
@@ -41,11 +44,29 @@ GetThreadMapping::GetThreadMapping()
  * @brief runTask
  */
 bool
-GetThreadMapping::runTask(BlossomLeaf &,
+GetThreadMapping::runTask(BlossomLeaf &blossomLeaf,
                           const Kitsunemimi::DataMap &,
                           BlossomStatus &,
                           Kitsunemimi::ErrorContainer &)
 {
+    ThreadHandler* threadHandler = ThreadHandler::getInstance();
+
+    const std::vector<std::string> names = threadHandler->getRegisteredNames();
+
+    DataMap* result = new DataMap();
+
+    for(const std::string &name : names)
+    {
+        const std::vector<Thread*> threads = threadHandler->getThreads(name);
+        DataArray* threadArray = new DataArray();
+        for(Thread* thread : threads) {
+            threadArray->append(new DataValue(thread->getCoreId()));
+        }
+        result->insert(name, threadArray);
+    }
+
+    blossomLeaf.output.insert("thread_map", result);
+
     return true;
 }
 
