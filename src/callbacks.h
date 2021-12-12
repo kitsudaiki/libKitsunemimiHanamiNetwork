@@ -113,10 +113,16 @@ errorCallback(Sakura::Session* session,
     LOG_ERROR(error);
 
     // close-session
-    if(session->isClientSide()) {
-        ClientHandler::m_instance->closeClient(session->m_sessionIdentifier, error, false);
-    } else {
-        ClientHandler::m_instance->removeInternalClient(session->m_sessionIdentifier);
+    const std::string identifier = session->m_sessionIdentifier;
+    if(session->isClientSide())
+    {
+        if(ClientHandler::m_instance->closeClient(identifier, error, false) == false) {
+            LOG_ERROR(error);
+        }
+    }
+    else
+    {
+        ClientHandler::m_instance->removeInternalClient(identifier);
     }
 }
 
@@ -150,7 +156,17 @@ void
 sessionCloseCallback(Kitsunemimi::Sakura::Session* session,
                       const std::string identifier)
 {
-    if(session->isClientSide() == false) {
+    Kitsunemimi::ErrorContainer error;
+
+    // close-session
+    if(session->isClientSide())
+    {
+        if(ClientHandler::m_instance->closeClient(identifier, error, false) == false) {
+            LOG_ERROR(error);
+        }
+    }
+    else
+    {
         ClientHandler::m_instance->removeInternalClient(identifier);
     }
 }

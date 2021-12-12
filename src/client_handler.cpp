@@ -150,12 +150,14 @@ ClientHandler::waitForAllConnected(const uint32_t timeout)
  */
 bool
 ClientHandler::addInternalClient(const std::string &identifier,
-                                 Sakura::Session *newClient)
+                                 Sakura::Session* newClient)
 {
     std::map<std::string, Sakura::Session*>::const_iterator it;
     it = m_incomingClients.find(identifier);
 
-    if(it != m_incomingClients.end()) {
+    if(it != m_incomingClients.end())
+    {
+        m_forDeletion.push_back(newClient);
         return false;
     }
 
