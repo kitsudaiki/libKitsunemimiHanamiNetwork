@@ -9,15 +9,15 @@ LIBS += -L../../src -lKitsunemimiHanamiMessaging
 INCLUDEPATH += $$PWD
 
 
+LIBS += -L../../../libKitsunemimiHanamiEndpoints/src -lKitsunemimiHanamiEndpoints
+LIBS += -L../../../libKitsunemimiHanamiEndpoints/src/debug -lKitsunemimiHanamiEndpoints
+LIBS += -L../../../libKitsunemimiHanamiEndpoints/src/release -lKitsunemimiHanamiEndpoints
+INCLUDEPATH += ../../../libKitsunemimiHanamiEndpoints/include
+
 LIBS += -L../../../libKitsunemimiSakuraLang/src -lKitsunemimiSakuraLang
 LIBS += -L../../../libKitsunemimiSakuraLang/src/debug -lKitsunemimiSakuraLang
 LIBS += -L../../../libKitsunemimiSakuraLang/src/release -lKitsunemimiSakuraLang
 INCLUDEPATH += ../../../libKitsunemimiSakuraLang/include
-
-LIBS += -L../../../libKitsunemimiArgs/src -lKitsunemimiArgs
-LIBS += -L../../../libKitsunemimiArgs/src/debug -lKitsunemimiArgs
-LIBS += -L../../../libKitsunemimiArgs/src/release -lKitsunemimiArgs
-INCLUDEPATH += ../../../libKitsunemimiArgs/include
 
 LIBS += -L../../../libKitsunemimiConfig/src -lKitsunemimiConfig
 LIBS += -L../../../libKitsunemimiConfig/src/debug -lKitsunemimiConfig
@@ -33,11 +33,6 @@ LIBS += -L../../../libKitsunemimiSakuraNetwork/src -lKitsunemimiSakuraNetwork
 LIBS += -L../../../libKitsunemimiSakuraNetwork/src/debug -lKitsunemimiSakuraNetwork
 LIBS += -L../../../libKitsunemimiSakuraNetwork/src/release -lKitsunemimiSakuraNetwork
 INCLUDEPATH += ../../../libKitsunemimiSakuraNetwork/include
-
-LIBS += -L../../../libKitsunemimiCommon/src -lKitsunemimiCommon
-LIBS += -L../../../libKitsunemimiCommon/src/debug -lKitsunemimiCommon
-LIBS += -L../../../libKitsunemimiCommon/src/release -lKitsunemimiCommon
-INCLUDEPATH += ../../../libKitsunemimiCommon/include
 
 LIBS += -L../../../libKitsunemimiNetwork/src -lKitsunemimiNetwork
 LIBS += -L../../../libKitsunemimiNetwork/src/debug -lKitsunemimiNetwork
@@ -74,13 +69,17 @@ LIBS += -L../../../libKitsunemimiHanamiCommon/src/debug -lKitsunemimiHanamiCommo
 LIBS += -L../../../libKitsunemimiHanamiCommon/src/release -lKitsunemimiHanamiCommon
 INCLUDEPATH += ../../../libKitsunemimiHanamiCommon/include
 
-LIBS += -L../../../libKitsunemimiHanamiEndpoints/src -lKitsunemimiHanamiEndpoints
-LIBS += -L../../../libKitsunemimiHanamiEndpoints/src/debug -lKitsunemimiHanamiEndpoints
-LIBS += -L../../../libKitsunemimiHanamiEndpoints/src/release -lKitsunemimiHanamiEndpoints
-INCLUDEPATH += ../../../libKitsunemimiHanamiEndpoints/include
+LIBS += -L../../../libKitsunemimiArgs/src -lKitsunemimiArgs
+LIBS += -L../../../libKitsunemimiArgs/src/debug -lKitsunemimiArgs
+LIBS += -L../../../libKitsunemimiArgs/src/release -lKitsunemimiArgs
+INCLUDEPATH += ../../../libKitsunemimiArgs/include
 
+LIBS += -L../../../libKitsunemimiCommon/src -lKitsunemimiCommon
+LIBS += -L../../../libKitsunemimiCommon/src/debug -lKitsunemimiCommon
+LIBS += -L../../../libKitsunemimiCommon/src/release -lKitsunemimiCommon
+INCLUDEPATH += ../../../libKitsunemimiCommon/include
 
-LIBS +=  -lssl -lcryptopp
+LIBS += -lssl -lcryptopp -lcrypto
 
 SOURCES += \
     main.cpp \

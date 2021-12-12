@@ -65,8 +65,7 @@ LIBS += -L../../libKitsunemimiHanamiCommon/src/debug -lKitsunemimiHanamiCommon
 LIBS += -L../../libKitsunemimiHanamiCommon/src/release -lKitsunemimiHanamiCommon
 INCLUDEPATH += ../../libKitsunemimiHanamiCommon/include
 
-
-LIBS += -lssl -lcryptopp
+LIBS += -lssl -lcryptopp -lcrypto
 
 INCLUDEPATH += $$PWD \
                $$PWD/../include
@@ -81,6 +80,7 @@ HEADERS += \
     callbacks.h \
     message_handling/messaging_event_queue.h \
     message_handling/messaging_event.h \
+    predefined_blossoms/bind_thread_to_core.h \
     predefined_blossoms/generate_api_docu.h \
     predefined_blossoms/get_thread_mapping.h \
     predefined_blossoms/special_blossoms.h
@@ -92,6 +92,7 @@ SOURCES += \
     message_handling/messaging_event_queue.cpp \
     message_handling/messaging_event.cpp \
     message_handling/permission.cpp \
+    predefined_blossoms/bind_thread_to_core.cpp \
     predefined_blossoms/generate_api_docu.cpp \
     predefined_blossoms/get_thread_mapping.cpp \
     predefined_blossoms/special_blossoms.cpp

@@ -27,6 +27,7 @@
 
 #include <predefined_blossoms/generate_api_docu.h>
 #include <predefined_blossoms/get_thread_mapping.h>
+#include <predefined_blossoms/bind_thread_to_core.h>
 #include <predefined_blossoms/special_blossoms.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
@@ -241,6 +242,19 @@ HanamiMessaging::initPredefinedBlossoms()
         return false;
     }
 
+    if(interface->addBlossom(group, "bind_thread_to_core", new BindThreadToCore()) == false) {
+        return false;
+    }
+
+    // add new endpoints
+    if(endpoints->addEndpoint("bind_thread_to_core",
+                              POST_TYPE,
+                              BLOSSOM_TYPE,
+                              "-",
+                              "bind_thread_to_core") == false)
+    {
+        return false;
+    }
 
     // add special-blossom without endpoint,
     // because they are only intendet to be used inside of trees
