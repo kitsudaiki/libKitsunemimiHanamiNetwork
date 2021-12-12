@@ -87,6 +87,9 @@ ClientHandler::closeClient(const std::string &remoteIdentifier,
             LOG_DEBUG("schedule client with remote-identifier \""
                       + remoteIdentifier
                       + "\" for deletion");
+            ErrorContainer error;
+            it->second.session->closeSession(error);
+            LOG_ERROR(error);
             m_forDeletion.push_back(it->second.session);
             it->second.session = nullptr;
         }
@@ -157,6 +160,9 @@ ClientHandler::addInternalClient(const std::string &identifier,
 
     if(it != m_incomingClients.end())
     {
+        ErrorContainer error;
+        newClient->closeSession(error);
+        LOG_ERROR(error);
         m_forDeletion.push_back(newClient);
         return false;
     }
@@ -174,15 +180,20 @@ ClientHandler::addInternalClient(const std::string &identifier,
 bool
 ClientHandler::removeInternalClient(const std::string &identifier)
 {
-    std::map<std::string, Sakura::Session*>::const_iterator it;
+    std::map<std::string, Sakura::Session*>::iterator it;
     it = m_incomingClients.find(identifier);
     if(it != m_incomingClients.end())
     {
-        if(it->second != nullptr) {
-            m_forDeletion.push_back(it->second);
-        }
-
+        Sakura::Session* tempSession = it->second;
         m_incomingClients.erase(it);
+
+        if(tempSession != nullptr)
+        {
+            ErrorContainer error;
+            tempSession->closeSession(error);
+            LOG_ERROR(error);
+            m_forDeletion.push_back(tempSession);
+        }
 
         return true;
     }
@@ -252,8 +263,6 @@ ClientHandler::run()
         for(Sakura::Session* session : m_forDeletion)
         {
             LOG_DEBUG("delete session '" + session->m_sessionIdentifier + "'");
-            ErrorContainer error;
-            session->closeSession(error);
             delete session;
         }
         m_forDeletion.clear();

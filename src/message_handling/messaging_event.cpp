@@ -34,7 +34,6 @@
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiJson/json_item.h>
 
-#include <libKitsunemimiHanamiEndpoints/endpoint.h>
 
 using Kitsunemimi::Sakura::SakuraLangInterface;
 
@@ -110,6 +109,63 @@ MessagingEvent::sendResponseMessage(const bool success,
 }
 
 /**
+ * @brief MessagingEvent::trigger
+ * @param newItem
+ * @param status
+ * @param entry
+ * @return
+ */
+bool
+MessagingEvent::trigger(DataMap &resultingItems,
+                        Json::JsonItem &newItem,
+                        Sakura::BlossomStatus &status,
+                        const EndpointEntry &entry)
+{
+    SakuraLangInterface* langInterface = SakuraLangInterface::getInstance();
+    ErrorContainer error;
+    DataMap context;
+
+    const std::string token = newItem["token"].getString();
+    // token is moved into the context object, so to not break the check of the input-fileds of the
+    // blossoms, we have to remove this here again
+    // TODO: handle context in a separate field in the messaging
+    if(m_targetId != "auth") {
+        newItem.remove("token");
+    }
+
+    const bool skipPermission = m_session->m_sessionIdentifier != "torii";
+
+    if(m_targetId == "auth"
+            || m_targetId == "token"
+            || checkPermission(context, token, status, skipPermission, error))
+    {
+        if(entry.type == TREE_TYPE)
+        {
+            return langInterface->triggerTree(resultingItems,
+                                             entry.name,
+                                             context,
+                                             *newItem.getItemContent()->toMap(),
+                                             status,
+                                             error);
+        }
+        else
+        {
+            return langInterface->triggerBlossom(resultingItems,
+                                                entry.name,
+                                                entry.group,
+                                                context,
+                                                *newItem.getItemContent()->toMap(),
+                                                status,
+                                                error);
+        }
+    }
+
+    status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+
+    return false;
+}
+
+/**
  * @brief process messageing-event
  *
  * @return true, if event was successful, else false
@@ -135,7 +191,6 @@ MessagingEvent::processEvent()
 
     // get global instances
     Endpoint* endpoints = Endpoint::getInstance();
-    SakuraLangInterface* langInterface = SakuraLangInterface::getInstance();
 
     // get real endpoint
     EndpointEntry entry;
@@ -156,45 +211,10 @@ MessagingEvent::processEvent()
         return false;
     }
 
-    DataMap context;
-    DataMap resultingItems;
+    // execute trigger
     Sakura::BlossomStatus status;
-
-    ret = false;
-    const std::string token = newItem["token"].getString();
-    // token is moved into the context object, so to not break the check of the input-fileds of the
-    // blossoms, we have to remove this here again
-    // TODO: handle context in a separate field in the messaging
-    if(m_targetId != "auth") {
-        newItem.remove("token");
-    }
-
-    const bool skipPermission = m_session->m_sessionIdentifier != "torii";
-
-    if(m_targetId == "auth"
-            || m_targetId == "token"
-            || checkPermission(context, token, status, skipPermission, error))
-    {
-        if(entry.type == TREE_TYPE)
-        {
-            ret = langInterface->triggerTree(resultingItems,
-                                             entry.name,
-                                             context,
-                                             *newItem.getItemContent()->toMap(),
-                                             status,
-                                             error);
-        }
-        else
-        {
-            ret = langInterface->triggerBlossom(resultingItems,
-                                                entry.name,
-                                                entry.group,
-                                                context,
-                                                *newItem.getItemContent()->toMap(),
-                                                status,
-                                                error);
-        }
-    }
+    DataMap resultingItems;
+    ret = trigger(resultingItems, newItem, status, entry);
 
     // creating and send reposonse with the result of the event
     const HttpResponseTypes type = static_cast<HttpResponseTypes>(status.statusCode);

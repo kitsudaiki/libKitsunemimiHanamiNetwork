@@ -31,6 +31,7 @@
 
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>
+#include <libKitsunemimiJwt/jwt.h>
 #include <libKitsunemimiCommon/common_methods/string_methods.h>
 #include <libKitsunemimiCommon/common_items/data_items.h>
 
@@ -69,14 +70,17 @@ checkPermission(DataMap &context,
     if(skipPermission
             || SupportedComponents::getInstance()->support[MISAKA] == false)
     {
-        if(getJwtTokenPayload(parsedResult, token, error) == false) {
-            // TODO: status in error-case
+        if(Kitsunemimi::Jwt::getJwtTokenPayload(parsedResult, token, error) == false)
+        {
+            status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
             return false;
         }
     }
     else
     {
-        if(getPermission(parsedResult, token, status, error) == false) {
+        if(getPermission(parsedResult, token, status, error) == false)
+        {
+            status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
             return false;
         }
     }
@@ -84,40 +88,6 @@ checkPermission(DataMap &context,
     // fill context-object
     context = *parsedResult.getItemContent()->toMap();
     context.insert("token", new DataValue(token));
-
-    return true;
-}
-
-/**
- * @brief HanamiMessaging::getJwtTokenPayload
- * @param resultPayload
- * @param token
- * @param error
- * @return
- */
-bool
-getJwtTokenPayload(Json::JsonItem &parsedResult,
-                   const std::string &token,
-                   ErrorContainer &error)
-{
-    std::vector<std::string> tokenParts;
-    Kitsunemimi::splitStringByDelimiter(tokenParts, token, '.');
-    if(tokenParts.size() != 3)
-    {
-        error.addMeesage("Token is broken");
-        LOG_ERROR(error);
-        return false;
-    }
-
-    std::string payloadString = tokenParts.at(1);
-    Kitsunemimi::Crypto::base64UrlToBase64(payloadString);
-    Kitsunemimi::Crypto::decodeBase64(payloadString, payloadString);
-    if(parsedResult.parse(payloadString, error) == false)
-    {
-        error.addMeesage("Token-payload is broken");
-        LOG_ERROR(error);
-        return false;
-    }
 
     return true;
 }

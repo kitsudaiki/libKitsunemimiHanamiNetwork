@@ -44,9 +44,6 @@ bool checkPermission(DataMap &context,
                      const bool skipPermission,
                      Kitsunemimi::ErrorContainer &error);
 
-bool getJwtTokenPayload(Json::JsonItem &parsedResult,
-                        const std::string &token,
-                        ErrorContainer &error);
 bool getPermission(Json::JsonItem &parsedResult,
                    const std::string &token,
                    Kitsunemimi::Sakura::BlossomStatus &status,

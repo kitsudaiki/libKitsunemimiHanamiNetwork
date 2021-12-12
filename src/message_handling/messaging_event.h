@@ -26,6 +26,7 @@
 #include <libKitsunemimiCommon/threading/event.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
 #include <libKitsunemimiCommon/logger.h>
+#include <libKitsunemimiHanamiEndpoints/endpoint.h>
 
 namespace Kitsunemimi
 {
@@ -66,6 +67,10 @@ private:
                              Kitsunemimi::Sakura::Session* session,
                              const uint64_t blockerId,
                              ErrorContainer &error);
+    bool trigger(DataMap &resultingItems,
+                 Json::JsonItem &newItem,
+                 Sakura::BlossomStatus &status,
+                 const EndpointEntry &entry);
 };
 
 }  // namespace Hanami

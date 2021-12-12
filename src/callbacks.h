@@ -112,18 +112,17 @@ errorCallback(Sakura::Session* session,
     error.addMeesage(message);
     LOG_ERROR(error);
 
-    // close-session
     const std::string identifier = session->m_sessionIdentifier;
-    if(session->isClientSide())
-    {
-        if(ClientHandler::m_instance->closeClient(identifier, error, false) == false) {
-            LOG_ERROR(error);
-        }
-    }
-    else
-    {
+    error.addMeesage("try to close session after error with identifier: '" + identifier + "'");
+
+    // close-session
+    if(session->isClientSide()) {
+        ClientHandler::m_instance->closeClient(identifier, error, false);
+    } else {
         ClientHandler::m_instance->removeInternalClient(identifier);
     }
+
+    LOG_ERROR(error);
 }
 
 /**
@@ -157,6 +156,7 @@ sessionCloseCallback(Kitsunemimi::Sakura::Session* session,
                       const std::string identifier)
 {
     Kitsunemimi::ErrorContainer error;
+    LOG_INFO("try to close session with identifier: '" + identifier + "'");
 
     // close-session
     if(session->isClientSide())

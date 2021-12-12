@@ -15,6 +15,11 @@ LIBS += -L../../libKitsunemimiJinja2/src/debug -lKitsunemimiJinja2
 LIBS += -L../../libKitsunemimiJinja2/src/release -lKitsunemimiJinja2
 INCLUDEPATH += ../../libKitsunemimiJinja2/include
 
+LIBS += -L../../libKitsunemimiJwt/src -lKitsunemimiJwt
+LIBS += -L../../libKitsunemimiJwt/src/debug -lKitsunemimiJwt
+LIBS += -L../../libKitsunemimiJwt/src/release -lKitsunemimiJwt
+INCLUDEPATH += ../../libKitsunemimiJwt/include
+
 LIBS += -L../../libKitsunemimiCrypto/src -lKitsunemimiCrypto
 LIBS += -L../../libKitsunemimiCrypto/src/debug -lKitsunemimiCrypto
 LIBS += -L../../libKitsunemimiCrypto/src/release -lKitsunemimiCrypto
