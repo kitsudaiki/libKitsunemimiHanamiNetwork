@@ -159,14 +159,7 @@ sessionCloseCallback(Kitsunemimi::Sakura::Session* session,
     LOG_INFO("try to close session with identifier: '" + identifier + "'");
 
     // close-session
-    if(session->isClientSide())
-    {
-        if(ClientHandler::m_instance->closeClient(identifier, error, false) == false) {
-            LOG_ERROR(error);
-        }
-    }
-    else
-    {
+    if(session->isClientSide() == false) {
         ClientHandler::m_instance->removeInternalClient(identifier);
     }
 }

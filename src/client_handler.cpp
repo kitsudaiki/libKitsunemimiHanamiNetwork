@@ -76,7 +76,7 @@ ClientHandler::closeClient(const std::string &remoteIdentifier,
 {
     LOG_DEBUG("close client with remote-identifier \"" + remoteIdentifier + "\"");
 
-    std::lock_guard<std::mutex> guard(m_lock);
+    std::lock_guard<std::mutex> guard(m_outgoinglock);
 
     std::map<std::string, ClientInformation>::iterator it;
     it = m_outgoingClients.find(remoteIdentifier);
@@ -84,13 +84,17 @@ ClientHandler::closeClient(const std::string &remoteIdentifier,
     {
         if(it->second.session != nullptr)
         {
+            ErrorContainer error;
+            if(it->second.session->closeSession(error) == false) {
+                LOG_ERROR(error);
+            }
+
             LOG_DEBUG("schedule client with remote-identifier \""
                       + remoteIdentifier
                       + "\" for deletion");
-            ErrorContainer error;
-            it->second.session->closeSession(error);
-            LOG_ERROR(error);
+            m_deletionMutex.lock();
             m_forDeletion.push_back(it->second.session);
+            m_deletionMutex.unlock();
             it->second.session = nullptr;
         }
 
@@ -120,7 +124,7 @@ ClientHandler::waitForAllConnected(const uint32_t timeout)
     {
         bool allConnected = true;
 
-        m_lock.lock();
+        m_outgoinglock.lock();
         std::map<std::string, ClientInformation>::iterator it;
         for(it = m_outgoingClients.begin();
             it != m_outgoingClients.end();
@@ -132,7 +136,7 @@ ClientHandler::waitForAllConnected(const uint32_t timeout)
                 break;
             }
         }
-        m_lock.unlock();
+        m_outgoinglock.unlock();
 
         if(allConnected) {
             return true;
@@ -155,19 +159,27 @@ bool
 ClientHandler::addInternalClient(const std::string &identifier,
                                  Sakura::Session* newClient)
 {
+    m_incominglock.lock();
+
     std::map<std::string, Sakura::Session*>::const_iterator it;
     it = m_incomingClients.find(identifier);
 
     if(it != m_incomingClients.end())
     {
+        m_incominglock.unlock();
+
         ErrorContainer error;
         newClient->closeSession(error);
         LOG_ERROR(error);
+        m_deletionMutex.lock();
         m_forDeletion.push_back(newClient);
+        m_deletionMutex.unlock();
         return false;
     }
 
     m_incomingClients.insert(std::make_pair(identifier, newClient));
+
+    m_incominglock.unlock();
 
     return true;
 }
@@ -180,6 +192,8 @@ ClientHandler::addInternalClient(const std::string &identifier,
 bool
 ClientHandler::removeInternalClient(const std::string &identifier)
 {
+    m_incominglock.lock();
+
     std::map<std::string, Sakura::Session*>::iterator it;
     it = m_incomingClients.find(identifier);
     if(it != m_incomingClients.end())
@@ -187,16 +201,24 @@ ClientHandler::removeInternalClient(const std::string &identifier)
         Sakura::Session* tempSession = it->second;
         m_incomingClients.erase(it);
 
+        m_incominglock.unlock();
+
         if(tempSession != nullptr)
         {
             ErrorContainer error;
-            tempSession->closeSession(error);
-            LOG_ERROR(error);
+            if(tempSession->closeSession(error) == false) {
+                LOG_ERROR(error);
+            }
+
+            m_deletionMutex.lock();
             m_forDeletion.push_back(tempSession);
+            m_deletionMutex.unlock();
         }
 
         return true;
     }
+
+    m_incominglock.unlock();
 
     return false;
 }
@@ -213,7 +235,7 @@ ClientHandler::addOutgoingClient(const std::string &remoteIdentifier,
                                  const std::string &address,
                                  const uint16_t port)
 {
-    std::lock_guard<std::mutex> guard(m_lock);
+    std::lock_guard<std::mutex> guard(m_outgoinglock);
 
     std::map<std::string, ClientInformation>::const_iterator it;
     it = m_outgoingClients.find(remoteIdentifier);
@@ -239,7 +261,7 @@ ClientHandler::addOutgoingClient(const std::string &remoteIdentifier,
 Sakura::Session*
 ClientHandler::getSession(const std::string &target)
 {
-    std::lock_guard<std::mutex> guard(m_lock);
+    std::lock_guard<std::mutex> guard(m_outgoinglock);
 
     std::map<std::string, ClientInformation>::const_iterator it;
     it = m_outgoingClients.find(target);
@@ -259,13 +281,17 @@ ClientHandler::run()
     ErrorContainer error;
     while(m_abort == false)
     {
-        m_lock.lock();
+        m_outgoinglock.lock();
+        m_deletionMutex.lock();
+
         for(Sakura::Session* session : m_forDeletion)
         {
             LOG_DEBUG("delete session '" + session->m_sessionIdentifier + "'");
             delete session;
         }
         m_forDeletion.clear();
+
+        m_deletionMutex.unlock();
 
         std::map<std::string, ClientInformation>::iterator it;
         for(it = m_outgoingClients.begin();
@@ -285,7 +311,7 @@ ClientHandler::run()
             }
         }
 
-        m_lock.unlock();
+        m_outgoinglock.unlock();
 
         sleepThread(100000);
     }

@@ -66,7 +66,9 @@ private:
     std::vector<Sakura::Session*> m_forDeletion;
 
     std::string m_localIdentifier = "";
-    std::mutex m_lock;
+    std::mutex m_outgoinglock;
+    std::mutex m_incominglock;
+    std::mutex m_deletionMutex;
 };
 
 }  // namespace Hanami
