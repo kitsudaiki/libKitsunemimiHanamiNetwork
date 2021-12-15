@@ -57,8 +57,8 @@ BindThreadToCore::runTask(BlossomLeaf &blossomLeaf,
                           BlossomStatus &status,
                           Kitsunemimi::ErrorContainer &error)
 {
-    const std::string threadName = blossomLeaf.input.getStringByKey("thread_name");
-    const long coreId = blossomLeaf.input.getLongByKey("core_id");
+    const std::string threadName = blossomLeaf.input.get("thread_name").getString();
+    const long coreId = blossomLeaf.input.get("core_id").getLong();
 
     ThreadHandler* threadHandler = ThreadHandler::getInstance();
 

@@ -47,8 +47,8 @@ AssertBlossom::runTask(BlossomLeaf &blossomLeaf,
                        Kitsunemimi::ErrorContainer &error)
 {
     std::map<std::string, Kitsunemimi::DataItem*>::iterator it;
-    for(it = blossomLeaf.input.map.begin();
-        it != blossomLeaf.input.map.end();
+    for(it = blossomLeaf.input.getItemContent()->toMap()->map.begin();
+        it != blossomLeaf.input.getItemContent()->toMap()->map.end();
         it++)
     {
         const std::string isValue = blossomLeaf.parentValues->get(it->first)->toString();
@@ -89,8 +89,8 @@ ItemUpdateBlossom::runTask(BlossomLeaf &blossomLeaf,
                            Kitsunemimi::ErrorContainer &)
 {
     std::map<std::string, Kitsunemimi::DataItem*>::iterator it;
-    for(it = blossomLeaf.input.map.begin();
-        it != blossomLeaf.input.map.end();
+    for(it = blossomLeaf.input.getItemContent()->toMap()->map.begin();
+        it != blossomLeaf.input.getItemContent()->toMap()->map.end();
         it++)
     {
         std::map<std::string, Kitsunemimi::DataItem*>::iterator originalIt;
@@ -131,8 +131,8 @@ PrintBlossom::runTask(BlossomLeaf &blossomLeaf,
     tableItem.addColumn("value", "Value");
 
     std::map<std::string, Kitsunemimi::DataItem*>::iterator it;
-    for(it = blossomLeaf.input.map.begin();
-        it != blossomLeaf.input.map.end();
+    for(it = blossomLeaf.input.getItemContent()->toMap()->map.begin();
+        it != blossomLeaf.input.getItemContent()->toMap()->map.end();
         it++)
     {
         tableItem.addRow(std::vector<std::string>{it->first, it->second->toString(true)});

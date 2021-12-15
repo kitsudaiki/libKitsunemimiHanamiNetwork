@@ -66,7 +66,7 @@ GenerateApiDocu::runTask(BlossomLeaf &blossomLeaf,
     std::string base64Docu;
     Crypto::encodeBase64(base64Docu, documentsion.c_str(), documentsion.size());
 
-    blossomLeaf.output.insert("documentation", new DataValue(base64Docu));
+    blossomLeaf.output.insert("documentation", base64Docu);
 
     return true;
 }

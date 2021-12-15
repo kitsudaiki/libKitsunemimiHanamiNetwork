@@ -137,6 +137,7 @@ MessagingEvent::trigger(DataMap &resultingItems,
 
     if(m_targetId == "auth"
             || m_targetId == "token"
+            || m_targetId == "token/internal"
             || checkPermission(context, token, status, skipPermission, error))
     {
         if(entry.type == TREE_TYPE)

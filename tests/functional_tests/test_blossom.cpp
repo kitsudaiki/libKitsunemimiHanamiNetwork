@@ -47,9 +47,9 @@ TestBlossom::runTask(Sakura::BlossomLeaf &blossomLeaf,
                      ErrorContainer &)
 {
     LOG_DEBUG("TestBlossom");
-    DataValue* value = blossomLeaf.input.get("input")->toValue();
-    m_sessionTest->compare(value->getInt(), 42);
-    blossomLeaf.output.insert("output", new Kitsunemimi::DataValue(42));
+    const int value = blossomLeaf.input.get("input").getInt();
+    m_sessionTest->compare(value, 42);
+    blossomLeaf.output.insert("output", 42);
 
     status.statusCode = OK_RTYPE;
     return true;
