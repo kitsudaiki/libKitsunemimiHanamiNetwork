@@ -67,6 +67,8 @@ addFieldDocu(std::string &docu,
         const Sakura::FieldType fieldType = it->second.fieldType;
         const std::string comment = it->second.comment;
         const bool isRequired = it->second.isRequired;
+        const DataItem* defaultVal = it->second.defaultVal;
+        const DataItem* matchVal = it->second.match;
 
         docu.append("\n");
         docu.append("``" + field + "``\n");
@@ -93,6 +95,27 @@ addFieldDocu(std::string &docu,
             docu.append("        ``True``\n");
         } else {
             docu.append("        ``False``\n");
+        }
+
+        // default
+        if(defaultVal != nullptr
+                && isRequired == false
+                && ioType == Sakura::FieldDef::INPUT_TYPE)
+        {
+            docu.append("    **Default:**\n");
+            if(isRequired) {
+                docu.append("        ``" + defaultVal->toString() + "``\n");
+            }
+        }
+
+        // match
+        if(matchVal != nullptr
+                && ioType == Sakura::FieldDef::OUTPUT_TYPE)
+        {
+            docu.append("    **Is:**\n");
+            if(isRequired) {
+                docu.append("        ``" + matchVal->toString() + "``\n");
+            }
         }
 
         // comment

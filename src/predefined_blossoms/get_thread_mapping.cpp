@@ -59,8 +59,14 @@ GetThreadMapping::runTask(BlossomLeaf &blossomLeaf,
     {
         const std::vector<Thread*> threads = threadHandler->getThreads(name);
         DataArray* threadArray = new DataArray();
-        for(Thread* thread : threads) {
-            threadArray->append(new DataValue(thread->getCoreId()));
+        for(Thread* thread : threads)
+        {
+            const std::vector<uint64_t> coreIds = thread->getCoreIds();
+            DataArray* cores = new DataArray();
+            for(const uint64_t coreId : coreIds) {
+                cores->append(new DataValue(static_cast<long>(coreId)));
+            }
+            threadArray->append(cores);
         }
         result->insert(name, threadArray);
     }
