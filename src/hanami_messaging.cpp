@@ -25,11 +25,6 @@
 #include <client_handler.h>
 #include <api_docu_generator.h>
 
-#include <predefined_blossoms/generate_api_docu.h>
-#include <predefined_blossoms/get_thread_mapping.h>
-#include <predefined_blossoms/bind_thread_to_core.h>
-#include <predefined_blossoms/special_blossoms.h>
-
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
 #include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
@@ -204,68 +199,6 @@ HanamiMessaging::initClients(const std::vector<std::string> &configGroups)
 }
 
 /**
- * @brief HanamiMessaging::initPredefinedBlossoms
- * @return
- */
-bool
-HanamiMessaging::initPredefinedBlossoms()
-{
-    // init predefined blossoms
-    Sakura::SakuraLangInterface* interface = Sakura::SakuraLangInterface::getInstance();
-    Endpoint* endpoints = Endpoint::getInstance();
-    const std::string group = "-";
-
-    if(interface->addBlossom(group, "get_api_documentation", new GenerateApiDocu()) == false) {
-        return false;
-    }
-    // add new endpoints
-    if(endpoints->addEndpoint("documentation/api",
-                              GET_TYPE,
-                              BLOSSOM_TYPE,
-                              "-",
-                              "get_api_documentation") == false)
-    {
-        return false;
-    }
-
-    if(interface->addBlossom(group, "get_thread_mapping", new GetThreadMapping()) == false) {
-        return false;
-    }
-
-    // add new endpoints
-    if(endpoints->addEndpoint("get_thread_mapping",
-                              GET_TYPE,
-                              BLOSSOM_TYPE,
-                              "-",
-                              "get_thread_mapping") == false)
-    {
-        return false;
-    }
-
-    if(interface->addBlossom(group, "bind_thread_to_core", new BindThreadToCore()) == false) {
-        return false;
-    }
-
-    // add new endpoints
-    if(endpoints->addEndpoint("bind_thread_to_core",
-                              POST_TYPE,
-                              BLOSSOM_TYPE,
-                              "-",
-                              "bind_thread_to_core") == false)
-    {
-        return false;
-    }
-
-    // add special-blossom without endpoint,
-    // because they are only intendet to be used inside of trees
-    interface->addBlossom(group, "print", new PrintBlossom());
-    interface->addBlossom(group, "assert", new AssertBlossom());
-    interface->addBlossom(group, "item_update", new ItemUpdateBlossom());
-
-    return true;
-}
-
-/**
  * @brief create and initialize new messaging-controller
  *
  * @param localIdentifier identifier for outgoing sessions to identify against the servers
@@ -318,10 +251,6 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
     if(createServer)
     {
         if(initServer(error, predefinedEndpoints) == false) {
-            return false;
-        }
-
-        if(initPredefinedBlossoms() == false) {
             return false;
         }
     }
