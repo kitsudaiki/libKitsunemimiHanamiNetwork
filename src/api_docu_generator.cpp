@@ -69,6 +69,9 @@ addFieldDocu(std::string &docu,
         const bool isRequired = it->second.isRequired;
         const DataItem* defaultVal = it->second.defaultVal;
         const DataItem* matchVal = it->second.match;
+        const std::string regexVal = it->second.regex;
+        const long lowerBorder = it->second.lowerBorder;
+        const long upperBorder = it->second.upperBorder;
 
         docu.append("\n");
         docu.append("``" + field + "``\n");
@@ -103,18 +106,40 @@ addFieldDocu(std::string &docu,
                 && ioType == Sakura::FieldDef::INPUT_TYPE)
         {
             docu.append("    **Default:**\n");
-            if(isRequired) {
-                docu.append("        ``" + defaultVal->toString() + "``\n");
-            }
+            docu.append("        ``" + defaultVal->toString() + "``\n");
         }
 
         // match
-        if(matchVal != nullptr
-                && ioType == Sakura::FieldDef::OUTPUT_TYPE)
+        if(matchVal != nullptr)
         {
-            docu.append("    **Is:**\n");
-            if(isRequired) {
-                docu.append("        ``" + matchVal->toString() + "``\n");
+            docu.append("    **Does have the value:**\n");
+            docu.append("        ``" + matchVal->toString() + "``\n");
+        }
+
+        // match
+        if(regexVal != "")
+        {
+            docu.append("    **Must match the regex:**\n");
+            docu.append("        ``" + regexVal + "``\n");
+        }
+
+        // border
+        if(lowerBorder != 0
+                || upperBorder != 0)
+        {
+            if(fieldType == Sakura::SAKURA_INT_TYPE)
+            {
+                docu.append("    **Lower border of value:**\n");
+                docu.append("        ``" + std::to_string(lowerBorder) + "``\n");
+                docu.append("    **Upper border of value:**\n");
+                docu.append("        ``" + std::to_string(upperBorder) + "``\n");
+            }
+            if(fieldType == Sakura::SAKURA_STRING_TYPE)
+            {
+                docu.append("    **Minimum string-length:**\n");
+                docu.append("        ``" + std::to_string(lowerBorder) + "``\n");
+                docu.append("    **Maximum string-length:**\n");
+                docu.append("        ``" + std::to_string(upperBorder) + "``\n");
             }
         }
 
