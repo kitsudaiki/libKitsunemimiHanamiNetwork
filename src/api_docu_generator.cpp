@@ -41,7 +41,6 @@ namespace Hanami
  */
 void
 addFieldDocu(std::string &docu,
-             const bool isInput,
              const std::map<std::string, Sakura::FieldDef>* defMap)
 {
     std::map<std::string, Sakura::FieldDef>::const_iterator it;
@@ -49,20 +48,6 @@ addFieldDocu(std::string &docu,
         it != defMap->end();
         it++)
     {
-        const Sakura::FieldDef::IO_ValueType ioType = it->second.ioType;
-        if(isInput
-                && ioType == Sakura::FieldDef::OUTPUT_TYPE)
-        {
-            continue;
-        }
-
-        if(isInput == false
-                && ioType == Sakura::FieldDef::INPUT_TYPE)
-        {
-            continue;
-        }
-
-
         const std::string field = it->first;
         const Sakura::FieldType fieldType = it->second.fieldType;
         const std::string comment = it->second.comment;
@@ -75,6 +60,13 @@ addFieldDocu(std::string &docu,
 
         docu.append("\n");
         docu.append("``" + field + "``\n");
+
+        // comment
+        if(comment != "")
+        {
+            docu.append("    **Description:**\n");
+            docu.append("        ``" + comment + "``\n");
+        }
 
         // type
         docu.append("    **Type:**\n");
@@ -102,8 +94,7 @@ addFieldDocu(std::string &docu,
 
         // default
         if(defaultVal != nullptr
-                && isRequired == false
-                && ioType == Sakura::FieldDef::INPUT_TYPE)
+                && isRequired == false)
         {
             docu.append("    **Default:**\n");
             docu.append("        ``" + defaultVal->toString() + "``\n");
@@ -142,13 +133,6 @@ addFieldDocu(std::string &docu,
                 docu.append("        ``" + std::to_string(upperBorder) + "``\n");
             }
         }
-
-        // comment
-        if(comment != "")
-        {
-            docu.append("    **Description:**\n");
-            docu.append("        ``" + comment + "``\n");
-        }
     }
 }
 
@@ -177,13 +161,13 @@ createBlossomDocu(std::string &docu,
     docu.append("\n");
     docu.append("Request-Parameter\n");
     docu.append("~~~~~~~~~~~~~~~~~\n");
-    addFieldDocu(docu, true, blossom->getValidationMap());
+    addFieldDocu(docu, blossom->getInputValidationMap());
 
     // add output-fields
     docu.append("\n");
     docu.append("Response-Parameter\n");
     docu.append("~~~~~~~~~~~~~~~~~~\n");
-    addFieldDocu(docu, false, blossom->getValidationMap());
+    addFieldDocu(docu, blossom->getOutputValidationMap());
 }
 
 /**
@@ -213,13 +197,13 @@ createTreeDocu(std::string &docu,
     docu.append("\n");
     docu.append("Request-Parameter\n");
     docu.append("~~~~~~~~~~~~~~~~~\n");
-    addFieldDocu(docu, true, &validationMap);
+    addFieldDocu(docu, &validationMap);
 
     // add output-fields
     docu.append("\n");
     docu.append("Response-Parameter\n");
     docu.append("~~~~~~~~~~~~~~~~~~\n");
-    addFieldDocu(docu, false, &validationMap);
+    addFieldDocu(docu, &validationMap);
 }
 
 /**
