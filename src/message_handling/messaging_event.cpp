@@ -129,15 +129,15 @@ MessagingEvent::trigger(DataMap &resultingItems,
     // token is moved into the context object, so to not break the check of the input-fileds of the
     // blossoms, we have to remove this here again
     // TODO: handle context in a separate field in the messaging
-    if(m_targetId != "auth") {
+    if(m_targetId != "v1/auth") {
         newItem.remove("token");
     }
 
     const bool skipPermission = m_session->m_sessionIdentifier != "torii";
 
-    if(m_targetId == "auth"
-            || m_targetId == "token"
-            || m_targetId == "token/internal"
+    if(m_targetId == "v1/auth"
+            || m_targetId == "v1/token"
+            || m_targetId == "v1/token/internal"
             || checkPermission(context, token, status, skipPermission, error))
     {
         if(entry.type == TREE_TYPE)

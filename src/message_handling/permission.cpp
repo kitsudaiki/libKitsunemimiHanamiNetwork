@@ -39,13 +39,15 @@ namespace Kitsunemimi
 {
 namespace Hanami
 {
-
 /**
- * @brief MessagingEvent::checkPermission
- * @param parsedResult
+ * @brief checkPermission
+ *
+ * @param context
  * @param token
  * @param status
+ * @param skipPermission
  * @param error
+ *
  * @return
  */
 bool
@@ -94,10 +96,12 @@ checkPermission(DataMap &context,
 
 /**
  * @brief MessagingEvent::getPermission
+ *
  * @param parsedResult
  * @param token
  * @param status
  * @param error
+ *
  * @return
  */
 bool
@@ -110,7 +114,7 @@ getPermission(Json::JsonItem &parsedResult,
     Kitsunemimi::Hanami::ResponseMessage responseMsg;
     Hanami::HanamiMessaging* messaging = Hanami::HanamiMessaging::getInstance();
 
-    requestMsg.id = "auth";
+    requestMsg.id = "v1/auth";
     requestMsg.httpType = HttpRequestType::GET_TYPE;
     requestMsg.inputValues = "{\"token\":\"" + token + "\"}";
 
