@@ -80,8 +80,6 @@ public:
     bool closeClient(const std::string &remoteIdentifier,
                      ErrorContainer &error);
 
-    void generateDocu(std::string &docu);
-
 private:
     HanamiMessaging();
 

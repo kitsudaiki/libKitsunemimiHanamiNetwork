@@ -23,7 +23,6 @@
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 #include <message_io.h>
 #include <client_handler.h>
-#include <api_docu_generator.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
@@ -380,16 +379,6 @@ HanamiMessaging::closeClient(const std::string &remoteIdentifier,
                              ErrorContainer &error)
 {
     return ClientHandler::m_instance->closeClient(remoteIdentifier, error, true);
-}
-
-/**
- * @brief HanamiMessaging::generateDocu
- * @param docu
- */
-void
-HanamiMessaging::generateDocu(std::string &docu)
-{
-    generateEndpointDocu(docu);
 }
 
 /**

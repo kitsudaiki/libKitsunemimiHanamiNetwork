@@ -72,7 +72,6 @@ INCLUDEPATH += $$PWD \
 
 HEADERS += \
     ../include/libKitsunemimiHanamiMessaging/hanami_messaging.h \
-    api_docu_generator.h \
     client_handler.h \
     message_handling/message_definitions.h \
     message_handling/permission.h \
@@ -82,7 +81,6 @@ HEADERS += \
     message_handling/messaging_event.h
 
 SOURCES += \
-    api_docu_generator.cpp \
     client_handler.cpp \
     hanami_messaging.cpp \
     message_handling/messaging_event_queue.cpp \

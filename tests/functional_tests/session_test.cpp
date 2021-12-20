@@ -122,9 +122,6 @@ Session_Test::runTest()
                                      true,
                                      getTestEndpoints()), false);
 
-    std::string docu = "";
-    messaging->generateDocu(docu);
-    std::cout<<docu<<std::endl;
 
     DataMap inputValues;
     inputValues.insert("input", new DataValue(42));
