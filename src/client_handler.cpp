@@ -1,3 +1,25 @@
+/**
+ * @file        client_handler.cpp
+ *
+ * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
+ *
+ * @copyright   Apache License Version 2.0
+ *
+ *      Copyright 2020 Tobias Anker
+ *
+ *      Licensed under the Apache License, Version 2.0 (the "License");
+ *      you may not use this file except in compliance with the License.
+ *      You may obtain a copy of the License at
+ *
+ *          http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *      Unless required by applicable law or agreed to in writing, software
+ *      distributed under the License is distributed on an "AS IS" BASIS,
+ *      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *      See the License for the specific language governing permissions and
+ *      limitations under the License.
+ */
+
 #include "client_handler.h"
 #include <callbacks.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
@@ -9,6 +31,11 @@ namespace Hanami
 ClientHandler* ClientHandler::m_instance = nullptr;
 Kitsunemimi::Sakura::SessionController* ClientHandler::m_sessionController = nullptr;
 
+/**
+ * @brief constructor
+ *
+ * @param localIdentifier name for the lokal component for identification against other components
+ */
 ClientHandler::ClientHandler(const std::string &localIdentifier)
     : Kitsunemimi::Thread("HanamiClientHandler")
 {
@@ -19,9 +46,11 @@ ClientHandler::ClientHandler(const std::string &localIdentifier)
 }
 
 /**
- * @brief ClientHandler::connectClient
- * @param info
- * @param error
+ * @brief create a new connection to a client
+ *
+ * @param info object with all information for the connection
+ * @param error reference for error-ourput
+ *
  * @return
  */
 bool
@@ -34,9 +63,10 @@ ClientHandler::connectClient(ClientInformation &info,
               + info.address
               + "\"");
 
-    const std::regex ipv4Regex("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
-
     Kitsunemimi::Sakura::Session* newSession = nullptr;
+
+    // connect based on the address-type
+    const std::regex ipv4Regex("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
     if(regex_match(info.address, ipv4Regex))
     {
         newSession = m_sessionController->startTcpSession(info.address,
@@ -53,10 +83,12 @@ ClientHandler::connectClient(ClientInformation &info,
                                                                  error);
     }
 
+    // check if connection was successful
     if(newSession == nullptr) {
         return false;
     }
 
+    // handle result
     newSession->m_sessionIdentifier = info.remoteIdentifier;
     info.session = newSession;
 
@@ -67,19 +99,20 @@ ClientHandler::connectClient(ClientInformation &info,
 /**
  * @brief forward callback to close session
  *
-* @param remoteIdentifier name of the client for later identification
+ * @param identifier name of the client for later identification
+ * @param earseFromList set to true to avoid reconnects
  */
 bool
-ClientHandler::closeClient(const std::string &remoteIdentifier,
+ClientHandler::closeClient(const std::string &identifier,
                            ErrorContainer &,
                            const bool earseFromList)
 {
-    LOG_DEBUG("close client with remote-identifier \"" + remoteIdentifier + "\"");
+    LOG_DEBUG("close client with remote-identifier \"" + identifier + "\"");
 
     std::lock_guard<std::mutex> guard(m_outgoinglock);
 
     std::map<std::string, ClientInformation>::iterator it;
-    it = m_outgoingClients.find(remoteIdentifier);
+    it = m_outgoingClients.find(identifier);
     if(it != m_outgoingClients.end())
     {
         if(it->second.session != nullptr)
@@ -90,7 +123,7 @@ ClientHandler::closeClient(const std::string &remoteIdentifier,
             }
 
             LOG_DEBUG("schedule client with remote-identifier \""
-                      + remoteIdentifier
+                      + identifier
                       + "\" for deletion");
             m_deletionMutex.lock();
             m_forDeletion.push_back(it->second.session);
@@ -109,9 +142,11 @@ ClientHandler::closeClient(const std::string &remoteIdentifier,
 }
 
 /**
- * @brief ClientHandler::waitForAllConnected
- * @param timeout
- * @return
+ * @brief wait until all outging connections are connected
+ *
+ * @param timeout number of seconds to wait for a timeout
+ *
+ * @return true, if all are connected, else false
  */
 bool
 ClientHandler::waitForAllConnected(const uint32_t timeout)
@@ -150,10 +185,12 @@ ClientHandler::waitForAllConnected(const uint32_t timeout)
 }
 
 /**
- * @brief ClientHandler::addInternalClient
- * @param identifier
- * @param newClient
- * @return
+ * @brief register an incoming connection
+ *
+ * @param identifier identifier for the new incoming connection
+ * @param newClient pointer to the session
+ *
+ * @return true, if successful, else false
  */
 bool
 ClientHandler::addInternalClient(const std::string &identifier,
@@ -185,9 +222,11 @@ ClientHandler::addInternalClient(const std::string &identifier,
 }
 
 /**
- * @brief ClientHandler::removeInternalClient
- * @param identifier
- * @return
+ * @brief remove the client of an incoming connection
+ *
+ * @param identifier identifier for the internal client
+ *
+ * @return true, if successful, else false
  */
 bool
 ClientHandler::removeInternalClient(const std::string &identifier)
@@ -224,11 +263,13 @@ ClientHandler::removeInternalClient(const std::string &identifier)
 }
 
 /**
- * @brief ClientHandler::addOutgoingClient
- * @param remoteIdentifier
- * @param address
- * @param port
- * @return
+ * @brief register a outgoing connection
+ *
+ * @param remoteIdentifier indentifier for the connection
+ * @param address address of the target
+ * @param port port in case of a tcp-connection
+ *
+ * @return true, if successful, else false
  */
 bool
 ClientHandler::addOutgoingClient(const std::string &remoteIdentifier,
@@ -254,17 +295,19 @@ ClientHandler::addOutgoingClient(const std::string &remoteIdentifier,
 }
 
 /**
- * @brief ClientHandler::getSession
- * @param target
- * @return
+ * @brief request the session of an outgoing connection
+ *
+ * @param identifier identifier of the connection
+ *
+ * @return nullptr, if session for the identifier was not found, else pointer to the found session
  */
 Sakura::Session*
-ClientHandler::getSession(const std::string &target)
+ClientHandler::getSession(const std::string &identifier)
 {
     std::lock_guard<std::mutex> guard(m_outgoinglock);
 
     std::map<std::string, ClientInformation>::const_iterator it;
-    it = m_outgoingClients.find(target);
+    it = m_outgoingClients.find(identifier);
     if(it != m_outgoingClients.end()) {
         return it->second.session;
     }
@@ -273,17 +316,18 @@ ClientHandler::getSession(const std::string &target)
 }
 
 /**
- * @brief ClientHandler::run
+ * @brief thread to close and delete connections, which are marked by a close-call or timeout,
+ *        and to reconnect outgoing connections
  */
 void
 ClientHandler::run()
 {
-    ErrorContainer error;
     while(m_abort == false)
     {
         m_outgoinglock.lock();
         m_deletionMutex.lock();
 
+        // close marked sessions
         for(Sakura::Session* session : m_forDeletion)
         {
             LOG_DEBUG("delete session '" + session->m_sessionIdentifier + "'");
@@ -293,6 +337,7 @@ ClientHandler::run()
 
         m_deletionMutex.unlock();
 
+        // reconnect outgoing connections
         std::map<std::string, ClientInformation>::iterator it;
         for(it = m_outgoingClients.begin();
             it != m_outgoingClients.end();
@@ -300,19 +345,19 @@ ClientHandler::run()
         {
             if(it->second.session == nullptr)
             {
+                ErrorContainer error;
                 if(connectClient(it->second, error) == false)
                 {
                     error.addMeesage("create connection to '" + it->first + "' failed");
                     error.addSolution("check if component '" + it->first + "' is up and running.");
                     LOG_ERROR(error);
-                    error._errorMessages.clear();
-                    error._possibleSolution.clear();
                 }
             }
         }
 
         m_outgoinglock.unlock();
 
+        // wait for 100ms
         sleepThread(100000);
     }
 }

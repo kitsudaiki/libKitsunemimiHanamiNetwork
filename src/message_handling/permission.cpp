@@ -40,15 +40,15 @@ namespace Kitsunemimi
 namespace Hanami
 {
 /**
- * @brief checkPermission
+ * @brief check if a token is valid and parse the token
  *
- * @param context
- * @param token
- * @param status
- * @param skipPermission
- * @param error
+ * @param context reference for the parsed information of the token
+ * @param token token to check
+ * @param status reference for status-output
+ * @param skipPermission set to true to only parse the jwt-token without check permission
+ * @param error reference for error-output
  *
- * @return
+ * @return true, if successful, else false
  */
 bool
 checkPermission(DataMap &context,
@@ -95,14 +95,14 @@ checkPermission(DataMap &context,
 }
 
 /**
- * @brief MessagingEvent::getPermission
+ * @brief send request to misaka to check and parse a jwt-token
  *
- * @param parsedResult
- * @param token
- * @param status
- * @param error
+ * @param parsedResult reference for the parsed result
+ * @param token token to check and to parse
+ * @param status reference for status-output
+ * @param error reference for error-output
  *
- * @return
+ * @return true, if successful, else false
  */
 bool
 getPermission(Json::JsonItem &parsedResult,
@@ -110,10 +110,11 @@ getPermission(Json::JsonItem &parsedResult,
               Sakura::BlossomStatus &status,
               ErrorContainer &error)
 {
-    Kitsunemimi::Hanami::RequestMessage requestMsg;
     Kitsunemimi::Hanami::ResponseMessage responseMsg;
     Hanami::HanamiMessaging* messaging = Hanami::HanamiMessaging::getInstance();
 
+    // create request
+    Kitsunemimi::Hanami::RequestMessage requestMsg;
     requestMsg.id = "v1/auth";
     requestMsg.httpType = HttpRequestType::GET_TYPE;
     requestMsg.inputValues = "{\"token\":\"" + token + "\"}";

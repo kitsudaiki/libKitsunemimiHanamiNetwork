@@ -68,9 +68,10 @@ private:
                              const uint64_t blockerId,
                              ErrorContainer &error);
     bool trigger(DataMap &resultingItems,
-                 Json::JsonItem &newItem,
+                 Json::JsonItem &inputValues,
                  Sakura::BlossomStatus &status,
-                 const EndpointEntry &entry);
+                 const EndpointEntry &entry,
+                 ErrorContainer &error);
 };
 
 }  // namespace Hanami

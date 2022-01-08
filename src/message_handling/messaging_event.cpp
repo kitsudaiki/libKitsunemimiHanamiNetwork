@@ -72,9 +72,11 @@ MessagingEvent::~MessagingEvent() {}
  * @brief send reponse message with the results of the event
  *
  * @param success success-result of the event
+ * @param responseType response http-type
  * @param message message to send over the response
  * @param session pointer to session to send the response back
  * @param blockerId blocker-id for the response
+ * @param error reference for error-output
  */
 void
 MessagingEvent::sendResponseMessage(const bool success,
@@ -109,28 +111,32 @@ MessagingEvent::sendResponseMessage(const bool success,
 }
 
 /**
- * @brief MessagingEvent::trigger
- * @param newItem
- * @param status
- * @param entry
- * @return
+ * @brief trigger remote blossom or tree
+ *
+ * @param resultingItems reference for the result of the trigger
+ * @param inputValues input-values for the trigger
+ * @param status reference for status-output
+ * @param entry entpoint-entry to identify the target
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
 MessagingEvent::trigger(DataMap &resultingItems,
-                        Json::JsonItem &newItem,
+                        Json::JsonItem &inputValues,
                         Sakura::BlossomStatus &status,
-                        const EndpointEntry &entry)
+                        const EndpointEntry &entry,
+                        ErrorContainer &error)
 {
     SakuraLangInterface* langInterface = SakuraLangInterface::getInstance();
-    ErrorContainer error;
     DataMap context;
 
-    const std::string token = newItem["token"].getString();
+    const std::string token = inputValues["token"].getString();
     // token is moved into the context object, so to not break the check of the input-fileds of the
     // blossoms, we have to remove this here again
     // TODO: handle context in a separate field in the messaging
     if(m_targetId != "v1/auth") {
-        newItem.remove("token");
+        inputValues.remove("token");
     }
 
     const bool skipPermission = m_session->m_sessionIdentifier != "torii";
@@ -143,21 +149,21 @@ MessagingEvent::trigger(DataMap &resultingItems,
         if(entry.type == TREE_TYPE)
         {
             return langInterface->triggerTree(resultingItems,
-                                             entry.name,
-                                             context,
-                                             *newItem.getItemContent()->toMap(),
-                                             status,
-                                             error);
+                                              entry.name,
+                                              context,
+                                              *inputValues.getItemContent()->toMap(),
+                                              status,
+                                              error);
         }
         else
         {
             return langInterface->triggerBlossom(resultingItems,
-                                                entry.name,
-                                                entry.group,
-                                                context,
-                                                *newItem.getItemContent()->toMap(),
-                                                status,
-                                                error);
+                                                 entry.name,
+                                                 entry.group,
+                                                 context,
+                                                 *inputValues.getItemContent()->toMap(),
+                                                 status,
+                                                 error);
         }
     }
 
@@ -177,8 +183,8 @@ MessagingEvent::processEvent()
     ErrorContainer error;
 
     // parse json-formated input values
-    Kitsunemimi::Json::JsonItem newItem;
-    if(newItem.parse(m_inputValues, error) == false)
+    Kitsunemimi::Json::JsonItem inputValues;
+    if(inputValues.parse(m_inputValues, error) == false)
     {
         LOG_ERROR(error);
         sendResponseMessage(false,
@@ -215,7 +221,7 @@ MessagingEvent::processEvent()
     // execute trigger
     Sakura::BlossomStatus status;
     DataMap resultingItems;
-    ret = trigger(resultingItems, newItem, status, entry);
+    ret = trigger(resultingItems, inputValues, status, entry, error);
 
     // creating and send reposonse with the result of the event
     const HttpResponseTypes type = static_cast<HttpResponseTypes>(status.statusCode);

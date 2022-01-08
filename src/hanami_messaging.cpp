@@ -58,7 +58,7 @@ HanamiMessaging::HanamiMessaging() {}
 HanamiMessaging::~HanamiMessaging() {}
 
 /**
- * @brief HanamiMessaging::fillSupportOverview
+ * @brief fill overview with all configured components
  */
 void
 HanamiMessaging::fillSupportOverview()
@@ -88,10 +88,12 @@ HanamiMessaging::fillSupportOverview()
 }
 
 /**
- * @brief HanamiMessaging::initEndpoints
- * @param error
- * @param predefinedEndpoints
- * @return
+ * @brief initalize endpoints
+ *
+ * @param error reference for error-output
+ * @param predefinedEndpoints optional string with a predefined endpoint-file for testing
+ *
+ * @return true, if successful, else false
  */
 bool
 HanamiMessaging::initEndpoints(ErrorContainer &error,
@@ -123,10 +125,12 @@ HanamiMessaging::initEndpoints(ErrorContainer &error,
 }
 
 /**
- * @brief HanamiMessaging::initServer
- * @param error
- * @param predefinedEndpoints
- * @return
+ * @brief initailize new server
+ *
+ * @param error reference for error-output
+ * @param predefinedEndpoints optional string with a predefined endpoint-file for testing
+ *
+ * @return true, if successful, else false
  */
 bool
 HanamiMessaging::initServer(ErrorContainer &error,
@@ -136,6 +140,7 @@ HanamiMessaging::initServer(ErrorContainer &error,
     const std::regex ipv4Regex("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
     const std::string serverAddress = GET_STRING_CONFIG("DEFAULT", "address", success);
 
+    // init endpoints
     if(initEndpoints(error, predefinedEndpoints) == false) {
         return false;
     }
@@ -169,9 +174,11 @@ HanamiMessaging::initServer(ErrorContainer &error,
 }
 
 /**
- * @brief HanamiMessaging::initClients
- * @param configGroups
- * @return
+ * @brief initalize client-connections
+ *
+ * @param list of groups in config-file
+ *
+ * @return true, if successful, else false
  */
 bool
 HanamiMessaging::initClients(const std::vector<std::string> &configGroups)
@@ -202,7 +209,10 @@ HanamiMessaging::initClients(const std::vector<std::string> &configGroups)
  *
  * @param localIdentifier identifier for outgoing sessions to identify against the servers
  * @param configGroups config-groups for automatic creation of server and clients
+ * @param receiver receiver for handling of intneral steam-messages within the callback-function
+ * @param error callbacks for incoming stream-messages
  * @param createServer true, if the instance should also create a server
+ * @param predefinedEndpoints
  *
  * @return true, if successful, else false
  */
@@ -265,12 +275,13 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
 }
 
 /**
- * @brief HanamiMessaging::sendStreamMessage
- * @param target
- * @param data
- * @param dataSize
- * @param replyExpected
- * @return
+ * @brief send stream-message over a client
+ *
+ * @param target name of the client to trigger
+ * @param data stack-buffer to send
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
 HanamiMessaging::sendStreamMessage(const std::string &target,
@@ -300,12 +311,15 @@ HanamiMessaging::sendStreamMessage(const std::string &target,
 }
 
 /**
- * @brief HanamiMessaging::sendStreamMessage
- * @param target
- * @param data
- * @param dataSize
- * @param error
- * @return
+ * @brief send stream-message over a client
+ *
+ * @param target name of the client to trigger
+ * @param data pointer to the data to send
+ * @param dataSize size of data in bytes to send
+ * @param replyExpected true to expect a reply-message
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
 HanamiMessaging::sendStreamMessage(const std::string &target,
@@ -329,12 +343,14 @@ HanamiMessaging::sendStreamMessage(const std::string &target,
 }
 
 /**
- * @brief HanamiMessaging::triggerSakuraFile
- * @param target
- * @param response
- * @param request
- * @param error
- * @return
+ * @brief trigger remote action
+ *
+ * @param target name of the client to trigger
+ * @param response reference for the response
+ * @param request request-information to identify the target-action on the remote host
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
 HanamiMessaging::triggerSakuraFile(const std::string &target,
@@ -369,10 +385,12 @@ HanamiMessaging::triggerSakuraFile(const std::string &target,
 }
 
 /**
- * @brief HanamiMessaging::closeClient
- * @param remoteIdentifier
- * @param error
- * @return
+ * @brief close a client
+ *
+ * @param remoteIdentifier identifier for the client to close
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
  */
 bool
 HanamiMessaging::closeClient(const std::string &remoteIdentifier,
