@@ -6,18 +6,19 @@
 
 name | repository | version | task
 --- | --- | --- | ---
-g++ | g++ | >= 6.0 | Compiler for the C++ code.
+g++ | g++ | >= 8.0 | Compiler for the C++ code.
 make | make | >= 4.0 | process the make-file, which is created by qmake to build the programm with g++
 qmake | qt5-qmake | >= 5.0 | This package provides the tool qmake, which is similar to cmake and create the make-file for compilation.
 FLEX | flex | >= 2.6 | Build the lexer-code for all used parser.
 GNU Bison | bison | 3.x | Build the parser-code together with the lexer-code.
 ssl library | libssl-dev | >= 1.1 | encryption for tls connections
-
+uuid | uuid-dev | >= 2.34 | generate uuid's
+crpyto++ | libcrypto++-dev | >= 5.6 | provides encryption-functions like AES
 
 Installation on Ubuntu/Debian:
 
 ```bash
-sudo apt-get install g++ make qt5-qmake flex bison  libssl-dev
+sudo apt-get install g++ make qt5-qmake flex bison libssl-dev uuid-dev libcrypto++-dev
 ```
 
 IMPORTANT: All my projects are only tested on Linux. 
@@ -26,15 +27,21 @@ IMPORTANT: All my projects are only tested on Linux.
 
 Repository-Name | Version-Tag | Download-Path
 --- | --- | ---
-libKitsunemimiCommon | v0.18.0 |  https://github.com/kitsudaiki/libKitsunemimiCommon.git
-libKitsunemimiPersistence | v0.10.2 |  https://github.com/kitsudaiki/libKitsunemimiPersistence.git
-libKitsunemimiJson | v0.10.6 |  https://github.com/kitsudaiki/libKitsunemimiJson.git
-libKitsunemimiJinja2 | v0.8.1 |  https://github.com/kitsudaiki/libKitsunemimiJinja2.git
-libKitsunemimiIni | v0.4.7 |  https://github.com/kitsudaiki/libKitsunemimiIni.git
-libKitsunemimiConfig | v0.2.4 |  https://github.com/kitsudaiki/libKitsunemimiConfig.git
-libKitsunemimiSakuraLang | v0.8.0 |  https://github.com/kitsudaiki/libKitsunemimiSakuraLang.git
-libKitsunemimiNetwork | v0.6.6 |  https://github.com/kitsudaiki/libKitsunemimiNetwork.git
-libKitsunemimiSakuraNetwork | v0.7.0 |  https://github.com/kitsudaiki/libKitsunemimiSakuraNetwork.git
+libKitsunemimiCommon | v0.25.1 |  https://github.com/kitsudaiki/libKitsunemimiCommon.git
+libKitsunemimiJson | v0.11.3 |  https://github.com/kitsudaiki/libKitsunemimiJson.git
+libKitsunemimiJinja2 | v0.9.1 |  https://github.com/kitsudaiki/libKitsunemimiJinja2.git
+libKitsunemimiIni | v0.5.1 |  https://github.com/kitsudaiki/libKitsunemimiIni.git
+libKitsunemimiNetwork | v0.8.2 |  https://github.com/kitsudaiki/libKitsunemimiNetwork.git
+libKitsunemimiArgs | v0.4.0 |  https://github.com/kitsudaiki/libKitsunemimiArgs.git
+libKitsunemimiConfig | v0.4.0 |  https://github.com/kitsudaiki/libKitsunemimiConfig.git
+libKitsunemimiCrypto | v0.2.0 |  -
+libKitsunemimiJwt | v0.4.1 |  -
+libKitsunemimiSakuraNetwork | v0.8.2 |  https://github.com/kitsudaiki/libKitsunemimiSakuraNetwork.git
+libKitsunemimiSakuraLang | v0.12.0 |  https://github.com/kitsudaiki/libKitsunemimiSakuraLang.git
+libKitsunemimiHanamiCommon | v0.1.0 |  -
+libKitsunemimiHanamiEndpoints | v0.1.0 |  -
+
+
 
 HINT: These Kitsunemimi-Libraries will be downloaded and build automatically with the build-script below.
 

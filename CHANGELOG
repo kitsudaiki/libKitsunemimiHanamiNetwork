@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0] - 2022-01-09
+
+### Added
+- reconnect-functionality for connections
+- jwt-token validation for incoming messages
+- use endpoint-definitions to map requests to targets
+
+### Changed
+- updated initializing process
+
+### Fixed
+- different fixes to improve stability
+
+
 ## [0.1.0] - 2021-09-26
 
 ### Added
