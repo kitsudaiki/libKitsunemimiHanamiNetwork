@@ -1,2 +1,8 @@
 # Changelog
 
+## [0.1.0] - 2021-09-26
+
+### Added
+- content of the old libKitsunemimiSakuraMessaging-repo
+    -  basic project-specific wrapper for libKitsunemimiSakuraNetwork
+
