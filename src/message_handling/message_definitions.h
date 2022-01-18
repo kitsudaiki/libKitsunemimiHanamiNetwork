@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_SAKURA_MESSAGING_MESSAGE_DEFINITIONS_H
-#define KITSUNEMIMI_SAKURA_MESSAGING_MESSAGE_DEFINITIONS_H
+#ifndef KITSUNEMIMI_HANAMI_MESSAGING_MESSAGE_DEFINITIONS_H
+#define KITSUNEMIMI_HANAMI_MESSAGING_MESSAGE_DEFINITIONS_H
 
 #include <stdint.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -56,4 +56,4 @@ struct ResponseHeader
 }  // namespace Hanami
 }  // namespace Kitsunemimi
 
-#endif // KITSUNEMIMI_SAKURA_MESSAGING_MESSAGE_DEFINITIONS_H
+#endif // KITSUNEMIMI_HANAMI_MESSAGING_MESSAGE_DEFINITIONS_H

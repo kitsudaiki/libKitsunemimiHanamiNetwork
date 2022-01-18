@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_SAKURA_MESSAGING_CALLBACKS_H
-#define KITSUNEMIMI_SAKURA_MESSAGING_CALLBACKS_H
+#ifndef KITSUNEMIMI_HANAMI_MESSAGING_CALLBACKS_H
+#define KITSUNEMIMI_HANAMI_MESSAGING_CALLBACKS_H
 
 #include <iostream>
 
@@ -167,4 +167,4 @@ sessionCloseCallback(Kitsunemimi::Sakura::Session* session,
 }  // namespace Hanami
 }  // namespace Kitsunemimi
 
-#endif // KITSUNEMIMI_SAKURA_MESSAGING_CALLBACKS_H
+#endif // KITSUNEMIMI_HANAMI_MESSAGING_CALLBACKS_H
