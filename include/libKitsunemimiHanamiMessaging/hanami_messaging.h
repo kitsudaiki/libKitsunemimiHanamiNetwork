@@ -80,6 +80,9 @@ public:
     bool closeClient(const std::string &remoteIdentifier,
                      ErrorContainer &error);
 
+    Sakura::Session* getOutgoingSession(const std::string identifier);
+    Sakura::Session* getIncomingSession(const std::string identifier);
+
 private:
     HanamiMessaging();
 
