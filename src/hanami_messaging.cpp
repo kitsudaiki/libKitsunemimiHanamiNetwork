@@ -289,7 +289,7 @@ HanamiMessaging::sendStreamMessage(const std::string &target,
                                    ErrorContainer &error)
 {
     // get target-client
-    Sakura::Session* client = ClientHandler::m_instance->getSession(target);
+    Sakura::Session* client = ClientHandler::m_instance->getOutgoingSession(target);
     if(client == nullptr) {
         return false;
     }
@@ -329,7 +329,7 @@ HanamiMessaging::sendStreamMessage(const std::string &target,
                                    ErrorContainer &error)
 {
     // get target-client
-    Sakura::Session* client = ClientHandler::m_instance->getSession(target);
+    Sakura::Session* client = ClientHandler::m_instance->getOutgoingSession(target);
     if(client == nullptr) {
         return false;
     }
@@ -360,7 +360,7 @@ HanamiMessaging::triggerSakuraFile(const std::string &target,
 {
     LOG_DEBUG("trigger sakura-file \'" + request.id + "\' on target \'" + target + "\'");
 
-    Sakura::Session* client = ClientHandler::m_instance->getSession(target);
+    Sakura::Session* client = ClientHandler::m_instance->getOutgoingSession(target);
 
     // check if target was found
     if(client == nullptr)
@@ -397,6 +397,32 @@ HanamiMessaging::closeClient(const std::string &remoteIdentifier,
                              ErrorContainer &error)
 {
     return ClientHandler::m_instance->closeClient(remoteIdentifier, error, true);
+}
+
+/**
+ * @brief get pointer of a specific outgoing session
+ *
+ * @param identifier name of the requested session
+ *
+ * @return nullptr, if session not found, else pointer to session
+ */
+Sakura::Session*
+HanamiMessaging::getOutgoingSession(const std::string identifier)
+{
+    return ClientHandler::m_instance->getOutgoingSession(identifier);
+}
+
+/**
+ * @brief get pointer of a specific incoming session
+ *
+ * @param identifier name of the requested session
+ *
+ * @return nullptr, if session not found, else pointer to session
+ */
+Sakura::Session*
+HanamiMessaging::getIncomingSession(const std::string identifier)
+{
+    return ClientHandler::m_instance->getIncomingSession(identifier);
 }
 
 /**

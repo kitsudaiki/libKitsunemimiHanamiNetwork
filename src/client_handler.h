@@ -61,7 +61,8 @@ public:
     bool addOutgoingClient(const std::string &remoteIdentifier,
                            const std::string &address,
                            const uint16_t port);
-    Sakura::Session* getSession(const std::string &identifier);
+    Sakura::Session* getOutgoingSession(const std::string &identifier);
+    Sakura::Session* getIncomingSession(const std::string &identifier);
     bool closeClient(const std::string &identifier,
                      ErrorContainer &error,
                      const bool earseFromList);

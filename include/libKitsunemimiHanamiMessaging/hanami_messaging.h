@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_SAKURA_MESSAGING_MESSAGING_CONTROLLER_H
-#define KITSUNEMIMI_SAKURA_MESSAGING_MESSAGING_CONTROLLER_H
+#ifndef KITSUNEMIMI_HANAMI_MESSAGING_MESSAGING_CONTROLLER_H
+#define KITSUNEMIMI_HANAMI_MESSAGING_MESSAGING_CONTROLLER_H
 
 #include <iostream>
 #include <map>
@@ -80,6 +80,9 @@ public:
     bool closeClient(const std::string &remoteIdentifier,
                      ErrorContainer &error);
 
+    Sakura::Session* getOutgoingSession(const std::string identifier);
+    Sakura::Session* getIncomingSession(const std::string identifier);
+
 private:
     HanamiMessaging();
 
@@ -99,4 +102,4 @@ private:
 }  // namespace Hanami
 }  // namespace Kitsunemimi
 
-#endif // KITSUNEMIMI_SAKURA_MESSAGING_MESSAGING_CONTROLLER_H
+#endif // KITSUNEMIMI_HANAMI_MESSAGING_MESSAGING_CONTROLLER_H

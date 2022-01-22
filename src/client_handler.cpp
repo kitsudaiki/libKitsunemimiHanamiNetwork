@@ -302,7 +302,7 @@ ClientHandler::addOutgoingClient(const std::string &remoteIdentifier,
  * @return nullptr, if session for the identifier was not found, else pointer to the found session
  */
 Sakura::Session*
-ClientHandler::getSession(const std::string &identifier)
+ClientHandler::getOutgoingSession(const std::string &identifier)
 {
     std::lock_guard<std::mutex> guard(m_outgoinglock);
 
@@ -310,6 +310,27 @@ ClientHandler::getSession(const std::string &identifier)
     it = m_outgoingClients.find(identifier);
     if(it != m_outgoingClients.end()) {
         return it->second.session;
+    }
+
+    return nullptr;
+}
+
+/**
+ * @brief request the session of an incoming connection
+ *
+ * @param identifier identifier of the connection
+ *
+ * @return nullptr, if session for the identifier was not found, else pointer to the found session
+ */
+Sakura::Session*
+ClientHandler::getIncomingSession(const std::string &identifier)
+{
+    std::lock_guard<std::mutex> guard(m_incominglock);
+
+    std::map<std::string, Sakura::Session*>::const_iterator it;
+    it = m_incomingClients.find(identifier);
+    if(it != m_incomingClients.end()) {
+        return it->second;
     }
 
     return nullptr;

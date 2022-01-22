@@ -20,8 +20,8 @@
  *      limitations under the License.
  */
 
-#ifndef KITSUNEMIMI_SAKURA_MESSAGING_MESSAGE_DEFINITIONS_H
-#define KITSUNEMIMI_SAKURA_MESSAGING_MESSAGE_DEFINITIONS_H
+#ifndef KITSUNEMIMI_HANAMI_MESSAGING_MESSAGE_DEFINITIONS_H
+#define KITSUNEMIMI_HANAMI_MESSAGING_MESSAGE_DEFINITIONS_H
 
 #include <stdint.h>
 #include <libKitsunemimiHanamiCommon/enums.h>
@@ -34,9 +34,6 @@ namespace Hanami
 enum MessageTypes
 {
     SAKURA_TRIGGER_MESSAGE = 0,
-    SAKURA_FILE_MESSAGE = 1,
-    NORMAL_FILE_MESSAGE = 2,
-    TEMPLATE_FILE_MESSAGE = 3,
     RESPONSE_MESSAGE = 4,
 };
 
@@ -46,27 +43,6 @@ struct SakuraTriggerHeader
     HttpRequestType requestType = GET_TYPE;
     uint32_t idSize = 0;
     uint32_t inputValuesSize = 0;
-};
-
-struct SakuraFileHeader
-{
-    const uint8_t type = SAKURA_FILE_MESSAGE;
-    uint32_t idSize = 0;
-    uint32_t sakuraStringSize = 0;
-};
-
-struct NormalFileHeader
-{
-    const uint8_t type = NORMAL_FILE_MESSAGE;
-    uint32_t idSize = 0;
-    uint64_t fileSize = 0;
-};
-
-struct TemplateFileHeader
-{
-    const uint8_t type = TEMPLATE_FILE_MESSAGE;
-    uint32_t idSize = 0;
-    uint32_t templateStringSize = 0;
 };
 
 struct ResponseHeader
@@ -80,4 +56,4 @@ struct ResponseHeader
 }  // namespace Hanami
 }  // namespace Kitsunemimi
 
-#endif // KITSUNEMIMI_SAKURA_MESSAGING_MESSAGE_DEFINITIONS_H
+#endif // KITSUNEMIMI_HANAMI_MESSAGING_MESSAGE_DEFINITIONS_H
