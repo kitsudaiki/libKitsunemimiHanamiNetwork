@@ -64,6 +64,7 @@ public:
                     const std::string &predefinedEndpoints = "");
     bool addServer(const std::string &serverAddress,
                    ErrorContainer &error,
+                   const uint16_t port = 0,
                    const std::string &certFilePath = "",
                    const std::string &keyFilePath = "");
 
