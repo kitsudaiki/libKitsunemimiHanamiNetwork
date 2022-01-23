@@ -129,6 +129,7 @@ HanamiMessaging::initEndpoints(ErrorContainer &error,
  *
  * @param serverAddress address of the new server
  * @param error reference for error-output
+ * @param port of the tcp-server
  * @param certFilePath path to the certificate-file
  * @param keyFilePath path to the key-file
  *
@@ -137,25 +138,22 @@ HanamiMessaging::initEndpoints(ErrorContainer &error,
 bool
 HanamiMessaging::addServer(const std::string &serverAddress,
                            ErrorContainer &error,
+                           const uint16_t port,
                            const std::string &certFilePath,
                            const std::string &keyFilePath)
 {
-    bool success = false;
-    const std::regex ipv4Regex("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
-
     // init server based on the type of the address in the config
+    const std::regex ipv4Regex("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
     if(regex_match(serverAddress, ipv4Regex))
     {
         // create tcp-server
-        const int port = GET_INT_CONFIG("DEFAULT", "port", success);
-        const uint16_t serverPort = static_cast<uint16_t>(port);
-        if(ClientHandler::m_sessionController->addTlsTcpServer(serverPort,
+        if(ClientHandler::m_sessionController->addTlsTcpServer(port,
                                                                certFilePath,
                                                                keyFilePath,
                                                                error) == 0)
         {
             error.addMeesage("can't initialize tcp-server on port "
-                             + std::to_string(serverPort));
+                             + std::to_string(port));
             LOG_ERROR(error);
             return false;
         }
@@ -272,8 +270,12 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
             return false;
         }
 
+        // get port from config
+        const int port = GET_INT_CONFIG("DEFAULT", "port", success);
+        const uint16_t serverPort = static_cast<uint16_t>(port);
+
         // create server
-        if(addServer(serverAddress, error) == false) {
+        if(addServer(serverAddress, error, serverPort) == false) {
             return false;
         }
     }
