@@ -62,6 +62,8 @@ public:
                     ErrorContainer &error,
                     const bool createServer = true,
                     const std::string &predefinedEndpoints = "");
+    bool addServer(const std::string &serverAddress,
+                   ErrorContainer &error);
 
     bool sendStreamMessage(const std::string &target,
                            StackBuffer &data,
@@ -89,8 +91,6 @@ private:
     bool m_isInit = false;
 
     void fillSupportOverview();
-    bool initServer(ErrorContainer &error,
-                    const std::string &predefinedEndpoints = "");
     bool initClients(const std::vector<std::string> &configGroups);
     bool initEndpoints(ErrorContainer &error,
                        const std::string &predefinedEndpoints);
