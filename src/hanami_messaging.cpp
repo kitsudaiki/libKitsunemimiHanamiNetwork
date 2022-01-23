@@ -125,25 +125,19 @@ HanamiMessaging::initEndpoints(ErrorContainer &error,
 }
 
 /**
- * @brief initailize new server
+ * @brief add new server
  *
+ * @param serverAddress address of the new server
  * @param error reference for error-output
- * @param predefinedEndpoints optional string with a predefined endpoint-file for testing
  *
  * @return true, if successful, else false
  */
 bool
-HanamiMessaging::initServer(ErrorContainer &error,
-                            const std::string &predefinedEndpoints)
+HanamiMessaging::addServer(const std::string &serverAddress,
+                            ErrorContainer &error)
 {
     bool success = false;
     const std::regex ipv4Regex("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
-    const std::string serverAddress = GET_STRING_CONFIG("DEFAULT", "address", success);
-
-    // init endpoints
-    if(initEndpoints(error, predefinedEndpoints) == false) {
-        return false;
-    }
 
     // init server based on the type of the address in the config
     if(regex_match(serverAddress, ipv4Regex))
@@ -259,7 +253,20 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
     // init server if requested
     if(createServer)
     {
-        if(initServer(error, predefinedEndpoints) == false) {
+        // get server-address from config
+        bool success = false;
+        const std::string serverAddress = GET_STRING_CONFIG("DEFAULT", "address", success);
+        if(success == false) {
+            return false;
+        }
+
+        // init endpoints
+        if(initEndpoints(error, predefinedEndpoints) == false) {
+            return false;
+        }
+
+        // create server
+        if(addServer(serverAddress, error) == false) {
             return false;
         }
     }
