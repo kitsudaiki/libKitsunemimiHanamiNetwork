@@ -129,12 +129,16 @@ HanamiMessaging::initEndpoints(ErrorContainer &error,
  *
  * @param serverAddress address of the new server
  * @param error reference for error-output
+ * @param certFilePath path to the certificate-file
+ * @param keyFilePath path to the key-file
  *
  * @return true, if successful, else false
  */
 bool
 HanamiMessaging::addServer(const std::string &serverAddress,
-                            ErrorContainer &error)
+                           ErrorContainer &error,
+                           const std::string &certFilePath,
+                           const std::string &keyFilePath)
 {
     bool success = false;
     const std::regex ipv4Regex("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
@@ -145,7 +149,10 @@ HanamiMessaging::addServer(const std::string &serverAddress,
         // create tcp-server
         const int port = GET_INT_CONFIG("DEFAULT", "port", success);
         const uint16_t serverPort = static_cast<uint16_t>(port);
-        if(ClientHandler::m_sessionController->addTcpServer(serverPort, error) == 0)
+        if(ClientHandler::m_sessionController->addTlsTcpServer(serverPort,
+                                                               certFilePath,
+                                                               keyFilePath,
+                                                               error) == 0)
         {
             error.addMeesage("can't initialize tcp-server on port "
                              + std::to_string(serverPort));

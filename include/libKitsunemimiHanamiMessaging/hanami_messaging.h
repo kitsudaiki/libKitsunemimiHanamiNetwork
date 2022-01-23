@@ -63,7 +63,9 @@ public:
                     const bool createServer = true,
                     const std::string &predefinedEndpoints = "");
     bool addServer(const std::string &serverAddress,
-                   ErrorContainer &error);
+                   ErrorContainer &error,
+                   const std::string &certFilePath = "",
+                   const std::string &keyFilePath = "");
 
     bool sendStreamMessage(const std::string &target,
                            StackBuffer &data,
