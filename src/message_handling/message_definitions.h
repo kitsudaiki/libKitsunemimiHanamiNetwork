@@ -34,6 +34,7 @@ namespace Hanami
 enum MessageTypes
 {
     SAKURA_TRIGGER_MESSAGE = 0,
+    SAKURA_GENERIC_MESSAGE = 1,
     RESPONSE_MESSAGE = 4,
 };
 
@@ -43,6 +44,12 @@ struct SakuraTriggerHeader
     HttpRequestType requestType = GET_TYPE;
     uint32_t idSize = 0;
     uint32_t inputValuesSize = 0;
+};
+
+struct SakuraGenericHeader
+{
+    const uint8_t type = SAKURA_GENERIC_MESSAGE;
+    uint32_t size = 0;
 };
 
 struct ResponseHeader

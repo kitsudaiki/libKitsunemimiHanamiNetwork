@@ -94,7 +94,21 @@ standaloneDataCallback(void*,
         MessagingEventQueue::getInstance()->addEventToQueue(event);
     }
     //==============================================================================================
+    if(type == SAKURA_GENERIC_MESSAGE)
+    {
+        // prepare message
+        const SakuraGenericHeader* header =
+                static_cast<const SakuraGenericHeader*>(data->data);
+        const char* message = static_cast<const char*>(data->data);
 
+        // get id
+        uint32_t pos = sizeof (SakuraGenericHeader);
+        const void* content = &message[pos];
+        const uint32_t size = header->size;
+
+        ClientHandler::m_instance->processGenericRequest(session, content, size, blockerId);
+    }
+    //==============================================================================================
     // TODO: error when unknown
 
     delete data;

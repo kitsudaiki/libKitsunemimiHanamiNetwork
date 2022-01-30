@@ -147,9 +147,8 @@ HanamiMessaging::addServer(const std::string &serverAddress,
     if(regex_match(serverAddress, ipv4Regex))
     {
         // create tcp-server
-        if(ClientHandler::m_sessionController->addTlsTcpServer(port,
-                                                               certFilePath,
-                                                               keyFilePath,
+        if(ClientHandler::m_sessionController->addTcpServer(port,
+
                                                                error) == 0)
         {
             error.addMeesage("can't initialize tcp-server on port "
@@ -209,6 +208,8 @@ HanamiMessaging::initClients(const std::vector<std::string> &configGroups)
  * @param localIdentifier identifier for outgoing sessions to identify against the servers
  * @param configGroups config-groups for automatic creation of server and clients
  * @param receiver receiver for handling of intneral steam-messages within the callback-function
+ * @param processStream callback for stream-messages
+ * @param processGenericRequest callback for data-request-messages
  * @param error callbacks for incoming stream-messages
  * @param createServer true, if the instance should also create a server
  * @param predefinedEndpoints
@@ -223,6 +224,10 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
                                                   Sakura::Session*,
                                                   const void*,
                                                   const uint64_t),
+                            void (*processGenericRequest)(Sakura::Session*,
+                                                          const void*,
+                                                          const uint64_t,
+                                                          const uint64_t),
                             ErrorContainer &error,
                             const bool createServer,
                             const std::string &predefinedEndpoints)
@@ -236,6 +241,7 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
     ClientHandler::m_instance = new ClientHandler(localIdentifier);    
     ClientHandler::m_instance->streamReceiver = receiver;
     ClientHandler::m_instance->processStreamData = processStream;
+    ClientHandler::m_instance->processGenericRequest = processGenericRequest;
     ClientHandler::m_instance->startThread();
 
     // check if config-file already initialized
@@ -359,6 +365,51 @@ HanamiMessaging::sendStreamMessage(const std::string &target,
 }
 
 /**
+ * @brief send a generic message over the internal messaging
+ *
+ * @param target name of the client to trigger
+ * @param data pointer to data to send
+ * @param dataSize size of data to send
+ * @param error reference for error-output
+ *
+ * @return pointer to data-buffer with response, if successful, else nullptr
+ */
+DataBuffer*
+HanamiMessaging::sendGenericMessage(const std::string &target,
+                                    const void* data,
+                                    const uint64_t dataSize,
+                                    ErrorContainer &error)
+{
+    LOG_DEBUG("send generic request to target \'" + target + "\'");
+
+    // get client
+    Sakura::Session* client = ClientHandler::m_instance->getOutgoingSession(target);
+    if(client == nullptr)
+    {
+        error.addMeesage("target '" + target + "' for send a generic message not found.");
+        return nullptr;
+    }
+
+    // create header
+    SakuraGenericHeader header;
+    header.size = dataSize;
+
+    // create message
+    const uint64_t bufferSize = sizeof(SakuraGenericHeader) + dataSize;
+    uint8_t* buffer = new uint8_t[bufferSize];
+    memcpy(&buffer[0], &header, sizeof(SakuraGenericHeader));
+    memcpy(&buffer[sizeof(SakuraGenericHeader)], data, dataSize);
+
+    // send
+    DataBuffer* result = client->sendRequest(buffer, bufferSize, 10, error);
+
+    // clear buffer to avoid memory-leak
+    delete[] buffer;
+
+    return result;
+}
+
+/**
  * @brief trigger remote action
  *
  * @param target name of the client to trigger
@@ -376,9 +427,8 @@ HanamiMessaging::triggerSakuraFile(const std::string &target,
 {
     LOG_DEBUG("trigger sakura-file \'" + request.id + "\' on target \'" + target + "\'");
 
+    // get client
     Sakura::Session* client = ClientHandler::m_instance->getOutgoingSession(target);
-
-    // check if target was found
     if(client == nullptr)
     {
         response.success = false;

@@ -76,6 +76,7 @@ public:
 
     void* streamReceiver = nullptr;
     void (*processStreamData)(void*, Sakura::Session*, const void*, const uint64_t);
+    void (*processGenericRequest)(Sakura::Session*, const void*, const uint64_t, const uint64_t);
 
 protected:
     void run();

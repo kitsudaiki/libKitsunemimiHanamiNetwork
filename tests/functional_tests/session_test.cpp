@@ -28,6 +28,7 @@
 
 #include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
 #include <libKitsunemimiSakuraLang/blossom.h>
+#include <libKitsunemimiSakuraNetwork/session.h>
 
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
@@ -84,6 +85,15 @@ Session_Test::initTestCase()
     Kitsunemimi::writeFile("/tmp/test-config.conf", getTestConfig(), error, true);
 }
 
+void dataRequestCallback(Sakura::Session* session,
+                         const void*,
+                         const uint64_t,
+                         const uint64_t blockerId)
+{
+    ErrorContainer error;
+    session->sendResponse(std::string("poi").c_str(), 3, blockerId, error);
+}
+
 void streamDataCallback(void*,
                         Sakura::Session*,
                         const void* data,
@@ -110,6 +120,7 @@ Session_Test::runTest()
                                      groupNames,
                                      Session_Test::m_instance,
                                      &streamDataCallback,
+                                     &dataRequestCallback,
                                      error,
                                      true,
                                      getTestEndpoints()), true);
@@ -118,6 +129,7 @@ Session_Test::runTest()
                                      groupNames,
                                      Session_Test::m_instance,
                                      &streamDataCallback,
+                                     &dataRequestCallback,
                                      error,
                                      true,
                                      getTestEndpoints()), false);
