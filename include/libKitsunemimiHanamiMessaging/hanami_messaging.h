@@ -58,7 +58,14 @@ public:
     bool initialize(const std::string &identifier,
                     const std::vector<std::string> &configGroups,
                     void* receiver,
-                    void (*processStream)(void*, Sakura::Session*, const void*, const uint64_t),
+                    void (*processStream)(void*,
+                                          Sakura::Session*,
+                                          const void*,
+                                          const uint64_t),
+                    void (*processGenericRequest)(Sakura::Session*,
+                                                  const void*,
+                                                  const uint64_t,
+                                                  const uint64_t),
                     ErrorContainer &error,
                     const bool createServer = true,
                     const std::string &predefinedEndpoints = "");
@@ -76,6 +83,11 @@ public:
                            const uint64_t dataSize,
                            const bool replyExpected,
                            ErrorContainer &error);
+
+    DataBuffer* sendGenericMessage(const std::string &target,
+                                   const void* data,
+                                   const uint64_t dataSize,
+                                   ErrorContainer &error);
 
     bool triggerSakuraFile(const std::string &target,
                            ResponseMessage &response,
