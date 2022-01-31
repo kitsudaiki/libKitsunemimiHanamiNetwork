@@ -33,6 +33,9 @@
 
 namespace Kitsunemimi
 {
+namespace Json {
+class JsonItem;
+}
 namespace Sakura {
 class Session;
 class SessionController;
@@ -75,8 +78,13 @@ public:
     bool removeInternalClient(const std::string &identifier);
 
     void* streamReceiver = nullptr;
-    void (*processStreamData)(void*, Sakura::Session*, const void*, const uint64_t);
-    void (*processGenericRequest)(Sakura::Session*, const void*, const uint64_t, const uint64_t);
+    void (*processStreamData)(void*,
+                              Sakura::Session*,
+                              const void*,
+                              const uint64_t);
+    void (*processGenericRequest)(Sakura::Session*,
+                                  const Kitsunemimi::Json::JsonItem&,
+                                  const uint64_t);
 
 protected:
     void run();

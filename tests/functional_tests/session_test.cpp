@@ -85,10 +85,9 @@ Session_Test::initTestCase()
     Kitsunemimi::writeFile("/tmp/test-config.conf", getTestConfig(), error, true);
 }
 
-void dataRequestCallback(Sakura::Session* session,
-                         const void*,
-                         const uint64_t,
-                         const uint64_t blockerId)
+void genreicMessageCallback(Sakura::Session* session,
+                            const Kitsunemimi::Json::JsonItem&,
+                            const uint64_t blockerId)
 {
     ErrorContainer error;
     session->sendResponse(std::string("poi").c_str(), 3, blockerId, error);
@@ -120,7 +119,7 @@ Session_Test::runTest()
                                      groupNames,
                                      Session_Test::m_instance,
                                      &streamDataCallback,
-                                     &dataRequestCallback,
+                                     &genreicMessageCallback,
                                      error,
                                      true,
                                      getTestEndpoints()), true);
@@ -129,7 +128,7 @@ Session_Test::runTest()
                                      groupNames,
                                      Session_Test::m_instance,
                                      &streamDataCallback,
-                                     &dataRequestCallback,
+                                     &genreicMessageCallback,
                                      error,
                                      true,
                                      getTestEndpoints()), false);
