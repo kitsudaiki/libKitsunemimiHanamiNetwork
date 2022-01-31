@@ -23,20 +23,18 @@
 #ifndef KITSUNEMIMI_HANAMI_MESSAGING_CALLBACKS_H
 #define KITSUNEMIMI_HANAMI_MESSAGING_CALLBACKS_H
 
-#include <iostream>
-
-#include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 #include <message_handling/messaging_event.h>
-
 #include <message_handling/message_definitions.h>
 #include <message_handling/messaging_event_queue.h>
+#include <client_handler.h>
+
+#include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
 
 #include <libKitsunemimiCommon/logger.h>
-
-#include <client_handler.h>
+#include <libKitsunemimiJson/json_item.h>
 
 namespace Kitsunemimi
 {
@@ -102,11 +100,17 @@ standaloneDataCallback(void*,
         const char* message = static_cast<const char*>(data->data);
 
         // get id
+        ErrorContainer error;
         uint32_t pos = sizeof (SakuraGenericHeader);
-        const void* content = &message[pos];
-        const uint32_t size = header->size;
+        const std::string messageStr(&message[pos], header->size);
+        Kitsunemimi::Json::JsonItem jsonItem;
+        if(jsonItem.parse(messageStr, error) == false)
+        {
+            // TODO: to central error log
+            LOG_ERROR(error);
+        }
 
-        ClientHandler::m_instance->processGenericRequest(session, content, size, blockerId);
+        ClientHandler::m_instance->processGenericRequest(session, jsonItem, blockerId);
     }
     //==============================================================================================
     // TODO: error when unknown
