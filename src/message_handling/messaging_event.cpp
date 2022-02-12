@@ -33,7 +33,7 @@
 #include <libKitsunemimiCommon/common_items/data_items.h>
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiJson/json_item.h>
-
+#include <libKitsunemimiCrypto/common.h>
 
 using Kitsunemimi::Sakura::SakuraLangInterface;
 
@@ -141,35 +141,47 @@ MessagingEvent::trigger(DataMap &resultingItems,
 
     const bool skipPermission = m_session->m_sessionIdentifier != "torii";
 
-    if(m_targetId == "v1/auth"
-            || m_targetId == "v1/token"
-            || m_targetId == "v1/token/internal"
-            || checkPermission(context, token, status, skipPermission, error))
+    // check permission
+    if(m_targetId != "v1/auth"
+            && m_targetId != "v1/token"
+            && m_targetId != "v1/token/internal"
+            && checkPermission(context, token, status, skipPermission, error) == false)
     {
-        if(entry.type == TREE_TYPE)
-        {
-            return langInterface->triggerTree(resultingItems,
-                                              entry.name,
-                                              context,
-                                              *inputValues.getItemContent()->toMap(),
-                                              status,
-                                              error);
-        }
-        else
-        {
-            return langInterface->triggerBlossom(resultingItems,
-                                                 entry.name,
-                                                 entry.group,
-                                                 context,
-                                                 *inputValues.getItemContent()->toMap(),
-                                                 status,
-                                                 error);
-        }
+        status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+        return false;
     }
 
-    status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
+    bool ret = false;
+    if(entry.type == TREE_TYPE)
+    {
+        ret = langInterface->triggerTree(resultingItems,
+                                         entry.name,
+                                         context,
+                                         *inputValues.getItemContent()->toMap(),
+                                         status,
+                                         error);
+    }
+    else
+    {
+        ret = langInterface->triggerBlossom(resultingItems,
+                                            entry.name,
+                                            entry.group,
+                                            context,
+                                            *inputValues.getItemContent()->toMap(),
+                                            status,
+                                            error);
+    }
 
-    return false;
+    // handle error
+    if(ret == false)
+    {
+        LOG_ERROR(error);
+        const std::string userUuid = context.getStringByKey("uuid");
+        sendErrorMessage(userUuid, context, inputValues, error.toString());
+        return false;
+    }
+
+    return true;
 }
 
 /**
@@ -236,7 +248,6 @@ MessagingEvent::processEvent()
     }
     else
     {
-        LOG_ERROR(error);
         sendResponseMessage(false,
                             type,
                             status.errorMessage,
@@ -246,6 +257,52 @@ MessagingEvent::processEvent()
     }
 
     return true;
+}
+
+/**
+ * @brief send error-message to sagiri
+ *
+ * @param userUuid uuid of the user where the error belongs to
+ * @param userUuid context context-object to log
+ * @param userUuid inputValues input-values of the request to log
+ * @param errorMessage error-message to send to sagiri
+ */
+void
+MessagingEvent::sendErrorMessage(const std::string &userUuid,
+                                 const DataMap &context,
+                                 const Json::JsonItem &inputValues,
+                                 const std::string &errorMessage)
+{
+    // check if sagiri is supported
+    if(SupportedComponents::getInstance()->support[SAGIRI] == false) {
+        return;
+    }
+
+    Kitsunemimi::ErrorContainer error;
+    std::string base64Error;
+    Kitsunemimi::Crypto::encodeBase64(base64Error, errorMessage.c_str(), errorMessage.size());
+
+    // create message
+    Kitsunemimi::Hanami::HanamiMessaging* msg = Kitsunemimi::Hanami::HanamiMessaging::getInstance();
+    const std::string message = "{\"message_type\":\"error_log\","
+                                "\"user_uuid\" : \"" + userUuid + "\","
+                                "\"context\" : " + context.toString() + ","
+                                "\"values\" : " + inputValues.toString() + ","
+                                "\"message\":\"" + base64Error + "\"}";
+
+    // send
+    Kitsunemimi::DataBuffer* ret = msg->sendGenericMessage("sagiri",
+                                                           message.c_str(),
+                                                           message.size(),
+                                                           error);
+
+    if(ret == nullptr)
+    {
+        LOG_ERROR(error);
+        return;
+    }
+
+    delete ret;
 }
 
 }  // namespace Hanami
