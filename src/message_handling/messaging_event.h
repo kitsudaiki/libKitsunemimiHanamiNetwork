@@ -70,11 +70,10 @@ private:
     bool trigger(DataMap &resultingItems,
                  Json::JsonItem &inputValues,
                  Sakura::BlossomStatus &status,
-                 const EndpointEntry &entry,
+                 const EndpointEntry &endpoint,
                  ErrorContainer &error);
 
-    void sendErrorMessage(const std::string &userUuid,
-                          const DataMap &context,
+    void sendErrorMessage(const DataMap &context,
                           const Json::JsonItem &inputValues,
                           const std::string &errorMessage);
 };

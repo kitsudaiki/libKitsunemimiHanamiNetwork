@@ -37,6 +37,7 @@
 #include <libKitsunemimiCommon/files/text_file.h>
 #include <libKitsunemimiCommon/buffer/stack_buffer.h>
 #include <libKitsunemimiConfig/config_handler.h>
+#include <libKitsunemimiCrypto/common.h>
 
 using Kitsunemimi::Sakura::SessionController;
 
@@ -56,6 +57,17 @@ HanamiMessaging::HanamiMessaging() {}
  * @brief destructor
  */
 HanamiMessaging::~HanamiMessaging() {}
+
+/**
+ * @brief callback, which is triggered by error-logs
+ *
+ * @param errorMessage error-message to send to sagiri
+ */
+void
+handleErrorCallback(const std::string &errorMessage)
+{
+    HanamiMessaging::getInstance()->sendGenericErrorMessage(errorMessage);
+}
 
 /**
  * @brief fill overview with all configured components
@@ -236,6 +248,9 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
         return false;
     }
 
+    // set callback to send error-messages to sagiri for logging
+    setErrorLogCallback(&handleErrorCallback);
+
     // init client-handler
     ClientHandler::m_instance = new ClientHandler(localIdentifier);    
     ClientHandler::m_instance->streamReceiver = receiver;
@@ -371,10 +386,51 @@ HanamiMessaging::sendStreamMessage(const std::string &target,
  * @param dataSize size of data to send
  * @param error reference for error-output
  *
+ * @return true, if successful, else false
+ */
+bool
+HanamiMessaging::sendGenericMessage(const std::string &target,
+                                    const void* data,
+                                    const uint64_t dataSize,
+                                    ErrorContainer &error)
+{
+    LOG_DEBUG("send generic message to target \'" + target + "\'");
+
+    // get client
+    Sakura::Session* client = ClientHandler::m_instance->getOutgoingSession(target);
+    if(client == nullptr)
+    {
+        error.addMeesage("target '" + target + "' for send a generic message not found.");
+        LOG_ERROR(error);
+        return false;
+    }
+
+    // create header
+    SakuraGenericHeader header;
+    header.size = dataSize;
+
+    // create message
+    const uint64_t bufferSize = sizeof(SakuraGenericHeader) + dataSize;
+    uint8_t* buffer = new uint8_t[bufferSize];
+    memcpy(&buffer[0], &header, sizeof(SakuraGenericHeader));
+    memcpy(&buffer[sizeof(SakuraGenericHeader)], data, dataSize);
+
+    // send
+    return client->sendNormalMessage(buffer, bufferSize, error);
+}
+
+/**
+ * @brief send a generic message over the internal messaging
+ *
+ * @param target name of the client to trigger
+ * @param data pointer to data to send
+ * @param dataSize size of data to send
+ * @param error reference for error-output
+ *
  * @return pointer to data-buffer with response, if successful, else nullptr
  */
 DataBuffer*
-HanamiMessaging::sendGenericMessage(const std::string &target,
+HanamiMessaging::sendGenericRequest(const std::string &target,
                                     const void* data,
                                     const uint64_t dataSize,
                                     ErrorContainer &error)
@@ -385,7 +441,8 @@ HanamiMessaging::sendGenericMessage(const std::string &target,
     Sakura::Session* client = ClientHandler::m_instance->getOutgoingSession(target);
     if(client == nullptr)
     {
-        error.addMeesage("target '" + target + "' for send a generic message not found.");
+        error.addMeesage("target '" + target + "' for send a generic request not found.");
+        LOG_ERROR(error);
         return nullptr;
     }
 
@@ -502,6 +559,108 @@ HanamiMessaging::getInstance()
         m_messagingController = new HanamiMessaging();
     }
     return m_messagingController;
+}
+
+/**
+ * @brief get the current datetime of the system
+ *
+ * @return datetime as string
+ */
+const std::string
+getDatetime()
+{
+    const time_t now = time(nullptr);
+    tm *ltm = localtime(&now);
+
+    const std::string datatime =
+            std::to_string(1900 + ltm->tm_year)
+            + "-"
+            + std::to_string(1 + ltm->tm_mon)
+            + "-"
+            + std::to_string(ltm->tm_mday)
+            + " "
+            + std::to_string(ltm->tm_hour)
+            + ":"
+            + std::to_string(ltm->tm_min)
+            + ":"
+            + std::to_string(ltm->tm_sec);
+
+    return datatime;
+}
+
+/**
+ * @brief send error-message to sagiri
+ *
+ * @param errorMessage error-message to send to sagiri
+ */
+void
+HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
+{
+    // handle local sagiri
+    if(SupportedComponents::getInstance()->localComponent == "sagiri")
+    {
+        bool success = false;
+        Kitsunemimi::ErrorContainer error;
+
+        // TODO: handle result
+        const std::string resultLocation = GET_STRING_CONFIG("sagiri", "error_location", success);
+        const std::string filePath = resultLocation + "/generic";
+
+        // create an empty file, if no exist
+        if(std::filesystem::exists(filePath) == false)
+        {
+            // create new file and write content
+            std::ofstream outputFile;
+            outputFile.open(filePath);
+            outputFile.close();
+        }
+
+        // init table
+        Kitsunemimi::TableItem tableOutput;
+        tableOutput.addColumn("key");
+        tableOutput.addColumn("value");
+
+        // fill table
+        tableOutput.addRow(std::vector<std::string>{"timestamp", getDatetime()});
+        tableOutput.addRow(std::vector<std::string>{"component", "sagiri"});
+        tableOutput.addRow(std::vector<std::string>{"error", errorMessage});
+
+        // write to file
+        const std::string finalMessage = tableOutput.toString(200, true) + "\n\n\n";
+        if(appendText(filePath, finalMessage, error) == false) {
+            LOG_ERROR(error);
+        }
+
+        return;
+    }
+
+    // check if sagiri is supported
+    if(SupportedComponents::getInstance()->support[SAGIRI] == false) {
+        return;
+    }
+
+    // this function is triggered by every error-message in this logger. if an error is in the
+    // following code which sending to sagiri, it would result in an infinity-look of this function
+    // and a stackoverflow. So this variable should ensure, that error in this function doesn't
+    // tigger the function in itself again.
+    if(m_whileSendError == true) {
+        return;
+    }
+    m_whileSendError = true;
+
+    // convert message
+    std::string base64Error;
+    Kitsunemimi::Crypto::encodeBase64(base64Error, errorMessage.c_str(), errorMessage.size());
+
+    // create message
+    Kitsunemimi::Hanami::HanamiMessaging* msg = Kitsunemimi::Hanami::HanamiMessaging::getInstance();
+    const std::string message = "{\"message_type\":\"error_log\","
+                                "\"message\":\"" + base64Error + "\"}";
+
+    // send
+    Kitsunemimi::ErrorContainer error;
+    msg->sendGenericMessage("sagiri", message.c_str(), message.size(), error);
+    m_whileSendError = false;
 }
 
 }  // namespace Hanami

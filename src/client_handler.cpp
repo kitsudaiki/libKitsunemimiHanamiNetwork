@@ -304,8 +304,8 @@ ClientHandler::addOutgoingClient(const std::string &remoteIdentifier,
 Sakura::Session*
 ClientHandler::getOutgoingSession(const std::string &identifier)
 {
-    std::lock_guard<std::mutex> guard(m_outgoinglock);
-
+    // TODO: removed the lock_guard here, because of conflicts with early triggered error-messages
+    //       so this dead-lock has to be fixed to re-add the lock_guard here
     std::map<std::string, ClientInformation>::const_iterator it;
     it = m_outgoingClients.find(identifier);
     if(it != m_outgoingClients.end()) {
