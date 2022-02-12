@@ -72,6 +72,11 @@ private:
                  Sakura::BlossomStatus &status,
                  const EndpointEntry &entry,
                  ErrorContainer &error);
+
+    void sendErrorMessage(const std::string &userUuid,
+                          const DataMap &context,
+                          const Json::JsonItem &inputValues,
+                          const std::string &errorMessage);
 };
 
 }  // namespace Hanami
