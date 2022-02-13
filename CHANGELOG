@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.0] - 2022-02-13
+
+### Added
+- allow multiple servers at the same time
+- add message-forwarding to stream-messages
+- send error-messages to sagiri
+- add generic data-transfer, which are basically request-response-messages
+
+
 ## [0.2.0] - 2022-01-09
 
 ### Added
