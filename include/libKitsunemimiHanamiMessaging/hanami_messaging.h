@@ -83,7 +83,12 @@ public:
                            const bool replyExpected,
                            ErrorContainer &error);
 
-    DataBuffer* sendGenericMessage(const std::string &target,
+    bool sendGenericMessage(const std::string &target,
+                            const void* data,
+                            const uint64_t dataSize,
+                            ErrorContainer &error);
+
+    DataBuffer* sendGenericRequest(const std::string &target,
                                    const void* data,
                                    const uint64_t dataSize,
                                    ErrorContainer &error);
@@ -99,10 +104,13 @@ public:
     Sakura::Session* getOutgoingSession(const std::string identifier);
     Sakura::Session* getIncomingSession(const std::string identifier);
 
+    void sendGenericErrorMessage(const std::string &errorMessage);
+
 private:
     HanamiMessaging();
 
     bool m_isInit = false;
+    bool m_whileSendError = false;
 
     void fillSupportOverview();
     bool initClients(const std::vector<std::string> &configGroups);

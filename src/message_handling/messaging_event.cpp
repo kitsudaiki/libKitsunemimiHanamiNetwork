@@ -116,7 +116,7 @@ MessagingEvent::sendResponseMessage(const bool success,
  * @param resultingItems reference for the result of the trigger
  * @param inputValues input-values for the trigger
  * @param status reference for status-output
- * @param entry entpoint-entry to identify the target
+ * @param endpoint entpoint-entry to identify the target
  * @param error reference for error-output
  *
  * @return true, if successful, else false
@@ -125,7 +125,7 @@ bool
 MessagingEvent::trigger(DataMap &resultingItems,
                         Json::JsonItem &inputValues,
                         Sakura::BlossomStatus &status,
-                        const EndpointEntry &entry,
+                        const EndpointEntry &endpoint,
                         ErrorContainer &error)
 {
     SakuraLangInterface* langInterface = SakuraLangInterface::getInstance();
@@ -152,10 +152,10 @@ MessagingEvent::trigger(DataMap &resultingItems,
     }
 
     bool ret = false;
-    if(entry.type == TREE_TYPE)
+    if(endpoint.type == TREE_TYPE)
     {
         ret = langInterface->triggerTree(resultingItems,
-                                         entry.name,
+                                         endpoint.name,
                                          context,
                                          *inputValues.getItemContent()->toMap(),
                                          status,
@@ -164,8 +164,8 @@ MessagingEvent::trigger(DataMap &resultingItems,
     else
     {
         ret = langInterface->triggerBlossom(resultingItems,
-                                            entry.name,
-                                            entry.group,
+                                            endpoint.name,
+                                            endpoint.group,
                                             context,
                                             *inputValues.getItemContent()->toMap(),
                                             status,
@@ -176,8 +176,7 @@ MessagingEvent::trigger(DataMap &resultingItems,
     if(ret == false)
     {
         LOG_ERROR(error);
-        const std::string userUuid = context.getStringByKey("uuid");
-        sendErrorMessage(userUuid, context, inputValues, error.toString());
+        sendErrorMessage(context, inputValues, error.toString());
         return false;
     }
 
@@ -208,11 +207,9 @@ MessagingEvent::processEvent()
         return false;
     }
 
-    // get global instances
-    Endpoint* endpoints = Endpoint::getInstance();
-
     // get real endpoint
     EndpointEntry entry;
+    Endpoint* endpoints = Endpoint::getInstance();
     bool ret = endpoints->mapEndpoint(entry, m_targetId, m_httpType);
     if(ret == false)
     {
@@ -262,14 +259,12 @@ MessagingEvent::processEvent()
 /**
  * @brief send error-message to sagiri
  *
- * @param userUuid uuid of the user where the error belongs to
- * @param userUuid context context-object to log
- * @param userUuid inputValues input-values of the request to log
+ * @param context context context-object to log
+ * @param inputValues inputValues input-values of the request to log
  * @param errorMessage error-message to send to sagiri
  */
 void
-MessagingEvent::sendErrorMessage(const std::string &userUuid,
-                                 const DataMap &context,
+MessagingEvent::sendErrorMessage(const DataMap &context,
                                  const Json::JsonItem &inputValues,
                                  const std::string &errorMessage)
 {
@@ -278,31 +273,31 @@ MessagingEvent::sendErrorMessage(const std::string &userUuid,
         return;
     }
 
+    // is user-id is not set, the error is send by the generic error-callback anyway and so it
+    // doesn't have to be send twice
+    const std::string userUuid = context.getStringByKey("uuid");
+    if(userUuid == "") {
+        return;
+    }
+
     Kitsunemimi::ErrorContainer error;
     std::string base64Error;
     Kitsunemimi::Crypto::encodeBase64(base64Error, errorMessage.c_str(), errorMessage.size());
 
     // create message
+    const std::string component = SupportedComponents::getInstance()->localComponent;
     Kitsunemimi::Hanami::HanamiMessaging* msg = Kitsunemimi::Hanami::HanamiMessaging::getInstance();
     const std::string message = "{\"message_type\":\"error_log\","
+                                "\"component\" : \"" + component + "\","
                                 "\"user_uuid\" : \"" + userUuid + "\","
                                 "\"context\" : " + context.toString() + ","
                                 "\"values\" : " + inputValues.toString() + ","
                                 "\"message\":\"" + base64Error + "\"}";
 
     // send
-    Kitsunemimi::DataBuffer* ret = msg->sendGenericMessage("sagiri",
-                                                           message.c_str(),
-                                                           message.size(),
-                                                           error);
-
-    if(ret == nullptr)
-    {
+    if(msg->sendGenericMessage("sagiri", message.c_str(), message.size(), error) == false) {
         LOG_ERROR(error);
-        return;
     }
-
-    delete ret;
 }
 
 }  // namespace Hanami
