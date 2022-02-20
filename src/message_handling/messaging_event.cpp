@@ -26,6 +26,7 @@
 #include <message_handling/message_definitions.h>
 
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
+#include <libKitsunemimiHanamiMessaging/hanami_messaging_client.h>
 #include <libKitsunemimiHanamiCommon/component_support.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
@@ -295,7 +296,8 @@ MessagingEvent::sendErrorMessage(const DataMap &context,
                                 "\"message\":\"" + base64Error + "\"}";
 
     // send
-    if(msg->sendGenericMessage("sagiri", message.c_str(), message.size(), error) == false) {
+    HanamiMessagingClient* client = msg->getOutgoingClient("sagiri");
+    if(client->sendGenericMessage(message.c_str(), message.size(), error) == false) {
         LOG_ERROR(error);
     }
 }

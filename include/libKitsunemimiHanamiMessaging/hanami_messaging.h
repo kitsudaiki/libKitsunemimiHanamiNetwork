@@ -43,9 +43,11 @@ struct StackBuffer;
 namespace Sakura {
 class Blossom;
 class Session;
+class SessionController;
 }
 namespace Hanami
 {
+class HanamiMessagingClient;
 
 class HanamiMessaging
 {
@@ -74,43 +76,52 @@ public:
                    const std::string &certFilePath = "",
                    const std::string &keyFilePath = "");
 
-    bool sendStreamMessage(const std::string &target,
-                           StackBuffer &data,
-                           ErrorContainer &error);
-    bool sendStreamMessage(const std::string &target,
-                           const void* data,
-                           const uint64_t dataSize,
-                           const bool replyExpected,
-                           ErrorContainer &error);
-
-    bool sendGenericMessage(const std::string &target,
-                            const void* data,
-                            const uint64_t dataSize,
-                            ErrorContainer &error);
-
-    DataBuffer* sendGenericRequest(const std::string &target,
-                                   const void* data,
-                                   const uint64_t dataSize,
-                                   ErrorContainer &error);
-
-    bool triggerSakuraFile(const std::string &target,
-                           ResponseMessage &response,
-                           const RequestMessage &request,
-                           ErrorContainer &error);
-
     bool closeClient(const std::string &remoteIdentifier,
                      ErrorContainer &error);
 
-    Sakura::Session* getOutgoingSession(const std::string identifier);
-    Sakura::Session* getIncomingSession(const std::string identifier);
+    HanamiMessagingClient* getOutgoingClient(const std::string &identifier);
+    HanamiMessagingClient* getIncomingClient(const std::string &identifier);
 
     void sendGenericErrorMessage(const std::string &errorMessage);
+
+    static Kitsunemimi::Sakura::SessionController* m_sessionController;
+
+    HanamiMessagingClient* misakaClient = nullptr;
+    HanamiMessagingClient* sagiriClient = nullptr;
+    HanamiMessagingClient* kyoukoClient = nullptr;
+    HanamiMessagingClient* azukiClient  = nullptr;
+    HanamiMessagingClient* nozomiClient = nullptr;
+    HanamiMessagingClient* izumiClient  = nullptr;
+    HanamiMessagingClient* toriiClient  = nullptr;
+
+    //=====================================================================
+    // ALL BELOW IS INTERNAL AND SHOULD NEVER BE USED BY EXTERNAL METHODS!
+    //=====================================================================
+    bool addInternalClient(const std::string &identifier,
+                           Sakura::Session* newSession);
+    bool removeInternalClient(const std::string &identifier);
+
+    void* streamReceiver = nullptr;
+    void (*processStreamData)(void*,
+                              Sakura::Session*,
+                              const void*,
+                              const uint64_t);
+    void (*processGenericRequest)(Sakura::Session*,
+                                  const Kitsunemimi::Json::JsonItem&,
+                                  const uint64_t);
+
 
 private:
     HanamiMessaging();
 
     bool m_isInit = false;
     bool m_whileSendError = false;
+
+    // session-handling
+    std::map<std::string, HanamiMessagingClient*> m_clients;
+    std::map<std::string, HanamiMessagingClient*> m_incomingClients;
+    std::string m_localIdentifier = "";
+    std::mutex m_incominglock;
 
     void fillSupportOverview();
     bool initClients(const std::vector<std::string> &configGroups);

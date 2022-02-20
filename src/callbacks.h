@@ -26,7 +26,6 @@
 #include <message_handling/messaging_event.h>
 #include <message_handling/message_definitions.h>
 #include <message_handling/messaging_event_queue.h>
-#include <client_handler.h>
 
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 
@@ -110,7 +109,7 @@ standaloneDataCallback(void*,
             LOG_ERROR(error);
         }
 
-        ClientHandler::m_instance->processGenericRequest(session, jsonItem, blockerId);
+        HanamiMessaging::getInstance()->processGenericRequest(session, jsonItem, blockerId);
     }
     //==============================================================================================
     // TODO: error when unknown
@@ -135,9 +134,9 @@ errorCallback(Sakura::Session* session,
 
     // close-session
     if(session->isClientSide()) {
-        ClientHandler::m_instance->closeClient(identifier, error, false);
+        HanamiMessaging::getInstance()->closeClient(identifier, error);
     } else {
-        ClientHandler::m_instance->removeInternalClient(identifier);
+        HanamiMessaging::getInstance()->removeInternalClient(identifier);
     }
 
     LOG_ERROR(error);
@@ -155,12 +154,12 @@ sessionCreateCallback(Kitsunemimi::Sakura::Session* session,
 {
     // set callback for incoming standalone-messages for trigger sakura-files
     session->setRequestCallback(nullptr, &standaloneDataCallback);
-    session->setStreamCallback(ClientHandler::m_instance->streamReceiver,
-                               ClientHandler::m_instance->processStreamData);
+    session->setStreamCallback(HanamiMessaging::getInstance()->streamReceiver,
+                               HanamiMessaging::getInstance()->processStreamData);
 
     // callback was triggered on server-side, place new session into central list
     if(session->isClientSide() == false) {
-        ClientHandler::m_instance->addInternalClient(identifier, session);
+        HanamiMessaging::getInstance()->addInternalClient(identifier, session);
     }
 }
 
@@ -178,7 +177,7 @@ sessionCloseCallback(Kitsunemimi::Sakura::Session* session,
 
     // close-session
     if(session->isClientSide() == false) {
-        ClientHandler::m_instance->removeInternalClient(identifier);
+        HanamiMessaging::getInstance()->removeInternalClient(identifier);
     }
 }
 
