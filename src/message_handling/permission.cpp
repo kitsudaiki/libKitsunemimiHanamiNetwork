@@ -24,6 +24,7 @@
 
 #include <libKitsunemimiHanamiCommon/component_support.h>
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
+#include <libKitsunemimiHanamiMessaging/hanami_messaging_client.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraLang/blossom.h>
@@ -119,8 +120,15 @@ getPermission(Json::JsonItem &parsedResult,
     requestMsg.httpType = HttpRequestType::GET_TYPE;
     requestMsg.inputValues = "{\"token\":\"" + token + "\"}";
 
+    if(messaging->misakaClient == nullptr)
+    {
+        status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMeesage("Misaka is not correctly initilized.");
+        return false;
+    }
+
     // send request to misaka
-    if(messaging->triggerSakuraFile("misaka", responseMsg, requestMsg, error) == false)
+    if(messaging->misakaClient->triggerSakuraFile(responseMsg, requestMsg, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Unable send validation for token-request.");

@@ -31,6 +31,7 @@
 #include <libKitsunemimiSakuraNetwork/session.h>
 
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
+#include <libKitsunemimiHanamiMessaging/hanami_messaging_client.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
 #include <libKitsunemimiHanamiEndpoints/endpoint.h>
 
@@ -154,7 +155,8 @@ Session_Test::runTest()
     request.httpType = GET_TYPE;
     request.inputValues = inputValues.toString();
     m_numberOfTests++;
-    TEST_EQUAL(messaging->triggerSakuraFile("target", response, request, error),  true);
+    HanamiMessagingClient* client = messaging->getOutgoingClient("target");
+    TEST_EQUAL(client->triggerSakuraFile(response, request, error),  true);
     m_numberOfTests++;
     TEST_EQUAL(response.type, 0);
     m_numberOfTests++;
@@ -166,21 +168,20 @@ Session_Test::runTest()
     inputValues.remove("test_output");
     request.inputValues = inputValues.toString();
     m_numberOfTests++;
-    TEST_EQUAL(messaging->triggerSakuraFile("target", response, request, error),  true);
+    TEST_EQUAL(client->triggerSakuraFile(response, request, error),  true);
 
 
     m_numberOfTests++;
     request.id = "fail";
-    TEST_EQUAL(messaging->triggerSakuraFile("target", response, request, error), true);
+    TEST_EQUAL(client->triggerSakuraFile(response, request, error), true);
 
     m_numberOfTests++;
     TEST_EQUAL(response.type, NOT_IMPLEMENTED_RTYPE);
 
-    TEST_EQUAL(messaging->sendStreamMessage("target",
-                                            m_streamMessage.c_str(),
-                                            m_streamMessage.size(),
-                                            false,
-                                            error), true);
+    TEST_EQUAL(client->sendStreamMessage(m_streamMessage.c_str(),
+                                         m_streamMessage.size(),
+                                         false,
+                                         error), true);
 
     m_numberOfTests++;
     TEST_EQUAL(messaging->closeClient("target", error), true);
