@@ -93,23 +93,12 @@ standaloneDataCallback(void*,
     //==============================================================================================
     if(type == SAKURA_GENERIC_MESSAGE)
     {
-        // prepare message
-        const SakuraGenericHeader* header =
-                static_cast<const SakuraGenericHeader*>(data->data);
-        const char* message = static_cast<const char*>(data->data);
-
-        // get id
-        ErrorContainer error;
-        uint32_t pos = sizeof (SakuraGenericHeader);
-        const std::string messageStr(&message[pos], header->size);
-        Kitsunemimi::Json::JsonItem jsonItem;
-        if(jsonItem.parse(messageStr, error) == false)
-        {
-            // TODO: to central error log
-            LOG_ERROR(error);
-        }
-
-        HanamiMessaging::getInstance()->processGenericRequest(session, jsonItem, blockerId);
+        const SakuraGenericHeader* header = static_cast<const SakuraGenericHeader*>(data->data);
+        const char* msgBody = &static_cast<const char*>(data->data)[sizeof(SakuraGenericHeader)];
+        HanamiMessaging::getInstance()->processGenericRequest(session,
+                                                              msgBody,
+                                                              header->size,
+                                                              blockerId);
     }
     //==============================================================================================
     // TODO: error when unknown

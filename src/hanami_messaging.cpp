@@ -32,6 +32,7 @@
 #include <libKitsunemimiHanamiCommon/component_support.h>
 #include <libKitsunemimiHanamiEndpoints/endpoint.h>
 #include <libKitsunemimiHanamiMessaging/hanami_messaging_client.h>
+#include <libKitsunemimiHanamiMessaging/hanami_messages.h>
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/files/text_file.h>
@@ -270,7 +271,8 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
                                                   const void*,
                                                   const uint64_t),
                             void (*processGenericRequest)(Sakura::Session*,
-                                                          const Kitsunemimi::Json::JsonItem&,
+                                                          const void*,
+                                                          const uint64_t,
                                                           const uint64_t),
                             ErrorContainer &error,
                             const bool createServer,
@@ -482,19 +484,22 @@ HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
     }
     m_whileSendError = true;
 
-    // convert message
-    std::string base64Error;
-    Kitsunemimi::Crypto::encodeBase64(base64Error, errorMessage.c_str(), errorMessage.size());
-
     // create message
-    const std::string message = "{\"message_type\":\"error_log\","
-                                "\"message\":\"" + base64Error + "\"}";
+    HanamiMessagingClient* client = HanamiMessaging::getInstance()->sagiriClient;
+    if(client == nullptr) {
+        return;
+    }
+
+    // create binary for send
+    Kitsunemimi::Hanami::ErrorLog_Message msg;
+    msg.errorMsg = errorMessage;
+    DataBuffer msgBlob;
+    msg.createBlob(msgBlob);
 
     // send
     Kitsunemimi::ErrorContainer error;
-
     if(sagiriClient != nullptr) {
-        sagiriClient->sendGenericMessage(message.c_str(), message.size(), error);
+        sagiriClient->sendGenericMessage(msgBlob.data, msgBlob.usedBufferSize, error);
     }
     m_whileSendError = false;
 }

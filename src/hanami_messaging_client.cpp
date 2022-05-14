@@ -173,6 +173,10 @@ HanamiMessagingClient::sendGenericMessage(const void* data,
 {
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
+    if(static_cast<const uint8_t*>(data)[0] == 1) {
+        std::cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"<<std::endl;
+    }
+
     // get client
     if(m_session == nullptr) {
         return false;
