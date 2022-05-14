@@ -181,5 +181,77 @@ HanamiMessage::readBinary(const void* data, DataBuffer &output)
     return true;
 }
 
+//==================================================================================================
+
+/**
+ * @brief ErrorLog_Message::ErrorLog_Message
+ */
+ErrorLog_Message::ErrorLog_Message()
+{
+    m_type = 255;
+}
+
+/**
+ * @brief ErrorLog_Message::~ErrorLog_Message
+ */
+ErrorLog_Message::~ErrorLog_Message() {}
+
+/**
+ * @brief ErrorLog_Message::read
+ * @param data
+ * @param dataSize
+ * @return
+ */
+bool
+ErrorLog_Message::read(const void* data, const uint64_t dataSize)
+{
+    if(initRead(data, dataSize) == false) {
+        return false;
+    }
+
+    if(readString(data, userUuid) == false) {
+        return false;
+    }
+    if(readString(data, component) == false) {
+        return false;
+    }
+    if(readString(data, errorMsg) == false) {
+        return false;
+    }
+    if(readString(data, context) == false) {
+        return false;
+    }
+    if(readString(data, values) == false) {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * @brief ErrorLog_Message::createBlob
+ * @param result
+ */
+void
+ErrorLog_Message::createBlob(DataBuffer &result)
+{
+    const uint64_t totalMsgSize = sizeof(MessageHeader)
+                                  + 5 * sizeof(Entry)
+                                  + userUuid.size()
+                                  + component.size()
+                                  + errorMsg.size()
+                                  + context.size()
+                                  + values.size();
+
+    initBlob(result, totalMsgSize);
+    appendString(result, userUuid);
+    appendString(result, component);
+    appendString(result, errorMsg);
+    appendString(result, context);
+    appendString(result, values);
+}
+
+//==================================================================================================
+
 }  // namespace Hanami
 }  // namespace Kitsunemimi

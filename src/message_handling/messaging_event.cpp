@@ -27,6 +27,7 @@
 
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 #include <libKitsunemimiHanamiMessaging/hanami_messaging_client.h>
+#include <libKitsunemimiHanamiMessaging/hanami_messages.h>
 #include <libKitsunemimiHanamiCommon/component_support.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
@@ -281,23 +282,24 @@ MessagingEvent::sendErrorMessage(const DataMap &context,
         return;
     }
 
-    Kitsunemimi::ErrorContainer error;
-    std::string base64Error;
-    Kitsunemimi::Crypto::encodeBase64(base64Error, errorMessage.c_str(), errorMessage.size());
+    HanamiMessagingClient* client = HanamiMessaging::getInstance()->sagiriClient;
+    if(client == nullptr) {
+        return;
+    }
 
-    // create message
-    const std::string component = SupportedComponents::getInstance()->localComponent;
-    Kitsunemimi::Hanami::HanamiMessaging* msg = Kitsunemimi::Hanami::HanamiMessaging::getInstance();
-    const std::string message = "{\"message_type\":\"error_log\","
-                                "\"component\" : \"" + component + "\","
-                                "\"user_uuid\" : \"" + userUuid + "\","
-                                "\"context\" : " + context.toString() + ","
-                                "\"values\" : " + inputValues.toString() + ","
-                                "\"message\":\"" + base64Error + "\"}";
+    // create binary for send
+    Kitsunemimi::Hanami::ErrorLog_Message msg;
+    msg.userUuid = userUuid;
+    msg.context = context.toString(true);
+    msg.values = inputValues.toString(true);
+    msg.component = SupportedComponents::getInstance()->localComponent;
+    msg.errorMsg = errorMessage;
+    DataBuffer msgBlob;
+    msg.createBlob(msgBlob);
 
     // send
-    HanamiMessagingClient* client = msg->getOutgoingClient("sagiri");
-    if(client->sendGenericMessage(message.c_str(), message.size(), error) == false) {
+    Kitsunemimi::ErrorContainer error;
+    if(client->sendGenericMessage(msgBlob.data, msgBlob.usedBufferSize, error) == false) {
         LOG_ERROR(error);
     }
 }

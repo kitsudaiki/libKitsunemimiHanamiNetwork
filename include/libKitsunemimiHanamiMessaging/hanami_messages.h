@@ -81,6 +81,27 @@ protected:
     bool readBinary(const void* data, DataBuffer& output);
 };
 
+//==================================================================================================
+
+class ErrorLog_Message
+        : public HanamiMessage
+{
+public:
+    ErrorLog_Message();
+    ~ErrorLog_Message();
+
+    std::string userUuid = "";
+    std::string component = "";
+    std::string errorMsg = "";
+    std::string context = "";
+    std::string values = "";
+
+    bool read(const void* data, const uint64_t dataSize);
+    void createBlob(DataBuffer &result);
+};
+
+//==================================================================================================
+
 }  // namespace Hanami
 }  // namespace Kitsunemimi
 
