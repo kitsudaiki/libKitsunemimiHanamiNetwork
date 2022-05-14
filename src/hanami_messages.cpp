@@ -30,19 +30,20 @@ namespace Hanami
 //==================================================================================================
 
 /**
- * @brief HanamiMessage::HanamiMessage
+ * @brief constructor
  */
 HanamiMessage::HanamiMessage() {}
 
 /**
- * @brief HanamiMessage::~HanamiMessage
+ * @brief destructor
  */
 HanamiMessage::~HanamiMessage() {}
 
 /**
- * @brief HanamiMessage::initBlob
- * @param result
- * @param totalMsgSize
+ * @brief initialize converting content into bytes
+ *
+ * @param result buffer for the resulting message
+ * @param totalMsgSize total number of bytes for the complete message
  */
 void
 HanamiMessage::initBlob(DataBuffer &result, const uint64_t totalMsgSize)
@@ -58,9 +59,10 @@ HanamiMessage::initBlob(DataBuffer &result, const uint64_t totalMsgSize)
 }
 
 /**
- * @brief HanamiMessage::appendString
- * @param result
- * @param val
+ * @brief append a string to the message
+ *
+ * @param result data-buffer, which holds the resulting bytes
+ * @param val string to convert
  */
 void
 HanamiMessage::appendString(DataBuffer &result, const std::string &val)
@@ -80,9 +82,10 @@ HanamiMessage::appendString(DataBuffer &result, const std::string &val)
 }
 
 /**
- * @brief HanamiMessage::appendData
- * @param result
- * @param val
+ * @brief append bytes to the message
+ *
+ * @param result data-buffer, which holds the resulting bytes
+ * @param val buffer with bytes to add
  */
 void
 HanamiMessage::appendData(DataBuffer &result, const DataBuffer &val)
@@ -102,10 +105,12 @@ HanamiMessage::appendData(DataBuffer &result, const DataBuffer &val)
 }
 
 /**
- * @brief HanamiMessage::initRead
- * @param data
- * @param dataSize
- * @return
+ * @brief initialize the reading of a message
+ *
+ * @param data bytes to read
+ * @param dataSize number of bytes to read
+ *
+ * @return false, if message is invalid, else true
  */
 bool
 HanamiMessage::initRead(const void* data, const uint64_t dataSize)
@@ -127,10 +132,12 @@ HanamiMessage::initRead(const void* data, const uint64_t dataSize)
 }
 
 /**
- * @brief HanamiMessage::readString
- * @param data
- * @param output
- * @return
+ * @brief read string from bytes
+ *
+ * @param data bytes to read
+ * @param output reference for the output-string
+ *
+ * @return false, if message is invalid, else true
  */
 bool
 HanamiMessage::readString(const void* data, std::string& output)
@@ -154,10 +161,12 @@ HanamiMessage::readString(const void* data, std::string& output)
 }
 
 /**
- * @brief HanamiMessage::readBinary
- * @param data
- * @param output
- * @return
+ * @brief read bytes from bytes
+ *
+ * @param data bytes to read
+ * @param output buffer for the bytes to read
+ *
+ * @return false, if message is invalid, else true
  */
 bool
 HanamiMessage::readBinary(const void* data, DataBuffer &output)
@@ -184,7 +193,7 @@ HanamiMessage::readBinary(const void* data, DataBuffer &output)
 //==================================================================================================
 
 /**
- * @brief ErrorLog_Message::ErrorLog_Message
+ * @brief constructor
  */
 ErrorLog_Message::ErrorLog_Message()
 {
@@ -192,15 +201,17 @@ ErrorLog_Message::ErrorLog_Message()
 }
 
 /**
- * @brief ErrorLog_Message::~ErrorLog_Message
+ * @brief destructor
  */
 ErrorLog_Message::~ErrorLog_Message() {}
 
 /**
- * @brief ErrorLog_Message::read
- * @param data
- * @param dataSize
- * @return
+ * @brief read message from bytes
+ *
+ * @param data data-pointer to read
+ * @param dataSize number of bytes to read
+ *
+ * @return false, if message is broken, else true
  */
 bool
 ErrorLog_Message::read(const void* data, const uint64_t dataSize)
@@ -229,8 +240,9 @@ ErrorLog_Message::read(const void* data, const uint64_t dataSize)
 }
 
 /**
- * @brief ErrorLog_Message::createBlob
- * @param result
+ * @brief convert message content into binary to send
+ *
+ * @param result data-buffer for the resulting binary
  */
 void
 ErrorLog_Message::createBlob(DataBuffer &result)
