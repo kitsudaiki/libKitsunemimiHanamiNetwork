@@ -65,7 +65,8 @@ public:
                                           const void*,
                                           const uint64_t),
                     void (*processGenericRequest)(Sakura::Session*,
-                                                  const Kitsunemimi::Json::JsonItem&,
+                                                  const void*,
+                                                  const uint64_t,
                                                   const uint64_t),
                     ErrorContainer &error,
                     const bool createServer = true,
@@ -107,7 +108,8 @@ public:
                               const void*,
                               const uint64_t);
     void (*processGenericRequest)(Sakura::Session*,
-                                  const Kitsunemimi::Json::JsonItem&,
+                                  const void*,
+                                  const uint64_t,
                                   const uint64_t);
 
 

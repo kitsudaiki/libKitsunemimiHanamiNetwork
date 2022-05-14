@@ -87,7 +87,8 @@ Session_Test::initTestCase()
 }
 
 void genreicMessageCallback(Sakura::Session* session,
-                            const Kitsunemimi::Json::JsonItem&,
+                            const void*,
+                            const uint64_t,
                             const uint64_t blockerId)
 {
     ErrorContainer error;
