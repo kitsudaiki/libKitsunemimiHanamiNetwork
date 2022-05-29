@@ -88,18 +88,20 @@ HanamiMessage::appendString(DataBuffer &result, const std::string &val)
  * @param val buffer with bytes to add
  */
 void
-HanamiMessage::appendData(DataBuffer &result, const DataBuffer &val)
+HanamiMessage::appendData(DataBuffer &result,
+                          const void* data,
+                          const uint64_t &dataSize)
 {
     uint8_t* u8Data = static_cast<uint8_t*>(result.data);
 
     Entry* tempEntry = reinterpret_cast<Entry*>(&u8Data[m_pos]);
     tempEntry->type = EntryType::BYTE_ENTRY_TYPE;
-    tempEntry->valSize = val.usedBufferSize;
+    tempEntry->valSize = dataSize;
     m_pos += sizeof(Entry);
 
     if(tempEntry->valSize > 0)
     {
-        memcpy(&u8Data[m_pos], val.data, val.usedBufferSize);
+        memcpy(&u8Data[m_pos], data, dataSize);
         m_pos += tempEntry->valSize;
     }
 }
@@ -169,9 +171,11 @@ HanamiMessage::readString(const void* data, std::string& output)
  * @return false, if message is invalid, else true
  */
 bool
-HanamiMessage::readBinary(const void* data, DataBuffer &output)
+HanamiMessage::readBinary(void* data,
+                          void** resultData,
+                          uint64_t &resultDataSize)
 {
-    const uint8_t* u8Data = static_cast<const uint8_t*>(data);
+    uint8_t* u8Data = static_cast<uint8_t*>(data);
     const Entry* tempEntry = nullptr;
 
     tempEntry = reinterpret_cast<const Entry*>(&u8Data[m_pos]);
@@ -182,9 +186,9 @@ HanamiMessage::readBinary(const void* data, DataBuffer &output)
 
     if(tempEntry->valSize > 0)
     {
-        allocateBlocks_DataBuffer(output, calcBytesToBlocks(tempEntry->valSize));
-        memcpy(output.data, data, tempEntry->valSize);
+        *resultData = reinterpret_cast<void*>(&u8Data[m_pos]);
         m_pos += tempEntry->valSize;
+        resultDataSize = tempEntry->valSize;
     }
 
     return true;
@@ -214,7 +218,7 @@ ErrorLog_Message::~ErrorLog_Message() {}
  * @return false, if message is broken, else true
  */
 bool
-ErrorLog_Message::read(const void* data, const uint64_t dataSize)
+ErrorLog_Message::read(void* data, const uint64_t dataSize)
 {
     if(initRead(data, dataSize) == false) {
         return false;

@@ -65,7 +65,7 @@ public:
     HanamiMessage();
     virtual ~HanamiMessage();
 
-    virtual bool read(const void* data, const uint64_t dataSize) = 0;
+    virtual bool read(void* data, const uint64_t dataSize) = 0;
     virtual void createBlob(DataBuffer &result) = 0;
 
 protected:
@@ -74,11 +74,11 @@ protected:
 
     void initBlob(DataBuffer &result, const uint64_t totalMsgSize);
     void appendString(DataBuffer &result, const std::string &val);
-    void appendData(DataBuffer &result, const DataBuffer &val);
+    void appendData(DataBuffer &result, const void* data, const uint64_t &dataSize);
 
     bool initRead(const void* data, const uint64_t dataSize);
     bool readString(const void* data, std::string& output);
-    bool readBinary(const void* data, DataBuffer& output);
+    bool readBinary(void* data, void** resultData, uint64_t &resultDataSize);
 };
 
 //==================================================================================================
@@ -96,7 +96,7 @@ public:
     std::string context = "";
     std::string values = "";
 
-    bool read(const void* data, const uint64_t dataSize);
+    bool read(void* data, const uint64_t dataSize);
     void createBlob(DataBuffer &result);
 };
 
