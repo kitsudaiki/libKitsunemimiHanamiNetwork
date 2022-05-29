@@ -65,7 +65,7 @@ public:
                                           const void*,
                                           const uint64_t),
                     void (*processGenericRequest)(Sakura::Session*,
-                                                  const void*,
+                                                  void*,
                                                   const uint64_t,
                                                   const uint64_t),
                     ErrorContainer &error,
@@ -108,7 +108,7 @@ public:
                               const void*,
                               const uint64_t);
     void (*processGenericRequest)(Sakura::Session*,
-                                  const void*,
+                                  void*,
                                   const uint64_t,
                                   const uint64_t);
 

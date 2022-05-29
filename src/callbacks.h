@@ -94,7 +94,7 @@ standaloneDataCallback(void*,
     if(type == SAKURA_GENERIC_MESSAGE)
     {
         const SakuraGenericHeader* header = static_cast<const SakuraGenericHeader*>(data->data);
-        const char* msgBody = &static_cast<const char*>(data->data)[sizeof(SakuraGenericHeader)];
+        char* msgBody = &static_cast<char*>(data->data)[sizeof(SakuraGenericHeader)];
         HanamiMessaging::getInstance()->processGenericRequest(session,
                                                               msgBody,
                                                               header->size,

@@ -87,7 +87,7 @@ Session_Test::initTestCase()
 }
 
 void genreicMessageCallback(Sakura::Session* session,
-                            const void*,
+                            void*,
                             const uint64_t,
                             const uint64_t blockerId)
 {
