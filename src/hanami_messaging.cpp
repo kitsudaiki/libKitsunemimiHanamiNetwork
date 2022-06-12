@@ -190,6 +190,33 @@ HanamiMessaging::addServer(const std::string &serverAddress,
 }
 
 /**
+ * @brief HanamiMessaging::createTemporaryClient
+ * @param remoteIdentifier
+ * @param error
+ * @return
+ */
+HanamiMessagingClient*
+HanamiMessaging::createTemporaryClient(const std::string &remoteIdentifier,
+                                       const std::string &target,
+                                       ErrorContainer &error)
+{
+    bool success = false;
+    const std::string address = GET_STRING_CONFIG(target, "address", success);
+    if(address != "")
+    {
+        const uint16_t port = static_cast<uint16_t>(GET_INT_CONFIG(target, "port", success));
+        HanamiMessagingClient* newClient = new HanamiMessagingClient(remoteIdentifier,
+                                                                     address,
+                                                                     port);
+        newClient->startThread();
+
+        return newClient;
+    }
+
+    return nullptr;
+}
+
+/**
  * @brief initalize client-connections
  *
  * @param list of groups in config-file

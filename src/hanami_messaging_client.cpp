@@ -48,7 +48,7 @@ HanamiMessagingClient::~HanamiMessagingClient()
  * @brief set callback for stram-message
  */
 bool
-HanamiMessagingClient::setStreamCallback(Hanami::HanamiMessagingClient* receiver,
+HanamiMessagingClient::setStreamCallback(void* receiver,
                                          void (*processStream)(void*,
                                                                Sakura::Session*,
                                                                const void*,
@@ -58,7 +58,7 @@ HanamiMessagingClient::setStreamCallback(Hanami::HanamiMessagingClient* receiver
 
     if(m_session != nullptr)
     {
-        m_session->setStreamCallback(receiver->m_session, processStream);
+        m_session->setStreamCallback(receiver, processStream);
         return true;
     }
 
@@ -172,10 +172,6 @@ HanamiMessagingClient::sendGenericMessage(const void* data,
                                           ErrorContainer &error)
 {
     std::lock_guard<std::mutex> guard(m_sessionLock);
-
-    if(static_cast<const uint8_t*>(data)[0] == 1) {
-        std::cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"<<std::endl;
-    }
 
     // get client
     if(m_session == nullptr) {

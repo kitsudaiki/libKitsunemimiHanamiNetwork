@@ -50,7 +50,7 @@ public:
                            const RequestMessage &request,
                            ErrorContainer &error);
 
-    bool setStreamCallback(HanamiMessagingClient* receiver,
+    bool setStreamCallback(void* receiver,
                            void (*processStream)(void*,
                                                  Sakura::Session*,
                                                  const void*,
