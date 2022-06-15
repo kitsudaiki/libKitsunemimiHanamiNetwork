@@ -30,9 +30,9 @@
 
 #include <libKitsunemimiHanamiCommon/config.h>
 #include <libKitsunemimiHanamiCommon/component_support.h>
+#include <libKitsunemimiHanamiCommon/messages.h>
 #include <libKitsunemimiHanamiEndpoints/endpoint.h>
 #include <libKitsunemimiHanamiMessaging/hanami_messaging_client.h>
-#include <libKitsunemimiHanamiMessaging/hanami_messages.h>
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/files/text_file.h>
@@ -208,7 +208,11 @@ HanamiMessaging::createTemporaryClient(const std::string &remoteIdentifier,
         HanamiMessagingClient* newClient = new HanamiMessagingClient(remoteIdentifier,
                                                                      address,
                                                                      port);
-        newClient->startThread();
+        if(newClient->connectClient(error) == false)
+        {
+            delete newClient;
+            return nullptr;
+        }
 
         return newClient;
     }

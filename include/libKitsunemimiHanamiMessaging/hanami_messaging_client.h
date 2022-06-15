@@ -56,6 +56,7 @@ public:
                                                  const void*,
                                                  const uint64_t));
     bool closeClient(ErrorContainer &error);
+    bool connectClient(ErrorContainer &error);
 
 protected:
     void run();
@@ -77,7 +78,6 @@ private:
     std::mutex m_sessionLock;
 
     void replaceSession(Sakura::Session* newSession);
-    bool connectClient(ErrorContainer &error);
     bool waitForAllConnected(const uint32_t timeout);
 
     bool createRequest(Kitsunemimi::Sakura::Session* session,
