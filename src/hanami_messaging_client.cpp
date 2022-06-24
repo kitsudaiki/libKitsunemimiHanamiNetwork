@@ -48,7 +48,7 @@ HanamiMessagingClient::~HanamiMessagingClient()
  * @brief set callback for stram-message
  */
 bool
-HanamiMessagingClient::setStreamCallback(Hanami::HanamiMessagingClient* receiver,
+HanamiMessagingClient::setStreamCallback(void* receiver,
                                          void (*processStream)(void*,
                                                                Sakura::Session*,
                                                                const void*,
@@ -58,7 +58,7 @@ HanamiMessagingClient::setStreamCallback(Hanami::HanamiMessagingClient* receiver
 
     if(m_session != nullptr)
     {
-        m_session->setStreamCallback(receiver->m_session, processStream);
+        m_session->setStreamCallback(receiver, processStream);
         return true;
     }
 
@@ -173,10 +173,6 @@ HanamiMessagingClient::sendGenericMessage(const void* data,
 {
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
-    if(static_cast<const uint8_t*>(data)[0] == 1) {
-        std::cout<<"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"<<std::endl;
-    }
-
     // get client
     if(m_session == nullptr) {
         return false;
@@ -282,6 +278,21 @@ HanamiMessagingClient::replaceSession(Sakura::Session* newSession)
     m_session = newSession;
 }
 
+/**
+ * @brief isUuid
+ * @param id
+ * @return
+ */
+bool
+isUuid(const std::string& id)
+{
+    const std::regex uuidRegex("[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}");
+    if(regex_match(id, uuidRegex)) {
+        return true;
+    }
+
+    return false;
+}
 
 /**
  * @brief create a new connection to a client
@@ -301,7 +312,10 @@ HanamiMessagingClient::connectClient(ErrorContainer &error)
 
     Kitsunemimi::Sakura::Session* newSession = nullptr;
     Kitsunemimi::Sakura::SessionController* sessionCon = HanamiMessaging::m_sessionController;
-    const std::string localIdent = SupportedComponents::getInstance()->localComponent;
+    std::string localIdent = SupportedComponents::getInstance()->localComponent;
+    if(isUuid(m_remoteIdentifier)) {
+        localIdent = m_remoteIdentifier;
+    }
 
     // connect based on the address-type
     const std::regex ipv4Regex("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");

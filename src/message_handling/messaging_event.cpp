@@ -27,7 +27,7 @@
 
 #include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
 #include <libKitsunemimiHanamiMessaging/hanami_messaging_client.h>
-#include <libKitsunemimiHanamiMessaging/hanami_messages.h>
+#include <libKitsunemimiHanamiCommon/messages.h>
 #include <libKitsunemimiHanamiCommon/component_support.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>

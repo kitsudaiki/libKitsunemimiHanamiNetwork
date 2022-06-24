@@ -30,9 +30,9 @@
 
 #include <libKitsunemimiHanamiCommon/config.h>
 #include <libKitsunemimiHanamiCommon/component_support.h>
+#include <libKitsunemimiHanamiCommon/messages.h>
 #include <libKitsunemimiHanamiEndpoints/endpoint.h>
 #include <libKitsunemimiHanamiMessaging/hanami_messaging_client.h>
-#include <libKitsunemimiHanamiMessaging/hanami_messages.h>
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/files/text_file.h>
@@ -187,6 +187,37 @@ HanamiMessaging::addServer(const std::string &serverAddress,
     }
 
     return true;
+}
+
+/**
+ * @brief HanamiMessaging::createTemporaryClient
+ * @param remoteIdentifier
+ * @param error
+ * @return
+ */
+HanamiMessagingClient*
+HanamiMessaging::createTemporaryClient(const std::string &remoteIdentifier,
+                                       const std::string &target,
+                                       ErrorContainer &error)
+{
+    bool success = false;
+    const std::string address = GET_STRING_CONFIG(target, "address", success);
+    if(address != "")
+    {
+        const uint16_t port = static_cast<uint16_t>(GET_INT_CONFIG(target, "port", success));
+        HanamiMessagingClient* newClient = new HanamiMessagingClient(remoteIdentifier,
+                                                                     address,
+                                                                     port);
+        if(newClient->connectClient(error) == false)
+        {
+            delete newClient;
+            return nullptr;
+        }
+
+        return newClient;
+    }
+
+    return nullptr;
 }
 
 /**

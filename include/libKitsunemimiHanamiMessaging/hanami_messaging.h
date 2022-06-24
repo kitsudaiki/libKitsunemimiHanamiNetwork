@@ -77,6 +77,9 @@ public:
                    const std::string &certFilePath = "",
                    const std::string &keyFilePath = "");
 
+    HanamiMessagingClient* createTemporaryClient(const std::string &remoteIdentifier,
+                                                 const std::string &target,
+                                                 ErrorContainer &error);
     bool closeClient(const std::string &remoteIdentifier,
                      ErrorContainer &error);
 
