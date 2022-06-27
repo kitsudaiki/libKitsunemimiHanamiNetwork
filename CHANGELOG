@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.0] - 2022-06-27
+
+### Added
+- getter for internal token-request (will be moved to libMisakaGuard in the near future)
+
+### Changed
+- reworked client-handling for better usability and stability
+- updated error-loggin
+
+
 ## [0.3.0] - 2022-02-13
 
 ### Added
