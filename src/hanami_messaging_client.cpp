@@ -250,7 +250,9 @@ HanamiMessagingClient::triggerSakuraFile(ResponseMessage& response,
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
     // get client
-    if(m_session == nullptr) {
+    if(m_session == nullptr)
+    {
+        error.addMeesage("Hanami-client is not initialized it a session");
         return false;
     }
 
@@ -259,7 +261,14 @@ HanamiMessagingClient::triggerSakuraFile(ResponseMessage& response,
     {
         response.success = false;
         response.type = INTERNAL_SERVER_ERROR_RTYPE;
+        error.addMeesage("Failed to trigger sakura-file.");
+        return false;
+    }
 
+    if(response.success == false)
+    {
+        error.addMeesage(response.responseContent);
+        error.addMeesage("Failed to trigger sakura-file.");
         return false;
     }
 
@@ -299,7 +308,7 @@ isUuid(const std::string& id)
  *
  * @param error reference for error-ourput
  *
- * @return
+ * @return true, if successful, else false
  */
 bool
 HanamiMessagingClient::connectClient(ErrorContainer &error)
@@ -336,7 +345,9 @@ HanamiMessagingClient::connectClient(ErrorContainer &error)
     }
 
     // check if connection was successful
-    if(newSession == nullptr) {
+    if(newSession == nullptr)
+    {
+        error.addMeesage("Failed to initialize session to address '" + m_address + "'");
         return false;
     }
 
@@ -486,7 +497,8 @@ HanamiMessagingClient::createRequest(Kitsunemimi::Sakura::Session* session,
     DataBuffer* responseData = session->sendRequest(buffer, totalSize, 0, error);
     if(responseData == nullptr)
     {
-        error.addMeesage("timeout while triggering sakura-file with id: " + request.id);
+        error.addMeesage("Timeout while triggering sakura-file with id: " + request.id);
+        LOG_ERROR(error);
         return false;
     }
 

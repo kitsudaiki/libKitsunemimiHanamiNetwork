@@ -550,9 +550,9 @@ HanamiMessaging::addInternalClient(const std::string &identifier,
 {
     m_incominglock.lock();
 
+    // check if client-identifier is already registered
     std::map<std::string, HanamiMessagingClient*>::const_iterator it;
     it = m_incomingClients.find(identifier);
-
     if(it != m_incomingClients.end())
     {
         m_incominglock.unlock();
@@ -564,6 +564,7 @@ HanamiMessaging::addInternalClient(const std::string &identifier,
         return false;
     }
 
+    // register client
     HanamiMessagingClient* newInternalCient = new HanamiMessagingClient(identifier, "", 0);
     newInternalCient->replaceSession(newSession);
     m_incomingClients.insert(std::make_pair(identifier, newInternalCient));
