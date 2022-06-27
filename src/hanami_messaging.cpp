@@ -39,6 +39,7 @@
 #include <libKitsunemimiCommon/buffer/stack_buffer.h>
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiCrypto/common.h>
+#include <libKitsunemimiJwt/jwt.h>
 
 using Kitsunemimi::Sakura::SessionController;
 
@@ -630,6 +631,84 @@ HanamiMessaging::removeInternalClient(const std::string &identifier)
     m_incominglock.unlock();
 
     return false;
+}
+
+/**
+ * @brief HanamiMessaging::getInternalToken
+ *
+ * @param token reference for the resulting token
+ * @param componentName name of the component where the token is for
+ * @param error reference for error-output
+ *
+ * @return true, if successful, else false
+ */
+bool
+HanamiMessaging::getInternalToken(std::string &token,
+                                  const std::string &componentName,
+                                  Kitsunemimi::ErrorContainer &error)
+{
+    SupportedComponents* scomp = SupportedComponents::getInstance();
+    if(scomp->support[Kitsunemimi::Hanami::MISAKA])
+    {
+        HanamiMessagingClient* misakaClient = HanamiMessaging::getInstance()->misakaClient;
+        Kitsunemimi::Hanami::ResponseMessage response;
+
+        // create request
+        Kitsunemimi::Hanami::RequestMessage request;
+        request.id = "v1/token/internal";
+        request.httpType = Kitsunemimi::Hanami::GET_TYPE;
+        request.inputValues = "{\"service_name\":\"" + componentName + "\"}";
+
+        // request internal jwt-token from misaka
+        if(misakaClient->triggerSakuraFile(response, request, error) == false)
+        {
+            error.addMeesage("Failed to trigger misaka to get a internal jwt-token");
+            LOG_ERROR(error);
+            return false;
+        }
+
+        // check response
+        if(response.success == false)
+        {
+            error.addMeesage("Failed to trigger misaka to get a internal jwt-token (no success)");
+            LOG_ERROR(error);
+            return false;
+        }
+
+        // parse response
+        Kitsunemimi::Json::JsonItem jsonItem;
+        if(jsonItem.parse(response.responseContent, error) == false)
+        {
+            error.addMeesage("Failed to parse internal jwt-token from response of misaka");
+            LOG_ERROR(error);
+            return false;
+        }
+
+        // get token from response
+        token = jsonItem.getItemContent()->toMap()->getStringByKey("token");
+        if(token == "")
+        {
+            error.addMeesage("Internal jwt-token from misaka is empty");
+            LOG_ERROR(error);
+            return false;
+        }
+
+        return true;
+    }
+    else
+    {
+        // create fake-token, in case that misaka is not available
+        const std::string tokenKeyStr = "-";
+        CryptoPP::SecByteBlock tokenKey((unsigned char*)tokenKeyStr.c_str(), tokenKeyStr.size());
+        Kitsunemimi::Jwt::Jwt jwt(tokenKey);
+
+        // fill token with content
+        Kitsunemimi::Json::JsonItem jsonItem;
+        jsonItem.insert("service_name", componentName);
+        jwt.create_HS256_Token(token, jsonItem, 0);
+
+        return true;
+    }
 }
 
 }  // namespace Hanami
