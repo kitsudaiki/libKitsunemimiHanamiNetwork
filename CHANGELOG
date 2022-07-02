@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.1] - 2022-07-02
+
+### Changed
+- use POST instead of GET requests for token-requests
+
+### Fixed
+- error-codes of requests are not replaced by 500-errors anymore
+
+
 ## [0.4.0] - 2022-06-27
 
 ### Added
