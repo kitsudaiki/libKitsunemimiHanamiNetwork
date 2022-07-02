@@ -657,7 +657,7 @@ HanamiMessaging::getInternalToken(std::string &token,
         // create request
         Kitsunemimi::Hanami::RequestMessage request;
         request.id = "v1/token/internal";
-        request.httpType = Kitsunemimi::Hanami::GET_TYPE;
+        request.httpType = Kitsunemimi::Hanami::POST_TYPE;
         request.inputValues = "{\"service_name\":\"" + componentName + "\"}";
 
         // request internal jwt-token from misaka
