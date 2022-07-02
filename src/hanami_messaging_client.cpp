@@ -265,13 +265,6 @@ HanamiMessagingClient::triggerSakuraFile(ResponseMessage& response,
         return false;
     }
 
-    if(response.success == false)
-    {
-        error.addMeesage(response.responseContent);
-        error.addMeesage("Failed to trigger sakura-file.");
-        return false;
-    }
-
     return true;
 }
 

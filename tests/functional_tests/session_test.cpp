@@ -174,7 +174,8 @@ Session_Test::runTest()
 
     m_numberOfTests++;
     request.id = "fail";
-    TEST_EQUAL(client->triggerSakuraFile(response, request, error), false);
+    TEST_EQUAL(client->triggerSakuraFile(response, request, error), true);
+    TEST_EQUAL(response.success, false);
 
     m_numberOfTests++;
     TEST_EQUAL(response.type, NOT_IMPLEMENTED_RTYPE);
