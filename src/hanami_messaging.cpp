@@ -525,13 +525,16 @@ HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
     // create binary for send
     Kitsunemimi::Hanami::ErrorLog_Message msg;
     msg.errorMsg = errorMessage;
-    DataBuffer msgBlob;
-    msg.createBlob(msgBlob);
+    uint8_t buffer[96*1024];
+    const uint64_t size = msg.createBlob(buffer, 96*1024);
+    if(size == 0) {
+        return;
+    }
 
     // send
     Kitsunemimi::ErrorContainer error;
     if(sagiriClient != nullptr) {
-        sagiriClient->sendGenericMessage(msgBlob.data, msgBlob.usedBufferSize, error);
+        sagiriClient->sendGenericMessage(buffer, size, error);
     }
     m_whileSendError = false;
 }
