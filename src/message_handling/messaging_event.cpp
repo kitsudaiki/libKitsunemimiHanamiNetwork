@@ -294,12 +294,15 @@ MessagingEvent::sendErrorMessage(const DataMap &context,
     msg.values = inputValues.toString(true);
     msg.component = SupportedComponents::getInstance()->localComponent;
     msg.errorMsg = errorMessage;
-    DataBuffer msgBlob;
-    msg.createBlob(msgBlob);
+    uint8_t buffer[96*1024];
+    const uint64_t size = msg.createBlob(buffer, 96*1024);
+    if(size == 0) {
+        return;
+    }
 
     // send
     Kitsunemimi::ErrorContainer error;
-    if(client->sendGenericMessage(msgBlob.data, msgBlob.usedBufferSize, error) == false) {
+    if(client->sendGenericMessage(buffer, size, error) == false) {
         LOG_ERROR(error);
     }
 }
