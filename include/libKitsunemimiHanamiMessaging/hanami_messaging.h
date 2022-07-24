@@ -93,12 +93,12 @@ public:
 
     static Kitsunemimi::Sakura::SessionController* m_sessionController;
 
-    HanamiMessagingClient* misakaClient = nullptr;
+    HanamiMessagingClient* misakiClient = nullptr;
     HanamiMessagingClient* sagiriClient = nullptr;
     HanamiMessagingClient* kyoukoClient = nullptr;
     HanamiMessagingClient* azukiClient  = nullptr;
     HanamiMessagingClient* nozomiClient = nullptr;
-    HanamiMessagingClient* izumiClient  = nullptr;
+    HanamiMessagingClient* inoriClient  = nullptr;
     HanamiMessagingClient* toriiClient  = nullptr;
 
     //=====================================================================

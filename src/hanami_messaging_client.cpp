@@ -252,7 +252,7 @@ HanamiMessagingClient::triggerSakuraFile(ResponseMessage& response,
     // get client
     if(m_session == nullptr)
     {
-        error.addMeesage("Hanami-client is not initialized it a session");
+        error.addMeesage("Hanami-client is not initialized with a session");
         return false;
     }
 

@@ -91,8 +91,8 @@ HanamiMessaging::fillSupportOverview()
     if(GET_STRING_CONFIG("kyouko", "address", success) != "") {
         supportedComponents->support[KYOUKO] = true;
     }
-    if(GET_STRING_CONFIG("misaka", "address", success) != "") {
-        supportedComponents->support[MISAKA] = true;
+    if(GET_STRING_CONFIG("misaki", "address", success) != "") {
+        supportedComponents->support[MISAKI] = true;
     }
     if(GET_STRING_CONFIG("azuki", "address", success) != "") {
         supportedComponents->support[AZUKI] = true;
@@ -100,11 +100,11 @@ HanamiMessaging::fillSupportOverview()
     if(GET_STRING_CONFIG("sagiri", "address", success) != "") {
         supportedComponents->support[SAGIRI] = true;
     }
-    if(GET_STRING_CONFIG("nagato", "address", success) != "") {
-        supportedComponents->support[NAGATO] = true;
+    if(GET_STRING_CONFIG("nozomi", "address", success) != "") {
+        supportedComponents->support[NOZOMI] = true;
     }
-    if(GET_STRING_CONFIG("izuna", "address", success) != "") {
-        supportedComponents->support[IZUNA] = true;
+    if(GET_STRING_CONFIG("inori", "address", success) != "") {
+        supportedComponents->support[INORI] = true;
     }
 }
 
@@ -244,8 +244,8 @@ HanamiMessaging::initClients(const std::vector<std::string> &configGroups)
             newClient->startThread();
             m_clients.emplace(groupName, newClient);
 
-            if(groupName == "misaka") {
-                misakaClient = newClient;
+            if(groupName == "misaki") {
+                misakiClient = newClient;
             }
             if(groupName == "sagiri") {
                 sagiriClient = newClient;
@@ -259,8 +259,8 @@ HanamiMessaging::initClients(const std::vector<std::string> &configGroups)
             if(groupName == "nozomi") {
                 nozomiClient = newClient;
             }
-            if(groupName == "izumi") {
-                izumiClient = newClient;
+            if(groupName == "inori") {
+                inoriClient = newClient;
             }
             if(groupName == "torii") {
                 toriiClient = newClient;
@@ -652,9 +652,9 @@ HanamiMessaging::getInternalToken(std::string &token,
                                   Kitsunemimi::ErrorContainer &error)
 {
     SupportedComponents* scomp = SupportedComponents::getInstance();
-    if(scomp->support[Kitsunemimi::Hanami::MISAKA])
+    if(scomp->support[Kitsunemimi::Hanami::MISAKI])
     {
-        HanamiMessagingClient* misakaClient = HanamiMessaging::getInstance()->misakaClient;
+        HanamiMessagingClient* misakiClient = HanamiMessaging::getInstance()->misakiClient;
         Kitsunemimi::Hanami::ResponseMessage response;
 
         // create request
@@ -663,10 +663,10 @@ HanamiMessaging::getInternalToken(std::string &token,
         request.httpType = Kitsunemimi::Hanami::POST_TYPE;
         request.inputValues = "{\"service_name\":\"" + componentName + "\"}";
 
-        // request internal jwt-token from misaka
-        if(misakaClient->triggerSakuraFile(response, request, error) == false)
+        // request internal jwt-token from misaki
+        if(misakiClient->triggerSakuraFile(response, request, error) == false)
         {
-            error.addMeesage("Failed to trigger misaka to get a internal jwt-token");
+            error.addMeesage("Failed to trigger misaki to get a internal jwt-token");
             LOG_ERROR(error);
             return false;
         }
@@ -674,7 +674,7 @@ HanamiMessaging::getInternalToken(std::string &token,
         // check response
         if(response.success == false)
         {
-            error.addMeesage("Failed to trigger misaka to get a internal jwt-token (no success)");
+            error.addMeesage("Failed to trigger misaki to get a internal jwt-token (no success)");
             LOG_ERROR(error);
             return false;
         }
@@ -683,7 +683,7 @@ HanamiMessaging::getInternalToken(std::string &token,
         Kitsunemimi::Json::JsonItem jsonItem;
         if(jsonItem.parse(response.responseContent, error) == false)
         {
-            error.addMeesage("Failed to parse internal jwt-token from response of misaka");
+            error.addMeesage("Failed to parse internal jwt-token from response of misaki");
             LOG_ERROR(error);
             return false;
         }
@@ -692,7 +692,7 @@ HanamiMessaging::getInternalToken(std::string &token,
         token = jsonItem.getItemContent()->toMap()->getStringByKey("token");
         if(token == "")
         {
-            error.addMeesage("Internal jwt-token from misaka is empty");
+            error.addMeesage("Internal jwt-token from misaki is empty");
             LOG_ERROR(error);
             return false;
         }
@@ -701,7 +701,7 @@ HanamiMessaging::getInternalToken(std::string &token,
     }
     else
     {
-        // create fake-token, in case that misaka is not available
+        // create fake-token, in case that misaki is not available
         const std::string tokenKeyStr = "-";
         CryptoPP::SecByteBlock tokenKey((unsigned char*)tokenKeyStr.c_str(), tokenKeyStr.size());
         Kitsunemimi::Jwt::Jwt jwt(tokenKey);

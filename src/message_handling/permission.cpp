@@ -69,9 +69,9 @@ checkPermission(DataMap &context,
 
     Kitsunemimi::Json::JsonItem parsedResult;
 
-    // only get token content without validation, if misaka is not supported
+    // only get token content without validation, if misaki is not supported
     if(skipPermission
-            || SupportedComponents::getInstance()->support[MISAKA] == false)
+            || SupportedComponents::getInstance()->support[MISAKI] == false)
     {
         if(Kitsunemimi::Jwt::getJwtTokenPayload(parsedResult, token, error) == false)
         {
@@ -96,7 +96,7 @@ checkPermission(DataMap &context,
 }
 
 /**
- * @brief send request to misaka to check and parse a jwt-token
+ * @brief send request to misaki to check and parse a jwt-token
  *
  * @param parsedResult reference for the parsed result
  * @param token token to check and to parse
@@ -120,15 +120,15 @@ getPermission(Json::JsonItem &parsedResult,
     requestMsg.httpType = HttpRequestType::GET_TYPE;
     requestMsg.inputValues = "{\"token\":\"" + token + "\"}";
 
-    if(messaging->misakaClient == nullptr)
+    if(messaging->misakiClient == nullptr)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
-        error.addMeesage("Misaka is not correctly initilized.");
+        error.addMeesage("Misaki is not correctly initilized.");
         return false;
     }
 
-    // send request to misaka
-    if(messaging->misakaClient->triggerSakuraFile(responseMsg, requestMsg, error) == false)
+    // send request to misaki
+    if(messaging->misakiClient->triggerSakuraFile(responseMsg, requestMsg, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::INTERNAL_SERVER_ERROR_RTYPE;
         error.addMeesage("Unable send validation for token-request.");
