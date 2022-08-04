@@ -185,6 +185,7 @@ Session_Test::runTest()
                                          false,
                                          error), true);
 
+    sleep(1);
     m_numberOfTests++;
     TEST_EQUAL(messaging->closeClient("target", error), true);
     sleep(1);
