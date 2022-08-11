@@ -55,7 +55,7 @@ function get_required_private_repo_github () {
     NUMBER_OF_THREADS=$3
 
     # clone repo
-    git clone https://kitsudaiki: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@github.com/kitsudaiki/$REPO_NAME.git "$PARENT_DIR/$REPO_NAME"
+    git clone https://kitsudaiki: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@github.com/kitsudaiki/$REPO_NAME.git "$PARENT_DIR/$REPO_NAME"
     cd "$PARENT_DIR/$REPO_NAME"
     git checkout $TAG_OR_BRANCH
 
@@ -68,13 +68,13 @@ function get_required_private_repo_github () {
 echo ""
 echo "###########################################################################################################"
 echo ""
-get_required_kitsune_lib_repo "libKitsunemimiCommon" "v0.26.0" 8
-get_required_kitsune_lib_repo "libKitsunemimiJson" "v0.11.3" 1
-get_required_kitsune_lib_repo "libKitsunemimiJinja2" "v0.9.1" 1
-get_required_kitsune_lib_repo "libKitsunemimiIni" "v0.5.1" 1
+get_required_kitsune_lib_repo "libKitsunemimiCommon" "v0.27.0" 8
+get_required_kitsune_lib_repo "libKitsunemimiJson" "develop" 1
+get_required_kitsune_lib_repo "libKitsunemimiJinja2" "develop" 1
+get_required_kitsune_lib_repo "libKitsunemimiIni" "develop" 1
 get_required_kitsune_lib_repo "libKitsunemimiNetwork" "v0.8.2" 8
-get_required_kitsune_lib_repo "libKitsunemimiArgs" "v0.4.0" 8
-get_required_kitsune_lib_repo "libKitsunemimiConfig" "v0.4.0" 8
+get_required_kitsune_lib_repo "libKitsunemimiArgs" "develop" 8
+get_required_kitsune_lib_repo "libKitsunemimiConfig" "develop" 8
 echo ""
 echo "###########################################################################################################"
 echo ""
@@ -83,22 +83,22 @@ get_required_private_repo_github "libKitsunemimiJwt" "develop" 8
 echo ""
 echo "###########################################################################################################"
 echo ""
-get_required_kitsune_lib_repo "libKitsunemimiSakuraNetwork" "v0.8.4" 8
-get_required_kitsune_lib_repo "libKitsunemimiSakuraLang" "v0.12.0" 1
+get_required_kitsune_lib_repo "libKitsunemimiSakuraNetwork" "develop" 8
+get_required_kitsune_lib_repo "libKitsunemimiSakuraLang" "develop" 1
 echo ""
 echo "###########################################################################################################"
 echo ""
 get_required_private_repo_github "libKitsunemimiHanamiCommon" "develop" 8
-get_required_private_repo_github "libKitsunemimiHanamiEndpoints" "v0.1.0" 1
+get_required_private_repo_github "libKitsunemimiHanamiEndpoints" "develop" 1
 echo ""
 echo "###########################################################################################################"
 
 #-----------------------------------------------------------------------------------------------------------------
 
 if [ $1 = "test" ]; then
-    build_kitsune_lib_repo "libKitsunemimiHanamiMessaging" 1 "run_tests"
+    build_kitsune_lib_repo "libKitsunemimiHanamiMessaging" 4 "run_tests"
 else
-    build_kitsune_lib_repo "libKitsunemimiHanamiMessaging" 1
+    build_kitsune_lib_repo "libKitsunemimiHanamiMessaging" 4
 fi
 
 #-----------------------------------------------------------------------------------------------------------------

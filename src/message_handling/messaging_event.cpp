@@ -32,7 +32,7 @@
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 
-#include <libKitsunemimiCommon/common_items/data_items.h>
+#include <libKitsunemimiCommon/items/data_items.h>
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCrypto/common.h>
