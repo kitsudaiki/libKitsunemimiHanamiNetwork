@@ -709,7 +709,11 @@ HanamiMessaging::getInternalToken(std::string &token,
         // fill token with content
         Kitsunemimi::Json::JsonItem jsonItem;
         jsonItem.insert("service_name", componentName);
-        jwt.create_HS256_Token(token, jsonItem, 0);
+        if(jwt.create_HS256_Token(token, jsonItem, 0, error) == false)
+        {
+            error.addMeesage("Failed to create JWT-Token");
+            return false;
+        }
 
         return true;
     }
