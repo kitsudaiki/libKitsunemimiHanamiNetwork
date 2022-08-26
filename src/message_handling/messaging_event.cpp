@@ -277,8 +277,8 @@ MessagingEvent::sendErrorMessage(const DataMap &context,
 
     // is user-id is not set, the error is send by the generic error-callback anyway and so it
     // doesn't have to be send twice
-    const std::string userUuid = context.getStringByKey("uuid");
-    if(userUuid == "") {
+    const std::string userId = context.getStringByKey("id");
+    if(userId == "") {
         return;
     }
 
@@ -289,7 +289,7 @@ MessagingEvent::sendErrorMessage(const DataMap &context,
 
     // create binary for send
     Kitsunemimi::Hanami::ErrorLog_Message msg;
-    msg.userUuid = userUuid;
+    msg.userId = userId;
     msg.context = context.toString(true);
     msg.values = inputValues.toString(true);
     msg.component = SupportedComponents::getInstance()->localComponent;
