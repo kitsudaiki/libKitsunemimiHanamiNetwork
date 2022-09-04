@@ -1,4 +1,4 @@
-# libKitsunemimiHanamiMessaging
+# libKitsunemimiHanamiNetwork
 
 ## Build
 
@@ -53,8 +53,8 @@ In all of my repositories you will find a `build.sh`. You only have to run this 
 Run the following commands:
 
 ```
-git clone https://github.com/kitsudaiki/libKitsunemimiHanamiMessaging.git
-cd libKitsunemimiHanamiMessaging
+git clone https://github.com/kitsudaiki/libKitsunemimiHanamiNetwork.git
+cd libKitsunemimiHanamiNetwork
 ./build.sh
 cd ../result
 ```

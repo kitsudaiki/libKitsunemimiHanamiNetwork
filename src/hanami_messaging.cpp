@@ -20,7 +20,7 @@
  *      limitations under the License.
  */
 
-#include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
+#include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 #include <callbacks.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
@@ -32,7 +32,7 @@
 #include <libKitsunemimiHanamiCommon/component_support.h>
 #include <libKitsunemimiHanamiCommon/messages.h>
 #include <libKitsunemimiHanamiEndpoints/endpoint.h>
-#include <libKitsunemimiHanamiMessaging/hanami_messaging_client.h>
+#include <libKitsunemimiHanamiNetwork/hanami_messaging_client.h>
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/files/text_file.h>

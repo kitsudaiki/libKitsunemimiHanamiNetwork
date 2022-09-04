@@ -27,7 +27,7 @@
 #include <message_handling/message_definitions.h>
 #include <message_handling/messaging_event_queue.h>
 
-#include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
+#include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>

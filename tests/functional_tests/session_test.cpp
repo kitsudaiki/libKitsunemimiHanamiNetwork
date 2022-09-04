@@ -30,8 +30,8 @@
 #include <libKitsunemimiSakuraLang/blossom.h>
 #include <libKitsunemimiSakuraNetwork/session.h>
 
-#include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
-#include <libKitsunemimiHanamiMessaging/hanami_messaging_client.h>
+#include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
+#include <libKitsunemimiHanamiNetwork/hanami_messaging_client.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
 #include <libKitsunemimiHanamiEndpoints/endpoint.h>
 

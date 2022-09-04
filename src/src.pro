@@ -71,8 +71,8 @@ INCLUDEPATH += $$PWD \
                $$PWD/../include
 
 HEADERS += \
-    ../include/libKitsunemimiHanamiMessaging/hanami_messaging.h \
-    ../include/libKitsunemimiHanamiMessaging/hanami_messaging_client.h \
+    ../include/libKitsunemimiHanamiNetwork/hanami_messaging.h \
+    ../include/libKitsunemimiHanamiNetwork/hanami_messaging_client.h \
     message_handling/message_definitions.h \
     message_handling/permission.h \
     callbacks.h \
