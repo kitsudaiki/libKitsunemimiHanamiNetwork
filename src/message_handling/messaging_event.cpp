@@ -25,8 +25,8 @@
 
 #include <message_handling/message_definitions.h>
 
-#include <libKitsunemimiHanamiMessaging/hanami_messaging.h>
-#include <libKitsunemimiHanamiMessaging/hanami_messaging_client.h>
+#include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
+#include <libKitsunemimiHanamiNetwork/hanami_messaging_client.h>
 #include <libKitsunemimiHanamiCommon/messages.h>
 #include <libKitsunemimiHanamiCommon/component_support.h>
 

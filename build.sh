@@ -96,9 +96,9 @@ echo "##########################################################################
 #-----------------------------------------------------------------------------------------------------------------
 
 if [ $1 = "test" ]; then
-    build_kitsune_lib_repo "libKitsunemimiHanamiMessaging" 4 "run_tests"
+    build_kitsune_lib_repo "libKitsunemimiHanamiNetwork" 4 "run_tests"
 else
-    build_kitsune_lib_repo "libKitsunemimiHanamiMessaging" 4
+    build_kitsune_lib_repo "libKitsunemimiHanamiNetwork" 4
 fi
 
 #-----------------------------------------------------------------------------------------------------------------

@@ -22,7 +22,7 @@ jobs:
         run: |
           mkdir /build_result
           cp -r ../result/* /build_result/
-          cp ../build/libKitsunemimiHanamiMessaging/tests/functional_tests/functional_tests /build_result/
+          cp ../build/libKitsunemimiHanamiNetwork/tests/functional_tests/functional_tests /build_result/
       - name: "Check target-directory"
         run: ls -l /build_result
       - name: Create artifact
