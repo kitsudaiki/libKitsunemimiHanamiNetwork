@@ -259,19 +259,19 @@ MessagingEvent::processEvent()
 }
 
 /**
- * @brief send error-message to sagiri
+ * @brief send error-message to shiori
  *
  * @param context context context-object to log
  * @param inputValues inputValues input-values of the request to log
- * @param errorMessage error-message to send to sagiri
+ * @param errorMessage error-message to send to shiori
  */
 void
 MessagingEvent::sendErrorMessage(const DataMap &context,
                                  const Json::JsonItem &inputValues,
                                  const std::string &errorMessage)
 {
-    // check if sagiri is supported
-    if(SupportedComponents::getInstance()->support[SAGIRI] == false) {
+    // check if shiori is supported
+    if(SupportedComponents::getInstance()->support[SHIORI] == false) {
         return;
     }
 
@@ -282,7 +282,7 @@ MessagingEvent::sendErrorMessage(const DataMap &context,
         return;
     }
 
-    HanamiMessagingClient* client = HanamiMessaging::getInstance()->sagiriClient;
+    HanamiMessagingClient* client = HanamiMessaging::getInstance()->shioriClient;
     if(client == nullptr) {
         return;
     }
