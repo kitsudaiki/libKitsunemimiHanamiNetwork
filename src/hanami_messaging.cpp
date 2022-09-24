@@ -70,7 +70,7 @@ HanamiMessaging::~HanamiMessaging() {}
 /**
  * @brief callback, which is triggered by error-logs
  *
- * @param errorMessage error-message to send to sagiri
+ * @param errorMessage error-message to send to shiori
  */
 void
 handleErrorCallback(const std::string &errorMessage)
@@ -97,8 +97,8 @@ HanamiMessaging::fillSupportOverview()
     if(GET_STRING_CONFIG("azuki", "address", success) != "") {
         supportedComponents->support[AZUKI] = true;
     }
-    if(GET_STRING_CONFIG("sagiri", "address", success) != "") {
-        supportedComponents->support[SAGIRI] = true;
+    if(GET_STRING_CONFIG("shiori", "address", success) != "") {
+        supportedComponents->support[SHIORI] = true;
     }
     if(GET_STRING_CONFIG("nozomi", "address", success) != "") {
         supportedComponents->support[NOZOMI] = true;
@@ -247,8 +247,8 @@ HanamiMessaging::initClients(const std::vector<std::string> &configGroups)
             if(groupName == "misaki") {
                 misakiClient = newClient;
             }
-            if(groupName == "sagiri") {
-                sagiriClient = newClient;
+            if(groupName == "shiori") {
+                shioriClient = newClient;
             }
             if(groupName == "kyouko") {
                 kyoukoClient = newClient;
@@ -315,7 +315,7 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
         return false;
     }
 
-    // set callback to send error-messages to sagiri for logging
+    // set callback to send error-messages to shiori for logging
     setErrorLogCallback(&handleErrorCallback);
 
     // init client-handler
@@ -457,21 +457,21 @@ getDatetime()
 }
 
 /**
- * @brief send error-message to sagiri
+ * @brief send error-message to shiori
  *
- * @param errorMessage error-message to send to sagiri
+ * @param errorMessage error-message to send to shiori
  */
 void
 HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
 {
-    // handle local sagiri
-    if(SupportedComponents::getInstance()->localComponent == "sagiri")
+    // handle local shiori
+    if(SupportedComponents::getInstance()->localComponent == "shiori")
     {
         bool success = false;
         Kitsunemimi::ErrorContainer error;
 
         // TODO: handle result
-        const std::string resultLocation = GET_STRING_CONFIG("sagiri", "error_location", success);
+        const std::string resultLocation = GET_STRING_CONFIG("shiori", "error_location", success);
         const std::string filePath = resultLocation + "/generic";
 
         // create an empty file, if no exist
@@ -490,7 +490,7 @@ HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
 
         // fill table
         tableOutput.addRow(std::vector<std::string>{"timestamp", getDatetime()});
-        tableOutput.addRow(std::vector<std::string>{"component", "sagiri"});
+        tableOutput.addRow(std::vector<std::string>{"component", "shiori"});
         tableOutput.addRow(std::vector<std::string>{"error", errorMessage});
 
         // write to file
@@ -502,13 +502,13 @@ HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
         return;
     }
 
-    // check if sagiri is supported
-    if(SupportedComponents::getInstance()->support[SAGIRI] == false) {
+    // check if shiori is supported
+    if(SupportedComponents::getInstance()->support[SHIORI] == false) {
         return;
     }
 
     // this function is triggered by every error-message in this logger. if an error is in the
-    // following code which sending to sagiri, it would result in an infinity-look of this function
+    // following code which sending to shiori, it would result in an infinity-look of this function
     // and a stackoverflow. So this variable should ensure, that error in this function doesn't
     // tigger the function in itself again.
     if(m_whileSendError == true) {
@@ -517,7 +517,7 @@ HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
     m_whileSendError = true;
 
     // create message
-    HanamiMessagingClient* client = HanamiMessaging::getInstance()->sagiriClient;
+    HanamiMessagingClient* client = HanamiMessaging::getInstance()->shioriClient;
     if(client == nullptr) {
         return;
     }
@@ -533,8 +533,8 @@ HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
 
     // send
     Kitsunemimi::ErrorContainer error;
-    if(sagiriClient != nullptr) {
-        sagiriClient->sendGenericMessage(buffer, size, error);
+    if(shioriClient != nullptr) {
+        shioriClient->sendGenericMessage(buffer, size, error);
     }
     m_whileSendError = false;
 }
