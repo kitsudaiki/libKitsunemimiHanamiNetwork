@@ -58,21 +58,15 @@ checkPermission(DataMap &context,
                 const bool skipPermission,
                 Kitsunemimi::ErrorContainer &error)
 {
-    // precheck
-    if(token == "")
-    {
-        status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
-        status.errorMessage = "Token is required but missing in the request.";
-        error.addMeesage("Token is missing in request");
-        return false;
-    }
-
     Kitsunemimi::Json::JsonItem parsedResult;
 
     // only get token content without validation, if misaki is not supported
-    if(skipPermission
-            || SupportedComponents::getInstance()->support[MISAKI] == false)
+    if(skipPermission)
     {
+        if(token == "") {
+            return true;
+        }
+
         if(Kitsunemimi::Jwt::getJwtTokenPayload(parsedResult, token, error) == false)
         {
             status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
@@ -81,6 +75,15 @@ checkPermission(DataMap &context,
     }
     else
     {
+        // precheck
+        if(token == "")
+        {
+            status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
+            status.errorMessage = "Token is required but missing in the request.";
+            error.addMeesage("Token is missing in request");
+            return false;
+        }
+
         if(getPermission(parsedResult, token, status, error) == false)
         {
             status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
