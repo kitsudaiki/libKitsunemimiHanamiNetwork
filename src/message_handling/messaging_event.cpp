@@ -141,13 +141,13 @@ MessagingEvent::trigger(DataMap &resultingItems,
         inputValues.remove("token");
     }
 
-    const bool skipPermission = m_session->m_sessionIdentifier != "torii";
+    const bool skipPermission = m_session->m_sessionIdentifier != "torii"
+                                || m_targetId != "v1/auth"
+                                || m_targetId != "v1/token"
+                                || m_targetId != "v1/token/internal";
 
     // check permission
-    if(m_targetId != "v1/auth"
-            && m_targetId != "v1/token"
-            && m_targetId != "v1/token/internal"
-            && checkPermission(context, token, status, skipPermission, error) == false)
+    if(checkPermission(context, token, status, skipPermission, error) == false)
     {
         status.statusCode = Kitsunemimi::Hanami::UNAUTHORIZED_RTYPE;
         return false;
