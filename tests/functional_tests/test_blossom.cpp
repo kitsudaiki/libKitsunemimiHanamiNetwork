@@ -41,15 +41,15 @@ TestBlossom::TestBlossom(Session_Test* sessionTest)
 }
 
 bool
-TestBlossom::runTask(Sakura::BlossomLeaf &blossomLeaf,
+TestBlossom::runTask(Sakura::BlossomIO &blossomIO,
                      const DataMap &,
                      Sakura::BlossomStatus &status,
                      ErrorContainer &)
 {
     LOG_DEBUG("TestBlossom");
-    const int value = blossomLeaf.input.get("input").getInt();
+    const int value = blossomIO.input.get("input").getInt();
     m_sessionTest->compare(value, 42);
-    blossomLeaf.output.insert("output", 42);
+    blossomIO.output.insert("output", 42);
 
     status.statusCode = OK_RTYPE;
     return true;

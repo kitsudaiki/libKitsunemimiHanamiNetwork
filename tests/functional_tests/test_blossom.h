@@ -38,7 +38,7 @@ public:
     TestBlossom(Session_Test* sessionTest);
 
 protected:
-    bool runTask(Sakura::BlossomLeaf &blossomLeaf,
+    bool runTask(Sakura::BlossomIO &blossomIO,
                  const DataMap &context,
                  Sakura::BlossomStatus &status,
                  ErrorContainer &);
