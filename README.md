@@ -64,11 +64,6 @@ It create automatic a `build` and `result` directory in the directory, where you
 Tested on Debian and Ubuntu. If you use Centos, Arch, etc and the build-script fails on your machine, then please write me a mail and I will try to fix the script.
 
 
-## Usage
-
-(sorry, docu comes later)
-
-
 ## Contributing
 
 Please give me as many inputs as possible: Bugs, bad code style, bad documentation and so on.
