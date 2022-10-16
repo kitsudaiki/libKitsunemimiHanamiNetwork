@@ -81,7 +81,7 @@ function download_private_repo_github () {
 echo ""
 echo "###########################################################################################################"
 echo ""
-get_required_kitsune_lib_repo "libKitsunemimiCommon" "v0.27.0" 8
+get_required_kitsune_lib_repo "libKitsunemimiCommon" "develop" 8
 get_required_kitsune_lib_repo "libKitsunemimiJson" "develop" 1
 get_required_kitsune_lib_repo "libKitsunemimiJinja2" "develop" 1
 get_required_kitsune_lib_repo "libKitsunemimiIni" "develop" 1

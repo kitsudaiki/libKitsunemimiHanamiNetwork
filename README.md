@@ -27,19 +27,19 @@ IMPORTANT: All my projects are only tested on Linux.
 
 Repository-Name | Version-Tag | Download-Path
 --- | --- | ---
-libKitsunemimiCommon | v0.26.0 |  https://github.com/kitsudaiki/libKitsunemimiCommon.git
-libKitsunemimiJson | v0.11.3 |  https://github.com/kitsudaiki/libKitsunemimiJson.git
-libKitsunemimiJinja2 | v0.9.1 |  https://github.com/kitsudaiki/libKitsunemimiJinja2.git
-libKitsunemimiIni | v0.5.1 |  https://github.com/kitsudaiki/libKitsunemimiIni.git
-libKitsunemimiNetwork | v0.8.2 |  https://github.com/kitsudaiki/libKitsunemimiNetwork.git
-libKitsunemimiArgs | v0.4.0 |  https://github.com/kitsudaiki/libKitsunemimiArgs.git
-libKitsunemimiConfig | v0.4.0 |  https://github.com/kitsudaiki/libKitsunemimiConfig.git
-libKitsunemimiCrypto | v0.2.0 |  -
-libKitsunemimiJwt | v0.4.1 |  -
-libKitsunemimiSakuraNetwork | v0.8.4 |  https://github.com/kitsudaiki/libKitsunemimiSakuraNetwork.git
-libKitsunemimiSakuraLang | v0.12.0 |  https://github.com/kitsudaiki/libKitsunemimiSakuraLang.git
-libKitsunemimiHanamiCommon | v0.2.0 |  -
-libKitsunemimiHanamiEndpoints | v0.1.0 |  -
+libKitsunemimiCommon | develop |  https://github.com/kitsudaiki/libKitsunemimiCommon.git
+libKitsunemimiJson | develop |  https://github.com/kitsudaiki/libKitsunemimiJson.git
+libKitsunemimiJinja2 | develop |  https://github.com/kitsudaiki/libKitsunemimiJinja2.git
+libKitsunemimiIni | develop |  https://github.com/kitsudaiki/libKitsunemimiIni.git
+libKitsunemimiNetwork | develop |  https://github.com/kitsudaiki/libKitsunemimiNetwork.git
+libKitsunemimiArgs | develop |  https://github.com/kitsudaiki/libKitsunemimiArgs.git
+libKitsunemimiConfig | develop |  https://github.com/kitsudaiki/libKitsunemimiConfig.git
+libKitsunemimiCrypto | develop |  https://github.com/kitsudaiki/libKitsunemimiCrypto.git
+libKitsunemimiJwt | develop |  https://github.com/kitsudaiki/libKitsunemimiJwt.git
+libKitsunemimiSakuraNetwork | develop |  https://github.com/kitsudaiki/libKitsunemimiSakuraNetwork.git
+libKitsunemimiSakuraLang | develop |  https://github.com/kitsudaiki/libKitsunemimiSakuraLang.git
+libKitsunemimiHanamiCommon | develop |  https://github.com/kitsudaiki/libKitsunemimiHanamiCommon.git
+libKitsunemimiHanamiEndpoints | develop |  https://github.com/kitsudaiki/libKitsunemimiHanamiEndpoints.git
 
 
 
