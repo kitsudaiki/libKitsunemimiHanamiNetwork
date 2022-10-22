@@ -160,6 +160,7 @@ HanamiMessagingClient::sendStreamMessage(const void* data,
 /**
  * @brief send a generic message over the internal messaging
  *
+ * @param subType message-subtype for identifiacation of the correct package
  * @param data pointer to data to send
  * @param dataSize size of data to send
  * @param error reference for error-output
@@ -167,7 +168,8 @@ HanamiMessagingClient::sendStreamMessage(const void* data,
  * @return true, if successful, else false
  */
 bool
-HanamiMessagingClient::sendGenericMessage(const void* data,
+HanamiMessagingClient::sendGenericMessage(const uint32_t subType,
+                                          const void* data,
                                           const uint64_t dataSize,
                                           ErrorContainer &error)
 {
@@ -181,6 +183,7 @@ HanamiMessagingClient::sendGenericMessage(const void* data,
     // create header
     SakuraGenericHeader header;
     header.size = dataSize;
+    header.subType = subType;
 
     // create message
     const uint64_t bufferSize = sizeof(SakuraGenericHeader) + dataSize;
@@ -195,6 +198,7 @@ HanamiMessagingClient::sendGenericMessage(const void* data,
 /**
  * @brief send a generic message over the internal messaging
  *
+ * @param subType message-subtype for identifiacation of the correct package
  * @param data pointer to data to send
  * @param dataSize size of data to send
  * @param error reference for error-output
@@ -202,7 +206,8 @@ HanamiMessagingClient::sendGenericMessage(const void* data,
  * @return pointer to data-buffer with response, if successful, else nullptr
  */
 DataBuffer*
-HanamiMessagingClient::sendGenericRequest(const void* data,
+HanamiMessagingClient::sendGenericRequest(const uint32_t subType,
+                                          const void* data,
                                           const uint64_t dataSize,
                                           ErrorContainer &error)
 {
@@ -216,6 +221,7 @@ HanamiMessagingClient::sendGenericRequest(const void* data,
     // create header
     SakuraGenericHeader header;
     header.size = dataSize;
+    header.subType = subType;
 
     // create message
     const uint64_t bufferSize = sizeof(SakuraGenericHeader) + dataSize;

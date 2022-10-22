@@ -15,7 +15,7 @@ jobs:
       - name: "update package-list"
         run: apt-get update
       - name: "install missing packages"
-        run: apt-get install -y libssl-dev   uuid-dev libcrypto++-dev
+        run: apt-get install -y libssl-dev   uuid-dev libcrypto++-dev  protobuf-compiler
       - name: "Build project"
         env:
           CLONE_TOKEN: ${{ secrets.CLONE_TOKEN }}
@@ -47,7 +47,7 @@ jobs:
       - name: "update package-list"
         run: apt-get update
       - name: "install missing packages"
-        run: apt-get install -y libssl-dev   uuid-dev libcrypto++-dev
+        run: apt-get install -y libssl-dev   uuid-dev libcrypto++-dev  protobuf-compiler
       - name: Get artifact
         uses: actions/download-artifact@v3
         with:

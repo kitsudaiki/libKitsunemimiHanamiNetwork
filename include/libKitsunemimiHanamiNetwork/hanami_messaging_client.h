@@ -38,11 +38,13 @@ public:
                            const bool replyExpected,
                            ErrorContainer &error);
 
-    bool sendGenericMessage(const void* data,
+    bool sendGenericMessage(const uint32_t subType,
+                            const void* data,
                             const uint64_t dataSize,
                             ErrorContainer &error);
 
-    DataBuffer* sendGenericRequest(const void* data,
+    DataBuffer* sendGenericRequest(const uint32_t subType,
+                                   const void* data,
                                    const uint64_t dataSize,
                                    ErrorContainer &error);
 
