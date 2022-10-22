@@ -1,6 +1,6 @@
 QT -= qt core gui
 
-TARGET = KitsunemimiHanamiMessaging
+TARGET = KitsunemimiHanamiNetwork
 CONFIG += c++17
 TEMPLATE = lib
 VERSION = 0.4.1

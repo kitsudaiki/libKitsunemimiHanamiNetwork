@@ -5,7 +5,7 @@ QT -= qt core gui
 CONFIG   -= app_bundle
 CONFIG += c++17 console
 
-LIBS += -L../../src -lKitsunemimiHanamiMessaging
+LIBS += -L../../src -lKitsunemimiHanamiNetwork
 INCLUDEPATH += $$PWD
 
 
