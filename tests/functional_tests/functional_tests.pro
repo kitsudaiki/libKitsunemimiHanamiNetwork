@@ -79,7 +79,7 @@ LIBS += -L../../../libKitsunemimiCommon/src/debug -lKitsunemimiCommon
 LIBS += -L../../../libKitsunemimiCommon/src/release -lKitsunemimiCommon
 INCLUDEPATH += ../../../libKitsunemimiCommon/include
 
-LIBS += -lssl -lcryptopp -lcrypto
+LIBS += -lssl -lcryptopp -lcrypto -pthread -lprotobuf
 
 SOURCES += \
     main.cpp \

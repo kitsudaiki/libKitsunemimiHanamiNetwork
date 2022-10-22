@@ -49,6 +49,20 @@ function get_required_kitsune_lib_repo () {
     build_kitsune_lib_repo $REPO_NAME $NUMBER_OF_THREADS $ADDITIONAL_CONFIGS
 }
 
+function download_repo_github () {
+    REPO_NAME=$1
+    TAG_OR_BRANCH=$2
+
+    # clone repo
+    git clone https://github.com/kitsudaiki/$REPO_NAME.git "$BUILD_DIR/$REPO_NAME"
+    git clone https://github.com/kitsudaiki/$REPO_NAME.git "$PARENT_DIR/$REPO_NAME"
+    cd "$BUILD_DIR/$REPO_NAME"
+    git checkout $TAG_OR_BRANCH
+    cd "$PARENT_DIR/$REPO_NAME"
+    git checkout $TAG_OR_BRANCH
+}
+
+
 
 #-----------------------------------------------------------------------------------------------------------------
 
@@ -74,6 +88,7 @@ echo "##########################################################################
 echo ""
 get_required_kitsune_lib_repo "libKitsunemimiHanamiCommon" "develop" 8
 get_required_kitsune_lib_repo "libKitsunemimiHanamiEndpoints" "develop" 1
+download_repo_github "libKitsunemimiHanamiMessages" "develop"
 echo ""
 echo "###########################################################################################################"
 

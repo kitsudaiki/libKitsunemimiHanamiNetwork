@@ -65,6 +65,7 @@ public:
                                           const void*,
                                           const uint64_t),
                     void (*processGenericRequest)(Sakura::Session*,
+                                                  const uint32_t,
                                                   void*,
                                                   const uint64_t,
                                                   const uint64_t),
@@ -114,6 +115,7 @@ public:
                               const void*,
                               const uint64_t);
     void (*processGenericRequest)(Sakura::Session*,
+                                  const uint32_t,
                                   void*,
                                   const uint64_t,
                                   const uint64_t);

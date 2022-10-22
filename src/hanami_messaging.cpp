@@ -30,7 +30,6 @@
 
 #include <libKitsunemimiHanamiCommon/config.h>
 #include <libKitsunemimiHanamiCommon/component_support.h>
-#include <libKitsunemimiHanamiCommon/messages.h>
 #include <libKitsunemimiHanamiEndpoints/endpoint.h>
 #include <libKitsunemimiHanamiNetwork/hanami_messaging_client.h>
 
@@ -40,6 +39,9 @@
 #include <libKitsunemimiConfig/config_handler.h>
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJwt/jwt.h>
+
+#include <../../libKitsunemimiHanamiMessages/protobuffers/shiori_messages.proto3.pb.h>
+#include <../../libKitsunemimiHanamiMessages/message_sub_types.h>
 
 using Kitsunemimi::Sakura::SessionController;
 
@@ -303,6 +305,7 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
                                                   const void*,
                                                   const uint64_t),
                             void (*processGenericRequest)(Sakura::Session*,
+                                                          const uint32_t,
                                                           void*,
                                                           const uint64_t,
                                                           const uint64_t),
@@ -523,19 +526,26 @@ HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
     }
 
     // create binary for send
-    Kitsunemimi::Hanami::ErrorLog_Message msg;
-    msg.errorMsg = errorMessage;
+    ErrorLog_Message msg;
+    msg.set_errormsg(errorMessage);
+
+    // serialize message
     uint8_t buffer[96*1024];
-    const uint64_t size = msg.createBlob(buffer, 96*1024);
-    if(size == 0) {
+    const uint64_t msgSize = msg.ByteSizeLong();
+    if(msg.SerializeToArray(buffer, msgSize) == false)
+    {
+        m_whileSendError = false;
         return;
     }
 
-    // send
+    // send message
     Kitsunemimi::ErrorContainer error;
-    if(shioriClient != nullptr) {
-        shioriClient->sendGenericMessage(buffer, size, error);
+    if(client->sendGenericMessage(SHIORI_ERROR_LOG_MESSAGE_TYPE, buffer, msgSize, error) == false)
+    {
+        m_whileSendError = false;
+        return;
     }
+
     m_whileSendError = false;
 }
 

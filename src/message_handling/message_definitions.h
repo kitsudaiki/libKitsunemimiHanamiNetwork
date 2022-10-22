@@ -49,6 +49,7 @@ struct SakuraTriggerHeader
 struct SakuraGenericHeader
 {
     const uint8_t type = SAKURA_GENERIC_MESSAGE;
+    uint32_t subType = 0;
     uint32_t size = 0;
 };
 

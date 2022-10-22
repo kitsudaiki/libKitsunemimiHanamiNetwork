@@ -27,7 +27,6 @@
 
 #include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 #include <libKitsunemimiHanamiNetwork/hanami_messaging_client.h>
-#include <libKitsunemimiHanamiCommon/messages.h>
 #include <libKitsunemimiHanamiCommon/component_support.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
@@ -36,6 +35,9 @@
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiJson/json_item.h>
 #include <libKitsunemimiCrypto/common.h>
+
+#include <../../libKitsunemimiHanamiMessages/protobuffers/shiori_messages.proto3.pb.h>
+#include <../../libKitsunemimiHanamiMessages/message_sub_types.h>
 
 using Kitsunemimi::Sakura::SakuraLangInterface;
 
@@ -288,22 +290,26 @@ MessagingEvent::sendErrorMessage(const DataMap &context,
     }
 
     // create binary for send
-    Kitsunemimi::Hanami::ErrorLog_Message msg;
-    msg.userId = userId;
-    msg.context = context.toString(true);
-    msg.values = inputValues.toString(true);
-    msg.component = SupportedComponents::getInstance()->localComponent;
-    msg.errorMsg = errorMessage;
+    ErrorLog_Message msg;
+    msg.set_userid(userId);
+    msg.set_context(context.toString(true));
+    msg.set_values(inputValues.toString(true));
+    msg.set_component(SupportedComponents::getInstance()->localComponent);
+    msg.set_errormsg(errorMessage);
+
+    // serialize message
     uint8_t buffer[96*1024];
-    const uint64_t size = msg.createBlob(buffer, 96*1024);
-    if(size == 0) {
+    const uint64_t msgSize = msg.ByteSizeLong();
+    if(msg.SerializeToArray(buffer, msgSize) == false)
+    {
         return;
     }
 
-    // send
+    // send message
     Kitsunemimi::ErrorContainer error;
-    if(client->sendGenericMessage(buffer, size, error) == false) {
-        LOG_ERROR(error);
+    if(client->sendGenericMessage(SHIORI_ERROR_LOG_MESSAGE_TYPE, buffer, msgSize, error) == false)
+    {
+        return;
     }
 }
 
