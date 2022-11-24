@@ -5,6 +5,7 @@
 #include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 #include <libKitsunemimiHanamiCommon/component_support.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
+#include <libKitsunemimiHanamiCommon/functions.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
@@ -231,8 +232,6 @@ HanamiMessagingClient::sendGenericRequest(const uint32_t subType,
 
     // send
     DataBuffer* result = m_session->sendRequest(buffer, bufferSize, 10, error);
-
-    // clear buffer to avoid memory-leak
     delete[] buffer;
 
     return result;
@@ -284,22 +283,6 @@ HanamiMessagingClient::replaceSession(Sakura::Session* newSession)
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
     m_session = newSession;
-}
-
-/**
- * @brief isUuid
- * @param id
- * @return
- */
-bool
-isUuid(const std::string& id)
-{
-    const std::regex uuidRegex("[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}");
-    if(regex_match(id, uuidRegex)) {
-        return true;
-    }
-
-    return false;
 }
 
 /**

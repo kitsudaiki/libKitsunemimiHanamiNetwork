@@ -433,33 +433,6 @@ HanamiMessaging::getInstance()
 }
 
 /**
- * @brief get the current datetime of the system
- *
- * @return datetime as string
- */
-const std::string
-getDatetime()
-{
-    const time_t now = time(nullptr);
-    tm *ltm = localtime(&now);
-
-    const std::string datatime =
-            std::to_string(1900 + ltm->tm_year)
-            + "-"
-            + std::to_string(1 + ltm->tm_mon)
-            + "-"
-            + std::to_string(ltm->tm_mday)
-            + " "
-            + std::to_string(ltm->tm_hour)
-            + ":"
-            + std::to_string(ltm->tm_min)
-            + ":"
-            + std::to_string(ltm->tm_sec);
-
-    return datatime;
-}
-
-/**
  * @brief send error-message to shiori
  *
  * @param errorMessage error-message to send to shiori
@@ -467,44 +440,6 @@ getDatetime()
 void
 HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
 {
-    // handle local shiori
-    if(SupportedComponents::getInstance()->localComponent == "shiori")
-    {
-        bool success = false;
-        Kitsunemimi::ErrorContainer error;
-
-        // TODO: handle result
-        const std::string resultLocation = GET_STRING_CONFIG("shiori", "error_location", success);
-        const std::string filePath = resultLocation + "/generic";
-
-        // create an empty file, if no exist
-        if(std::filesystem::exists(filePath) == false)
-        {
-            // create new file and write content
-            std::ofstream outputFile;
-            outputFile.open(filePath);
-            outputFile.close();
-        }
-
-        // init table
-        Kitsunemimi::TableItem tableOutput;
-        tableOutput.addColumn("key");
-        tableOutput.addColumn("value");
-
-        // fill table
-        tableOutput.addRow(std::vector<std::string>{"timestamp", getDatetime()});
-        tableOutput.addRow(std::vector<std::string>{"component", "shiori"});
-        tableOutput.addRow(std::vector<std::string>{"error", errorMessage});
-
-        // write to file
-        const std::string finalMessage = tableOutput.toString(200, true) + "\n\n\n";
-        if(appendText(filePath, finalMessage, error) == false) {
-            LOG_ERROR(error);
-        }
-
-        return;
-    }
-
     // check if shiori is supported
     if(SupportedComponents::getInstance()->support[SHIORI] == false) {
         return;
