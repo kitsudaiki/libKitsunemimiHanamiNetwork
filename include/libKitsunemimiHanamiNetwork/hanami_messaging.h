@@ -88,9 +88,6 @@ public:
     HanamiMessagingClient* getIncomingClient(const std::string &identifier);
 
     void sendGenericErrorMessage(const std::string &errorMessage);
-    bool getInternalToken(std::string &token,
-                          const std::string &componentName,
-                          Kitsunemimi::ErrorContainer &error);
 
     static Kitsunemimi::Sakura::SessionController* m_sessionController;
 
