@@ -193,7 +193,10 @@ HanamiMessagingClient::sendGenericMessage(const uint32_t subType,
     memcpy(&buffer[sizeof(SakuraGenericHeader)], data, dataSize);
 
     // send
-    return m_session->sendNormalMessage(buffer, bufferSize, error);
+    const bool ret = m_session->sendNormalMessage(buffer, bufferSize, error);
+    delete[] buffer;
+
+    return ret;
 }
 
 /**
@@ -396,7 +399,6 @@ HanamiMessagingClient::waitForAllConnected(const uint32_t timeout)
     return false;
 }
 
-
 /**
  * @brief process response-message
  *
@@ -477,6 +479,7 @@ HanamiMessagingClient::createRequest(Kitsunemimi::Sakura::Session* session,
     // send
     // TODO: make timeout-time configurable
     DataBuffer* responseData = session->sendRequest(buffer, totalSize, 0, error);
+    delete[] buffer;
     if(responseData == nullptr)
     {
         error.addMeesage("Timeout while triggering sakura-file with id: " + request.id);
@@ -485,7 +488,6 @@ HanamiMessagingClient::createRequest(Kitsunemimi::Sakura::Session* session,
     }
 
     const bool ret = processResponse(response, responseData, error);
-
     delete responseData;
 
     return ret;
