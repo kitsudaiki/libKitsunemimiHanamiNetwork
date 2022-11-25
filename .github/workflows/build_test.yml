@@ -4,14 +4,17 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: 
+    container:
       image: registry.gitlab.com/kitsudaiki/kitsunemimi-ci-docker-images/normal-tests:1.2.0
     name: build-job
     steps:
       - name: "Checkout repository"
-        uses: actions/checkout@v3
-      - name: "Check directory"
-        run: ls -l ./
+        run: |
+          # use manually clone, because with the "actions/checkout@v3" action the name of the
+          # branch can not be read by the git commands, which is necessary for the build-script
+          git clone https://github.com/kitsudaiki/${GITHUB_REPOSITORY#*/}.git
+          cd ${GITHUB_REPOSITORY#*/}
+          git checkout ${GITHUB_REF#refs/heads/}
       - name: "update package-list"
         run: apt-get update
       - name: "install missing packages"
@@ -19,12 +22,14 @@ jobs:
       - name: "Build project"
         env:
           CLONE_TOKEN: ${{ secrets.CLONE_TOKEN }}
-        run: ./build.sh test
+        run:  |
+          cd ${GITHUB_REPOSITORY#*/}
+          ./build.sh test
       - name: "Copy files"
         run: |
           mkdir /build_result
-          cp -r ../result/* /build_result/
-          cp ../build/libKitsunemimiHanamiNetwork/tests/functional_tests/functional_tests /build_result/
+          cp -r result/* /build_result/
+          cp build/${GITHUB_REPOSITORY#*/}/tests/functional_tests/functional_tests /build_result/
       - name: "Check target-directory"
         run: ls -l /build_result
       - name: Create artifact
@@ -36,7 +41,7 @@ jobs:
   functional_tests:
     needs: build
     runs-on: ubuntu-latest
-    container: 
+    container:
       image: registry.gitlab.com/kitsudaiki/kitsunemimi-ci-docker-images/normal-tests:1.2.0
     name: functional-test-job
     steps:
@@ -59,3 +64,15 @@ jobs:
         run: |
           chmod +x /build_result/functional_tests
           /build_result/functional_tests
+
+  cleanup:
+    needs: functional_tests
+    runs-on: ubuntu-latest
+    container:
+      image: registry.gitlab.com/kitsudaiki/kitsunemimi-ci-docker-images/normal-tests:1.2.0
+    name: cleanup-job
+    steps:
+      - name: "Delete artifacts"
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: result
