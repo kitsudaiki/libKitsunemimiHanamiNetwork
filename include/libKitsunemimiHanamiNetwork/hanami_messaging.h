@@ -130,7 +130,8 @@ private:
     std::mutex m_incominglock;
 
     void fillSupportOverview();
-    bool initClients(const std::vector<std::string> &configGroups);
+    bool initClients(const std::vector<std::string> &configGroups,
+                     ErrorContainer &error);
     bool initEndpoints(ErrorContainer &error,
                        const std::string &predefinedEndpoints);
 

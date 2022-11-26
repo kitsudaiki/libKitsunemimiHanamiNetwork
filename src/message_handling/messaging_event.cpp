@@ -298,17 +298,20 @@ MessagingEvent::sendErrorMessage(const DataMap &context,
     msg.set_errormsg(errorMessage);
 
     // serialize message
-    uint8_t buffer[96*1024];
     const uint64_t msgSize = msg.ByteSizeLong();
-    if(msg.SerializeToArray(buffer, msgSize) == false)
-    {
+    uint8_t* buffer = new uint8_t[msgSize];
+    if(msg.SerializeToArray(buffer, msgSize) == false) {
         return;
     }
 
     // send message
     Kitsunemimi::ErrorContainer error;
-    if(client->sendGenericMessage(SHIORI_ERROR_LOG_MESSAGE_TYPE, buffer, msgSize, error) == false)
-    {
+    const bool ret = client->sendGenericMessage(SHIORI_ERROR_LOG_MESSAGE_TYPE,
+                                                buffer,
+                                                msgSize,
+                                                error);
+    delete[] buffer;
+    if(ret == false) {
         return;
     }
 }

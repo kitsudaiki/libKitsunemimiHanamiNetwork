@@ -57,13 +57,12 @@ HanamiMessagingClient::setStreamCallback(void* receiver,
 {
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
-    if(m_session != nullptr)
-    {
-        m_session->setStreamCallback(receiver, processStream);
-        return true;
+    if(m_session == nullptr) {
+        return false;
     }
 
-    return false;
+    m_session->setStreamCallback(receiver, processStream);
+    return true;
 }
 
 /**
@@ -78,11 +77,15 @@ HanamiMessagingClient::closeClient(ErrorContainer &error)
 {
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
-    if(m_session == nullptr) {
+    if(m_session == nullptr)
+    {
+        error.addMeesage("Hanami-client is not initialized with a session");
         return false;
     }
 
-    if(m_session->closeSession(error) == false) {
+    if(m_session->closeSession(error) == false)
+    {
+        error.addMeesage("Closing Hanami-client failed");
         return false;
     }
 
@@ -106,8 +109,9 @@ HanamiMessagingClient::sendStreamMessage(StackBuffer &data,
 {
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
-    // get target-client
-    if(m_session == nullptr) {
+    if(m_session == nullptr)
+    {
+        error.addMeesage("Hanami-client is not initialized with a session");
         return false;
     }
 
@@ -145,17 +149,13 @@ HanamiMessagingClient::sendStreamMessage(const void* data,
 {
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
-    // get target-client
-    if(m_session == nullptr) {
+    if(m_session == nullptr)
+    {
+        error.addMeesage("Hanami-client is not initialized with a session");
         return false;
     }
 
-    // send stream-data
-    if(m_session->sendStreamData(data, dataSize, error, replyExpected) == false) {
-        return false;
-    }
-
-    return true;
+    return m_session->sendStreamData(data, dataSize, error, replyExpected);
 }
 
 /**
@@ -177,7 +177,9 @@ HanamiMessagingClient::sendGenericMessage(const uint32_t subType,
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
     // get client
-    if(m_session == nullptr) {
+    if(m_session == nullptr)
+    {
+        error.addMeesage("Hanami-client is not initialized with a session");
         return false;
     }
 
@@ -218,7 +220,9 @@ HanamiMessagingClient::sendGenericRequest(const uint32_t subType,
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
     // get client
-    if(m_session == nullptr) {
+    if(m_session == nullptr)
+    {
+        error.addMeesage("Hanami-client is not initialized with a session");
         return nullptr;
     }
 
@@ -312,7 +316,7 @@ HanamiMessagingClient::connectClient(ErrorContainer &error)
     }
 
     // connect based on the address-type
-    const std::regex ipv4Regex("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
+    const std::regex ipv4Regex(IPV4_REGEX);
     if(regex_match(m_address, ipv4Regex))
     {
         newSession = sessionCon->startTcpSession(m_address,

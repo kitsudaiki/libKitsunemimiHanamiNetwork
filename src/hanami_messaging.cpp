@@ -170,7 +170,7 @@ HanamiMessaging::addServer(const std::string &serverAddress,
     if(regex_match(serverAddress, ipv4Regex))
     {
         // create tcp-server
-        if(m_sessionController->addTcpServer(port, error) == 0)
+        if(m_sessionController->addTlsTcpServer(port, certFilePath, keyFilePath, error) == 0)
         {
             error.addMeesage("can't initialize tcp-server on port "
                              + std::to_string(port));
@@ -226,12 +226,14 @@ HanamiMessaging::createTemporaryClient(const std::string &remoteIdentifier,
 /**
  * @brief initalize client-connections
  *
- * @param list of groups in config-file
+ * @param configGroups list of groups in config-file
+ * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
-HanamiMessaging::initClients(const std::vector<std::string> &configGroups)
+HanamiMessaging::initClients(const std::vector<std::string> &configGroups,
+                             ErrorContainer &error)
 {
     bool success = false;
 
@@ -271,12 +273,15 @@ HanamiMessaging::initClients(const std::vector<std::string> &configGroups)
     }
 
     // wait until all connected
-    std::map<std::string, HanamiMessagingClient*>::const_iterator it;
-    for(it = m_clients.begin();
-        it != m_clients.end();
-        it++)
+    for(const auto& [name, client] : m_clients)
     {
-        it->second->waitForAllConnected(1);
+        // TODO: make wait-time configurable
+        if(client->waitForAllConnected(1) == false)
+        {
+            error.addMeesage("Failed to initalize connection for client '"
+                             + name
+                             + "'");
+        }
     }
 
     return true;
@@ -349,12 +354,18 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
         // get server-address from config
         bool success = false;
         const std::string serverAddress = GET_STRING_CONFIG("DEFAULT", "address", success);
-        if(success == false) {
+        if(success == false)
+        {
+            error.addMeesage("Failed to get server-address from config.");
+            LOG_ERROR(error);
             return false;
         }
 
         // init endpoints
-        if(initEndpoints(error, predefinedEndpoints) == false) {
+        if(initEndpoints(error, predefinedEndpoints) == false)
+        {
+            error.addMeesage("Failed to initialize endpoints.");
+            LOG_ERROR(error);
             return false;
         }
 
@@ -363,13 +374,23 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
         const uint16_t serverPort = static_cast<uint16_t>(port);
 
         // create server
-        if(addServer(serverAddress, error, serverPort) == false) {
+        if(addServer(serverAddress, error, serverPort) == false)
+        {
+            error.addMeesage("Failed to create server on address '"
+                             + serverAddress
+                             + "' with port '"
+                             + std::to_string(serverPort)
+                             + "'.");
+            LOG_ERROR(error);
             return false;
         }
     }
 
     // init clients
-    if(initClients(configGroups) == false) {
+    if(initClients(configGroups, error) == false)
+    {
+        error.addMeesage("Failed to initialize clients.");
+        LOG_ERROR(error);
         return false;
     }
 
@@ -465,8 +486,8 @@ HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
     msg.set_errormsg(errorMessage);
 
     // serialize message
-    uint8_t buffer[96*1024];
     const uint64_t msgSize = msg.ByteSizeLong();
+    uint8_t* buffer = new uint8_t[msgSize];
     if(msg.SerializeToArray(buffer, msgSize) == false)
     {
         m_whileSendError = false;
@@ -475,7 +496,12 @@ HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
 
     // send message
     Kitsunemimi::ErrorContainer error;
-    if(client->sendGenericMessage(SHIORI_ERROR_LOG_MESSAGE_TYPE, buffer, msgSize, error) == false)
+    const bool ret = client->sendGenericMessage(SHIORI_ERROR_LOG_MESSAGE_TYPE,
+                                                buffer,
+                                                msgSize,
+                                                error);
+    delete[] buffer;
+    if(ret == false)
     {
         m_whileSendError = false;
         return;
@@ -553,7 +579,7 @@ HanamiMessaging::getIncomingClient(const std::string &identifier)
 bool
 HanamiMessaging::removeInternalClient(const std::string &identifier)
 {
-    m_incominglock.lock();
+    std::lock_guard<std::mutex> guard(m_incominglock);
 
     std::map<std::string, HanamiMessagingClient*>::iterator it;
     it = m_incomingClients.find(identifier);
@@ -561,9 +587,6 @@ HanamiMessaging::removeInternalClient(const std::string &identifier)
     {
         HanamiMessagingClient* tempSession = it->second;
         m_incomingClients.erase(it);
-
-        m_incominglock.unlock();
-
         if(tempSession != nullptr)
         {
             ErrorContainer error;
@@ -576,8 +599,6 @@ HanamiMessaging::removeInternalClient(const std::string &identifier)
 
         return true;
     }
-
-    m_incominglock.unlock();
 
     return false;
 }
