@@ -5,6 +5,7 @@
 #include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 #include <libKitsunemimiHanamiCommon/component_support.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
+#include <libKitsunemimiHanamiCommon/functions.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
@@ -56,13 +57,12 @@ HanamiMessagingClient::setStreamCallback(void* receiver,
 {
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
-    if(m_session != nullptr)
-    {
-        m_session->setStreamCallback(receiver, processStream);
-        return true;
+    if(m_session == nullptr) {
+        return false;
     }
 
-    return false;
+    m_session->setStreamCallback(receiver, processStream);
+    return true;
 }
 
 /**
@@ -77,11 +77,15 @@ HanamiMessagingClient::closeClient(ErrorContainer &error)
 {
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
-    if(m_session == nullptr) {
+    if(m_session == nullptr)
+    {
+        error.addMeesage("Hanami-client is not initialized with a session");
         return false;
     }
 
-    if(m_session->closeSession(error) == false) {
+    if(m_session->closeSession(error) == false)
+    {
+        error.addMeesage("Closing Hanami-client failed");
         return false;
     }
 
@@ -105,8 +109,9 @@ HanamiMessagingClient::sendStreamMessage(StackBuffer &data,
 {
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
-    // get target-client
-    if(m_session == nullptr) {
+    if(m_session == nullptr)
+    {
+        error.addMeesage("Hanami-client is not initialized with a session");
         return false;
     }
 
@@ -144,17 +149,13 @@ HanamiMessagingClient::sendStreamMessage(const void* data,
 {
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
-    // get target-client
-    if(m_session == nullptr) {
+    if(m_session == nullptr)
+    {
+        error.addMeesage("Hanami-client is not initialized with a session");
         return false;
     }
 
-    // send stream-data
-    if(m_session->sendStreamData(data, dataSize, error, replyExpected) == false) {
-        return false;
-    }
-
-    return true;
+    return m_session->sendStreamData(data, dataSize, error, replyExpected);
 }
 
 /**
@@ -176,7 +177,9 @@ HanamiMessagingClient::sendGenericMessage(const uint32_t subType,
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
     // get client
-    if(m_session == nullptr) {
+    if(m_session == nullptr)
+    {
+        error.addMeesage("Hanami-client is not initialized with a session");
         return false;
     }
 
@@ -192,7 +195,10 @@ HanamiMessagingClient::sendGenericMessage(const uint32_t subType,
     memcpy(&buffer[sizeof(SakuraGenericHeader)], data, dataSize);
 
     // send
-    return m_session->sendNormalMessage(buffer, bufferSize, error);
+    const bool ret = m_session->sendNormalMessage(buffer, bufferSize, error);
+    delete[] buffer;
+
+    return ret;
 }
 
 /**
@@ -214,7 +220,9 @@ HanamiMessagingClient::sendGenericRequest(const uint32_t subType,
     std::lock_guard<std::mutex> guard(m_sessionLock);
 
     // get client
-    if(m_session == nullptr) {
+    if(m_session == nullptr)
+    {
+        error.addMeesage("Hanami-client is not initialized with a session");
         return nullptr;
     }
 
@@ -231,8 +239,6 @@ HanamiMessagingClient::sendGenericRequest(const uint32_t subType,
 
     // send
     DataBuffer* result = m_session->sendRequest(buffer, bufferSize, 10, error);
-
-    // clear buffer to avoid memory-leak
     delete[] buffer;
 
     return result;
@@ -287,22 +293,6 @@ HanamiMessagingClient::replaceSession(Sakura::Session* newSession)
 }
 
 /**
- * @brief isUuid
- * @param id
- * @return
- */
-bool
-isUuid(const std::string& id)
-{
-    const std::regex uuidRegex("[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}");
-    if(regex_match(id, uuidRegex)) {
-        return true;
-    }
-
-    return false;
-}
-
-/**
  * @brief create a new connection to a client
  *
  * @param error reference for error-ourput
@@ -326,7 +316,7 @@ HanamiMessagingClient::connectClient(ErrorContainer &error)
     }
 
     // connect based on the address-type
-    const std::regex ipv4Regex("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
+    const std::regex ipv4Regex(IPV4_REGEX);
     if(regex_match(m_address, ipv4Regex))
     {
         newSession = sessionCon->startTcpSession(m_address,
@@ -413,7 +403,6 @@ HanamiMessagingClient::waitForAllConnected(const uint32_t timeout)
     return false;
 }
 
-
 /**
  * @brief process response-message
  *
@@ -494,6 +483,7 @@ HanamiMessagingClient::createRequest(Kitsunemimi::Sakura::Session* session,
     // send
     // TODO: make timeout-time configurable
     DataBuffer* responseData = session->sendRequest(buffer, totalSize, 0, error);
+    delete[] buffer;
     if(responseData == nullptr)
     {
         error.addMeesage("Timeout while triggering sakura-file with id: " + request.id);
@@ -502,7 +492,6 @@ HanamiMessagingClient::createRequest(Kitsunemimi::Sakura::Session* session,
     }
 
     const bool ret = processResponse(response, responseData, error);
-
     delete responseData;
 
     return ret;

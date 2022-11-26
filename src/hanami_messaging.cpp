@@ -170,7 +170,7 @@ HanamiMessaging::addServer(const std::string &serverAddress,
     if(regex_match(serverAddress, ipv4Regex))
     {
         // create tcp-server
-        if(m_sessionController->addTcpServer(port, error) == 0)
+        if(m_sessionController->addTlsTcpServer(port, certFilePath, keyFilePath, error) == 0)
         {
             error.addMeesage("can't initialize tcp-server on port "
                              + std::to_string(port));
@@ -226,12 +226,14 @@ HanamiMessaging::createTemporaryClient(const std::string &remoteIdentifier,
 /**
  * @brief initalize client-connections
  *
- * @param list of groups in config-file
+ * @param configGroups list of groups in config-file
+ * @param error reference for error-output
  *
  * @return true, if successful, else false
  */
 bool
-HanamiMessaging::initClients(const std::vector<std::string> &configGroups)
+HanamiMessaging::initClients(const std::vector<std::string> &configGroups,
+                             ErrorContainer &error)
 {
     bool success = false;
 
@@ -271,12 +273,15 @@ HanamiMessaging::initClients(const std::vector<std::string> &configGroups)
     }
 
     // wait until all connected
-    std::map<std::string, HanamiMessagingClient*>::const_iterator it;
-    for(it = m_clients.begin();
-        it != m_clients.end();
-        it++)
+    for(const auto& [name, client] : m_clients)
     {
-        it->second->waitForAllConnected(1);
+        // TODO: make wait-time configurable
+        if(client->waitForAllConnected(1) == false)
+        {
+            error.addMeesage("Failed to initalize connection for client '"
+                             + name
+                             + "'");
+        }
     }
 
     return true;
@@ -349,12 +354,18 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
         // get server-address from config
         bool success = false;
         const std::string serverAddress = GET_STRING_CONFIG("DEFAULT", "address", success);
-        if(success == false) {
+        if(success == false)
+        {
+            error.addMeesage("Failed to get server-address from config.");
+            LOG_ERROR(error);
             return false;
         }
 
         // init endpoints
-        if(initEndpoints(error, predefinedEndpoints) == false) {
+        if(initEndpoints(error, predefinedEndpoints) == false)
+        {
+            error.addMeesage("Failed to initialize endpoints.");
+            LOG_ERROR(error);
             return false;
         }
 
@@ -363,13 +374,23 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
         const uint16_t serverPort = static_cast<uint16_t>(port);
 
         // create server
-        if(addServer(serverAddress, error, serverPort) == false) {
+        if(addServer(serverAddress, error, serverPort) == false)
+        {
+            error.addMeesage("Failed to create server on address '"
+                             + serverAddress
+                             + "' with port '"
+                             + std::to_string(serverPort)
+                             + "'.");
+            LOG_ERROR(error);
             return false;
         }
     }
 
     // init clients
-    if(initClients(configGroups) == false) {
+    if(initClients(configGroups, error) == false)
+    {
+        error.addMeesage("Failed to initialize clients.");
+        LOG_ERROR(error);
         return false;
     }
 
@@ -433,33 +454,6 @@ HanamiMessaging::getInstance()
 }
 
 /**
- * @brief get the current datetime of the system
- *
- * @return datetime as string
- */
-const std::string
-getDatetime()
-{
-    const time_t now = time(nullptr);
-    tm *ltm = localtime(&now);
-
-    const std::string datatime =
-            std::to_string(1900 + ltm->tm_year)
-            + "-"
-            + std::to_string(1 + ltm->tm_mon)
-            + "-"
-            + std::to_string(ltm->tm_mday)
-            + " "
-            + std::to_string(ltm->tm_hour)
-            + ":"
-            + std::to_string(ltm->tm_min)
-            + ":"
-            + std::to_string(ltm->tm_sec);
-
-    return datatime;
-}
-
-/**
  * @brief send error-message to shiori
  *
  * @param errorMessage error-message to send to shiori
@@ -467,44 +461,6 @@ getDatetime()
 void
 HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
 {
-    // handle local shiori
-    if(SupportedComponents::getInstance()->localComponent == "shiori")
-    {
-        bool success = false;
-        Kitsunemimi::ErrorContainer error;
-
-        // TODO: handle result
-        const std::string resultLocation = GET_STRING_CONFIG("shiori", "error_location", success);
-        const std::string filePath = resultLocation + "/generic";
-
-        // create an empty file, if no exist
-        if(std::filesystem::exists(filePath) == false)
-        {
-            // create new file and write content
-            std::ofstream outputFile;
-            outputFile.open(filePath);
-            outputFile.close();
-        }
-
-        // init table
-        Kitsunemimi::TableItem tableOutput;
-        tableOutput.addColumn("key");
-        tableOutput.addColumn("value");
-
-        // fill table
-        tableOutput.addRow(std::vector<std::string>{"timestamp", getDatetime()});
-        tableOutput.addRow(std::vector<std::string>{"component", "shiori"});
-        tableOutput.addRow(std::vector<std::string>{"error", errorMessage});
-
-        // write to file
-        const std::string finalMessage = tableOutput.toString(200, true) + "\n\n\n";
-        if(appendText(filePath, finalMessage, error) == false) {
-            LOG_ERROR(error);
-        }
-
-        return;
-    }
-
     // check if shiori is supported
     if(SupportedComponents::getInstance()->support[SHIORI] == false) {
         return;
@@ -530,8 +486,8 @@ HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
     msg.set_errormsg(errorMessage);
 
     // serialize message
-    uint8_t buffer[96*1024];
     const uint64_t msgSize = msg.ByteSizeLong();
+    uint8_t* buffer = new uint8_t[msgSize];
     if(msg.SerializeToArray(buffer, msgSize) == false)
     {
         m_whileSendError = false;
@@ -540,7 +496,12 @@ HanamiMessaging::sendGenericErrorMessage(const std::string &errorMessage)
 
     // send message
     Kitsunemimi::ErrorContainer error;
-    if(client->sendGenericMessage(SHIORI_ERROR_LOG_MESSAGE_TYPE, buffer, msgSize, error) == false)
+    const bool ret = client->sendGenericMessage(SHIORI_ERROR_LOG_MESSAGE_TYPE,
+                                                buffer,
+                                                msgSize,
+                                                error);
+    delete[] buffer;
+    if(ret == false)
     {
         m_whileSendError = false;
         return;
@@ -618,7 +579,7 @@ HanamiMessaging::getIncomingClient(const std::string &identifier)
 bool
 HanamiMessaging::removeInternalClient(const std::string &identifier)
 {
-    m_incominglock.lock();
+    std::lock_guard<std::mutex> guard(m_incominglock);
 
     std::map<std::string, HanamiMessagingClient*>::iterator it;
     it = m_incomingClients.find(identifier);
@@ -626,9 +587,6 @@ HanamiMessaging::removeInternalClient(const std::string &identifier)
     {
         HanamiMessagingClient* tempSession = it->second;
         m_incomingClients.erase(it);
-
-        m_incominglock.unlock();
-
         if(tempSession != nullptr)
         {
             ErrorContainer error;
@@ -642,91 +600,7 @@ HanamiMessaging::removeInternalClient(const std::string &identifier)
         return true;
     }
 
-    m_incominglock.unlock();
-
     return false;
-}
-
-/**
- * @brief HanamiMessaging::getInternalToken
- *
- * @param token reference for the resulting token
- * @param componentName name of the component where the token is for
- * @param error reference for error-output
- *
- * @return true, if successful, else false
- */
-bool
-HanamiMessaging::getInternalToken(std::string &token,
-                                  const std::string &componentName,
-                                  Kitsunemimi::ErrorContainer &error)
-{
-    SupportedComponents* scomp = SupportedComponents::getInstance();
-    if(scomp->support[Kitsunemimi::Hanami::MISAKI])
-    {
-        HanamiMessagingClient* misakiClient = HanamiMessaging::getInstance()->misakiClient;
-        Kitsunemimi::Hanami::ResponseMessage response;
-
-        // create request
-        Kitsunemimi::Hanami::RequestMessage request;
-        request.id = "v1/token/internal";
-        request.httpType = Kitsunemimi::Hanami::POST_TYPE;
-        request.inputValues = "{\"service_name\":\"" + componentName + "\"}";
-
-        // request internal jwt-token from misaki
-        if(misakiClient->triggerSakuraFile(response, request, error) == false)
-        {
-            error.addMeesage("Failed to trigger misaki to get a internal jwt-token");
-            LOG_ERROR(error);
-            return false;
-        }
-
-        // check response
-        if(response.success == false)
-        {
-            error.addMeesage("Failed to trigger misaki to get a internal jwt-token (no success)");
-            LOG_ERROR(error);
-            return false;
-        }
-
-        // parse response
-        Kitsunemimi::Json::JsonItem jsonItem;
-        if(jsonItem.parse(response.responseContent, error) == false)
-        {
-            error.addMeesage("Failed to parse internal jwt-token from response of misaki");
-            LOG_ERROR(error);
-            return false;
-        }
-
-        // get token from response
-        token = jsonItem.getItemContent()->toMap()->getStringByKey("token");
-        if(token == "")
-        {
-            error.addMeesage("Internal jwt-token from misaki is empty");
-            LOG_ERROR(error);
-            return false;
-        }
-
-        return true;
-    }
-    else
-    {
-        // create fake-token, in case that misaki is not available
-        const std::string tokenKeyStr = "-";
-        CryptoPP::SecByteBlock tokenKey((unsigned char*)tokenKeyStr.c_str(), tokenKeyStr.size());
-        Kitsunemimi::Jwt::Jwt jwt(tokenKey);
-
-        // fill token with content
-        Kitsunemimi::Json::JsonItem jsonItem;
-        jsonItem.insert("service_name", componentName);
-        if(jwt.create_HS256_Token(token, jsonItem, 0, error) == false)
-        {
-            error.addMeesage("Failed to create JWT-Token");
-            return false;
-        }
-
-        return true;
-    }
 }
 
 }  // namespace Hanami

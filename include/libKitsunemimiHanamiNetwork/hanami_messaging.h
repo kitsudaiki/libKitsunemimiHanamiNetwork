@@ -88,9 +88,6 @@ public:
     HanamiMessagingClient* getIncomingClient(const std::string &identifier);
 
     void sendGenericErrorMessage(const std::string &errorMessage);
-    bool getInternalToken(std::string &token,
-                          const std::string &componentName,
-                          Kitsunemimi::ErrorContainer &error);
 
     static Kitsunemimi::Sakura::SessionController* m_sessionController;
 
@@ -133,7 +130,8 @@ private:
     std::mutex m_incominglock;
 
     void fillSupportOverview();
-    bool initClients(const std::vector<std::string> &configGroups);
+    bool initClients(const std::vector<std::string> &configGroups,
+                     ErrorContainer &error);
     bool initEndpoints(ErrorContainer &error,
                        const std::string &predefinedEndpoints);
 
