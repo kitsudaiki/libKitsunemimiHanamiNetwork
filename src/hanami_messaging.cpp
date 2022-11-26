@@ -579,7 +579,7 @@ HanamiMessaging::getIncomingClient(const std::string &identifier)
 bool
 HanamiMessaging::removeInternalClient(const std::string &identifier)
 {
-    std::lock_guard<std::mutex> guard(m_incominglock);
+    m_incominglock.lock();
 
     std::map<std::string, HanamiMessagingClient*>::iterator it;
     it = m_incomingClients.find(identifier);
@@ -587,6 +587,9 @@ HanamiMessaging::removeInternalClient(const std::string &identifier)
     {
         HanamiMessagingClient* tempSession = it->second;
         m_incomingClients.erase(it);
+
+        m_incominglock.unlock();
+
         if(tempSession != nullptr)
         {
             ErrorContainer error;
@@ -599,6 +602,8 @@ HanamiMessaging::removeInternalClient(const std::string &identifier)
 
         return true;
     }
+
+    m_incominglock.unlock();
 
     return false;
 }
