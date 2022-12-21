@@ -26,8 +26,7 @@
 
 #include <libKitsunemimiConfig/config_handler.h>
 
-#include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
-#include <libKitsunemimiSakuraLang/blossom.h>
+#include <libKitsunemimiHanamiNetwork/blossom.h>
 #include <libKitsunemimiSakuraNetwork/session.h>
 
 #include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
@@ -37,8 +36,6 @@
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiCommon/files/text_file.h>
-
-using Kitsunemimi::Sakura::SakuraLangInterface;
 
 namespace Kitsunemimi
 {
@@ -81,8 +78,7 @@ Session_Test::initTestCase()
 
     ErrorContainer error;
     TestBlossom* newBlossom = new TestBlossom(this);
-    SakuraLangInterface::getInstance()->addBlossom("test1", "test2", newBlossom);
-    SakuraLangInterface::getInstance()->addTree("test_tree", getTestTree(), error);
+    HanamiMessaging::getInstance()->addBlossom("test1", "test2", newBlossom);
     Kitsunemimi::writeFile("/tmp/test-config.conf", getTestConfig(), error, true);
 }
 
@@ -153,17 +149,7 @@ Session_Test::runTest()
 
     ResponseMessage response;
     RequestMessage request;
-    request.id = "path/test2";
-    request.httpType = GET_TYPE;
-    request.inputValues = inputValues.toString();
-    m_numberOfTests++;
     HanamiMessagingClient* client = messaging->getOutgoingClient("target");
-    TEST_EQUAL(client->triggerSakuraFile(response, request, error),  true);
-    m_numberOfTests++;
-    TEST_EQUAL(response.type, 0);
-    m_numberOfTests++;
-    TEST_EQUAL(response.responseContent, "{\"test_output\":42}");
-
 
     request.id = "path-test_2/test";
     request.httpType = GET_TYPE;
@@ -193,31 +179,9 @@ Session_Test::runTest()
 
     // check that were no tests silently skipped
     m_numberOfTests++;
-    TEST_EQUAL(m_numberOfTests, 13);
+    TEST_EQUAL(m_numberOfTests, 9);
 
     std::cout<<"finish"<<std::endl;
-}
-
-/**
- * @brief Session_Test::getTestTree
- * @return
- */
-const std::string
-Session_Test::getTestTree()
-{
-    const std::string tree = "[\"test\"]\n"
-                             "(\"tree-comment\")\n"
-                             "\n"
-                             "- input = ?[int]\n"
-                             "  (\"test-comment1\")\n"
-                             "- test_output = >> [int]\n"
-                             "  (\"test-comment3\")\n"
-                             "\n"
-                             "test1(\"this is a test\")\n"
-                             "->test2:\n"
-                             "   - input = input\n"
-                             "   - output >> test_output\n";
-    return tree;
 }
 
 /**
@@ -247,12 +211,8 @@ Session_Test::getTestConfig()
 const std::string
 Session_Test::getTestEndpoints()
 {
-    const std::string endpoints = "path/test2\n"
-                                  "- GET -> tree : test_tree\n"
-                                  "\n"
-                                  "path-test_2/test\n"
+    const std::string endpoints = "path-test_2/test\n"
                                   "- GET  -> blossom : test1 : test2\n"
-                                  "- POST -> tree : group1 : test_list2_blossom\n"
                                   "\n";
     return endpoints;
 }

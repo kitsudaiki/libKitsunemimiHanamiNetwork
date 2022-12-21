@@ -39,8 +39,6 @@
 #include <../../libKitsunemimiHanamiMessages/protobuffers/shiori_messages.proto3.pb.h>
 #include <../../libKitsunemimiHanamiMessages/message_sub_types.h>
 
-using Kitsunemimi::Sakura::SakuraLangInterface;
-
 namespace Kitsunemimi
 {
 namespace Hanami
@@ -128,12 +126,12 @@ MessagingEvent::sendResponseMessage(const bool success,
 bool
 MessagingEvent::trigger(DataMap &resultingItems,
                         Json::JsonItem &inputValues,
-                        Sakura::BlossomStatus &status,
+                        Hanami::BlossomStatus &status,
                         const EndpointEntry &endpoint,
                         ErrorContainer &error)
 {
-    SakuraLangInterface* langInterface = SakuraLangInterface::getInstance();
     DataMap context;
+    HanamiMessaging* controller = HanamiMessaging::getInstance();
 
     const std::string token = inputValues["token"].getString();
     // token is moved into the context object, so to not break the check of the input-fileds of the
@@ -155,26 +153,13 @@ MessagingEvent::trigger(DataMap &resultingItems,
         return false;
     }
 
-    bool ret = false;
-    if(endpoint.type == TREE_TYPE)
-    {
-        ret = langInterface->triggerTree(resultingItems,
-                                         endpoint.name,
-                                         context,
-                                         *inputValues.getItemContent()->toMap(),
-                                         status,
-                                         error);
-    }
-    else
-    {
-        ret = langInterface->triggerBlossom(resultingItems,
-                                            endpoint.name,
-                                            endpoint.group,
-                                            context,
-                                            *inputValues.getItemContent()->toMap(),
-                                            status,
-                                            error);
-    }
+    const bool ret = controller->triggerBlossom(resultingItems,
+                                                endpoint.name,
+                                                endpoint.group,
+                                                context,
+                                                *inputValues.getItemContent()->toMap(),
+                                                status,
+                                                error);
 
     // handle error
     if(ret == false)
@@ -232,7 +217,7 @@ MessagingEvent::processEvent()
     }
 
     // execute trigger
-    Sakura::BlossomStatus status;
+    Hanami::BlossomStatus status;
     DataMap resultingItems;
     ret = trigger(resultingItems, inputValues, status, entry, error);
 

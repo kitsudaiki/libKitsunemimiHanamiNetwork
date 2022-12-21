@@ -24,7 +24,7 @@
 #define SESSION_TEST_H
 
 #include <iostream>
-
+#include <unistd.h>
 
 #include <libKitsunemimiCommon/test_helper/compare_test_helper.h>
 
@@ -58,7 +58,6 @@ public:
     uint32_t m_numberOfTests = 0;
 
 private:
-    const std::string getTestTree();
     const std::string getTestConfig();
     const std::string getTestEndpoints();
 

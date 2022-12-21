@@ -32,21 +32,19 @@ namespace Kitsunemimi
 namespace Json {
 class JsonItem;
 }
-namespace Sakura {
-struct BlossomStatus;
-}
 namespace Hanami
 {
+struct BlossomStatus;
 
 bool checkPermission(DataMap &context,
                      const std::string &token,
-                     Kitsunemimi::Sakura::BlossomStatus &status,
+                     Kitsunemimi::Hanami::BlossomStatus &status,
                      const bool skipPermission,
                      Kitsunemimi::ErrorContainer &error);
 
 bool getPermission(Json::JsonItem &parsedResult,
                    const std::string &token,
-                   Kitsunemimi::Sakura::BlossomStatus &status,
+                   Kitsunemimi::Hanami::BlossomStatus &status,
                    Kitsunemimi::ErrorContainer &error);
 
 }  // namespace Hanami

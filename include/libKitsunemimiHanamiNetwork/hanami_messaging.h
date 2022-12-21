@@ -30,8 +30,7 @@
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
-
-#include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
+#include <libKitsunemimiHanamiNetwork/structs.h>
 
 #include <libKitsunemimiCommon/logger.h>
 
@@ -47,6 +46,7 @@ class SessionController;
 }
 namespace Hanami
 {
+class Blossom;
 class HanamiMessagingClient;
 
 class HanamiMessaging
@@ -77,6 +77,21 @@ public:
                    const uint16_t port = 0,
                    const std::string &certFilePath = "",
                    const std::string &keyFilePath = "");
+
+    bool triggerBlossom(DataMap& result,
+                        const std::string &blossomName,
+                        const std::string &blossomGroupName,
+                        const DataMap &context,
+                        const DataMap &initialValues,
+                        Hanami::BlossomStatus &status,
+                        ErrorContainer &error);
+    bool doesBlossomExist(const std::string &groupName,
+                          const std::string &itemName);
+    bool addBlossom(const std::string &groupName,
+                    const std::string &itemName,
+                    Hanami::Blossom *newBlossom);
+    Hanami::Blossom* getBlossom(const std::string &groupName,
+                                const std::string &itemName);
 
     HanamiMessagingClient* createTemporaryClient(const std::string &remoteIdentifier,
                                                  const std::string &target,
@@ -136,7 +151,8 @@ private:
                        const std::string &predefinedEndpoints);
 
     static HanamiMessaging* m_messagingController;
-    void createBlossomDocu(Sakura::Blossom* blossom, std::string &docu);
+    void createBlossomDocu(Hanami::Blossom* blossom, std::string &docu);
+    std::map<std::string, std::map<std::string, Hanami::Blossom*>> m_registeredBlossoms;
 };
 
 }  // namespace Hanami

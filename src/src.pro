@@ -10,11 +10,6 @@ LIBS += -L../../libKitsunemimiCommon/src/debug -lKitsunemimiCommon
 LIBS += -L../../libKitsunemimiCommon/src/release -lKitsunemimiCommon
 INCLUDEPATH += ../../libKitsunemimiCommon/include
 
-LIBS += -L../../libKitsunemimiJinja2/src -lKitsunemimiJinja2
-LIBS += -L../../libKitsunemimiJinja2/src/debug -lKitsunemimiJinja2
-LIBS += -L../../libKitsunemimiJinja2/src/release -lKitsunemimiJinja2
-INCLUDEPATH += ../../libKitsunemimiJinja2/include
-
 LIBS += -L../../libKitsunemimiJwt/src -lKitsunemimiJwt
 LIBS += -L../../libKitsunemimiJwt/src/debug -lKitsunemimiJwt
 LIBS += -L../../libKitsunemimiJwt/src/release -lKitsunemimiJwt
@@ -39,11 +34,6 @@ LIBS += -L../../libKitsunemimiConfig/src -lKitsunemimiConfig
 LIBS += -L../../libKitsunemimiConfig/src/debug -lKitsunemimiConfig
 LIBS += -L../../libKitsunemimiConfig/src/release -lKitsunemimiConfig
 INCLUDEPATH += ../../libKitsunemimiConfig/include
-
-LIBS += -L../../libKitsunemimiSakuraLang/src -lKitsunemimiSakuraLang
-LIBS += -L../../libKitsunemimiSakuraLang/src/debug -lKitsunemimiSakuraLang
-LIBS += -L../../libKitsunemimiSakuraLang/src/release -lKitsunemimiSakuraLang
-INCLUDEPATH += ../../libKitsunemimiSakuraLang/include
 
 LIBS += -L../../libKitsunemimiNetwork/src -lKitsunemimiNetwork
 LIBS += -L../../libKitsunemimiNetwork/src/debug -lKitsunemimiNetwork
@@ -71,20 +61,32 @@ INCLUDEPATH += $$PWD \
                $$PWD/../include
 
 HEADERS += \
+    ../include/libKitsunemimiHanamiNetwork/blossom.h \
     ../include/libKitsunemimiHanamiNetwork/hanami_messaging.h \
     ../include/libKitsunemimiHanamiNetwork/hanami_messaging_client.h \
+    ../include/libKitsunemimiHanamiNetwork/structs.h \
+    items/item_methods.h \
+    items/sakura_items.h \
+    items/value_item_map.h \
+    items/value_items.h \
     message_handling/message_definitions.h \
     message_handling/permission.h \
     callbacks.h \
     message_handling/messaging_event_queue.h \
-    message_handling/messaging_event.h
+    message_handling/messaging_event.h \
+    runtime_validation.h
 
 SOURCES += \
+    blossom.cpp \
     hanami_messaging.cpp \
     hanami_messaging_client.cpp \
+    items/item_methods.cpp \
+    items/sakura_items.cpp \
+    items/value_item_map.cpp \
     message_handling/messaging_event_queue.cpp \
     message_handling/messaging_event.cpp \
-    message_handling/permission.cpp
+    message_handling/permission.cpp \
+    runtime_validation.cpp
 
 
 SHIORI_PROTO_BUFFER = ../../libKitsunemimiHanamiMessages/protobuffers/shiori_messages.proto3

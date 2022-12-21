@@ -35,10 +35,10 @@ class JsonItem;
 }
 namespace Sakura {
 class Session;
-struct BlossomStatus;
 }
 namespace Hanami
 {
+struct BlossomStatus;
 
 class MessagingEvent
         : public Event
@@ -69,7 +69,7 @@ private:
                              ErrorContainer &error);
     bool trigger(DataMap &resultingItems,
                  Json::JsonItem &inputValues,
-                 Sakura::BlossomStatus &status,
+                 Kitsunemimi::Hanami::BlossomStatus &status,
                  const EndpointEntry &endpoint,
                  ErrorContainer &error);
 

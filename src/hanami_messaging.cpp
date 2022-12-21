@@ -22,16 +22,16 @@
 
 #include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 #include <callbacks.h>
+#include <items/item_methods.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
 #include <libKitsunemimiSakuraNetwork/session_controller.h>
-#include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
-#include <libKitsunemimiSakuraLang/blossom.h>
 
 #include <libKitsunemimiHanamiCommon/config.h>
 #include <libKitsunemimiHanamiCommon/component_support.h>
 #include <libKitsunemimiHanamiEndpoints/endpoint.h>
 #include <libKitsunemimiHanamiNetwork/hanami_messaging_client.h>
+#include <libKitsunemimiHanamiNetwork/blossom.h>
 
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiCommon/files/text_file.h>
@@ -42,8 +42,6 @@
 
 #include <../../libKitsunemimiHanamiMessages/protobuffers/shiori_messages.proto3.pb.h>
 #include <../../libKitsunemimiHanamiMessages/message_sub_types.h>
-
-using Kitsunemimi::Sakura::SessionController;
 
 namespace Kitsunemimi
 {
@@ -606,6 +604,188 @@ HanamiMessaging::removeInternalClient(const std::string &identifier)
     m_incominglock.unlock();
 
     return false;
+}
+
+
+/**
+ * @brief check if a specific blossom was registered
+ *
+ * @param groupName group-identifier of the blossom
+ * @param itemName item-identifier of the blossom
+ *
+ * @return true, if blossom with the given group- and item-name exist, else false
+ */
+bool
+HanamiMessaging::doesBlossomExist(const std::string &groupName,
+                                  const std::string &itemName)
+{
+    std::map<std::string, std::map<std::string, Blossom*>>::const_iterator groupIt;
+    groupIt = m_registeredBlossoms.find(groupName);
+
+    if(groupIt != m_registeredBlossoms.end())
+    {
+        std::map<std::string, Blossom*>::const_iterator itemIt;
+        itemIt = groupIt->second.find(itemName);
+
+        if(itemIt != groupIt->second.end()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @brief SakuraLangInterface::addBlossom
+ *
+ * @param groupName group-identifier of the blossom
+ * @param itemName item-identifier of the blossom
+ * @param newBlossom pointer to the new blossom
+ *
+ * @return true, if blossom was registered or false, if the group- and item-name are already
+ *         registered
+ */
+bool
+HanamiMessaging::addBlossom(const std::string &groupName,
+                            const std::string &itemName,
+                            Blossom* newBlossom)
+{
+    // check if already used
+    if(doesBlossomExist(groupName, itemName) == true) {
+        return false;
+    }
+
+    std::map<std::string, std::map<std::string, Blossom*>>::iterator groupIt;
+    groupIt = m_registeredBlossoms.find(groupName);
+
+    // create internal group-map, if not already exist
+    if(groupIt == m_registeredBlossoms.end())
+    {
+        std::map<std::string, Blossom*> newMap;
+        m_registeredBlossoms.insert(std::make_pair(groupName, newMap));
+    }
+
+    // add item to group
+    groupIt = m_registeredBlossoms.find(groupName);
+    groupIt->second.insert(std::make_pair(itemName, newBlossom));
+
+    return true;
+}
+
+/**
+ * @brief request a registered blossom
+ *
+ * @param groupName group-identifier of the blossom
+ * @param itemName item-identifier of the blossom
+ *
+ * @return pointer to the blossom or
+ *         nullptr, if blossom the given group- and item-name was not found
+ */
+Blossom*
+HanamiMessaging::getBlossom(const std::string &groupName,
+                            const std::string &itemName)
+{
+    // search for group
+    std::map<std::string, std::map<std::string, Blossom*>>::const_iterator groupIt;
+    groupIt = m_registeredBlossoms.find(groupName);
+
+    if(groupIt != m_registeredBlossoms.end())
+    {
+        // search for item within group
+        std::map<std::string, Blossom*>::const_iterator itemIt;
+        itemIt = groupIt->second.find(itemName);
+
+        if(itemIt != groupIt->second.end()) {
+            return itemIt->second;
+        }
+    }
+
+    return nullptr;
+}
+
+/**
+ * @brief trigger existing blossom
+ *
+ * @param result map with resulting items
+ * @param blossomName id of the blossom to trigger
+ * @param blossomGroupName id of the group of the blossom to trigger
+ * @param initialValues input-values for the tree
+ * @param status reference for status-output
+ * @param error reference for error-output
+ *
+ * @return true, if successfule, else false
+ */
+bool
+HanamiMessaging::triggerBlossom(DataMap &result,
+                                const std::string &blossomName,
+                                const std::string &blossomGroupName,
+                                const DataMap &context,
+                                const DataMap &initialValues,
+                                BlossomStatus &status,
+                                ErrorContainer &error)
+{
+    LOG_DEBUG("trigger blossom");
+
+    // get initial blossom-item
+    Blossom* blossom = getBlossom(blossomGroupName, blossomName);
+    if(blossom == nullptr)
+    {
+        error.addMeesage("No blosom found for the id " + blossomName);
+        return false;
+    }
+
+    // inialize a new blossom-leaf for processing
+    BlossomIO blossomIO;
+    blossomIO.blossomName = blossomName;
+    blossomIO.blossomPath = blossomName;
+    blossomIO.blossomGroupType = blossomGroupName;
+    blossomIO.input = &initialValues;
+    blossomIO.parentValues = blossomIO.input.getItemContent()->toMap();
+    blossomIO.nameHirarchie.push_back("BLOSSOM: " + blossomName);
+
+    std::string errorMessage;
+    // check input to be complete
+    if(blossom->validateFieldsCompleteness(initialValues,
+                                           *blossom->getInputValidationMap(),
+                                           FieldDef::INPUT_TYPE,
+                                           errorMessage) == false)
+    {
+        error.addMeesage(errorMessage);
+        error.addMeesage("check of completeness of input-fields failed");
+        status.statusCode = 400;
+        status.errorMessage = errorMessage;
+        LOG_ERROR(error);
+        return false;
+    }
+
+    // process blossom
+    if(blossom->growBlossom(blossomIO, &context, status, error) == false)
+    {
+        error.addMeesage("trigger blossom failed.");
+        LOG_ERROR(error);
+        return false;
+    }
+
+    // check output to be complete
+    DataMap* output = blossomIO.output.getItemContent()->toMap();
+    if(blossom->validateFieldsCompleteness(*output,
+                                           *blossom->getOutputValidationMap(),
+                                           FieldDef::OUTPUT_TYPE,
+                                           errorMessage) == false)
+    {
+        error.addMeesage(errorMessage);
+        error.addMeesage("check of completeness of output-fields failed");
+        status.statusCode = 500;
+        status.errorMessage = errorMessage;
+        LOG_ERROR(error);
+        return false;
+    }
+
+    // TODO: override only with the output-values to avoid unnecessary conflicts
+    result.clear();
+    overrideItems(result, *output, ALL);
+
+    return true;
 }
 
 }  // namespace Hanami
