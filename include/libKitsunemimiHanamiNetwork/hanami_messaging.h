@@ -30,7 +30,6 @@
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
-#include <libKitsunemimiHanamiNetwork/structs.h>
 
 #include <libKitsunemimiCommon/logger.h>
 

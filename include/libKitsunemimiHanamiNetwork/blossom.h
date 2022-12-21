@@ -25,7 +25,9 @@
 
 #include <libKitsunemimiCommon/items/data_items.h>
 #include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiHanamiNetwork/structs.h>
+#include <libKitsunemimiJson/json_item.h>
+
+#include <libKitsunemimiHanamiCommon/structs.h>
 
 namespace Kitsunemimi
 {
@@ -36,6 +38,77 @@ class SakuraThread;
 class InitialValidator;
 class HanamiMessaging;
 class ValueItemMap;
+
+//--------------------------------------------------------------------------------------------------
+
+struct BlossomIO
+{
+    std::string blossomType = "";
+    std::string blossomName = "";
+    std::string blossomPath = "";
+    std::string blossomGroupType = "";
+    std::vector<std::string> nameHirarchie;
+
+    Json::JsonItem output;
+    Json::JsonItem input;
+
+    DataMap* parentValues = nullptr;
+
+    std::string terminalOutput = "";
+
+    BlossomIO()
+    {
+        std::map<std::string, Json::JsonItem> temp;
+        output = Json::JsonItem(temp);
+        input = Json::JsonItem(temp);
+    }
+};
+
+//--------------------------------------------------------------------------------------------------
+
+enum FieldType
+{
+    SAKURA_UNDEFINED_TYPE = 0,
+    SAKURA_INT_TYPE = 1,
+    SAKURA_FLOAT_TYPE = 2,
+    SAKURA_BOOL_TYPE = 3,
+    SAKURA_STRING_TYPE = 4,
+    SAKURA_ARRAY_TYPE = 5,
+    SAKURA_MAP_TYPE = 6
+};
+
+//--------------------------------------------------------------------------------------------------
+
+struct FieldDef
+{
+    enum IO_ValueType
+    {
+        UNDEFINED_VALUE_TYPE = 0,
+        INPUT_TYPE = 1,
+        OUTPUT_TYPE = 2,
+    };
+
+    const IO_ValueType ioType;
+    const FieldType fieldType;
+    const bool isRequired;
+    const std::string comment;
+    DataItem* match = nullptr;
+    DataItem* defaultVal = nullptr;
+    std::string regex = "";
+    long lowerBorder = 0;
+    long upperBorder = 0;
+
+    FieldDef(const IO_ValueType ioType,
+             const FieldType fieldType,
+             const bool isRequired,
+             const std::string &comment)
+        : ioType(ioType),
+          fieldType(fieldType),
+          isRequired(isRequired),
+          comment(comment) { }
+};
+
+//--------------------------------------------------------------------------------------------------
 
 class Blossom
 {
@@ -69,8 +142,8 @@ protected:
     bool addFieldRegex(const std::string &name,
                        const std::string &regex);
     bool addFieldBorder(const std::string &name,
-                   const long lowerBorder,
-                   const long upperBorder);
+                        const long lowerBorder,
+                        const long upperBorder);
 
 private:
     friend SakuraThread;

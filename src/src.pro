@@ -59,7 +59,6 @@ HEADERS += \
     ../include/libKitsunemimiHanamiNetwork/blossom.h \
     ../include/libKitsunemimiHanamiNetwork/hanami_messaging.h \
     ../include/libKitsunemimiHanamiNetwork/hanami_messaging_client.h \
-    ../include/libKitsunemimiHanamiNetwork/structs.h \
     items/item_methods.h \
     items/sakura_items.h \
     items/value_item_map.h \

@@ -26,7 +26,6 @@
 #include <libKitsunemimiCommon/threading/event.h>
 #include <libKitsunemimiCommon/logger.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
-#include <libKitsunemimiHanamiNetwork/structs.h>
 
 namespace Kitsunemimi
 {
