@@ -141,6 +141,8 @@ public:
                                   const uint64_t,
                                   const uint64_t);
 
+    std::map<std::string, std::map<HttpRequestType, EndpointEntry>> endpointRules;
+
 private:
     HanamiMessaging();
 
@@ -160,7 +162,6 @@ private:
     static HanamiMessaging* m_messagingController;
     void createBlossomDocu(Hanami::Blossom* blossom, std::string &docu);
     std::map<std::string, std::map<std::string, Hanami::Blossom*>> m_registeredBlossoms;
-    std::map<std::string, std::map<HttpRequestType, EndpointEntry>> endpointRules;
 };
 
 }  // namespace Hanami
