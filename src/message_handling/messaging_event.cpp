@@ -198,8 +198,7 @@ MessagingEvent::processEvent()
 
     // get real endpoint
     EndpointEntry entry;
-    Endpoint* endpoints = Endpoint::getInstance();
-    bool ret = endpoints->mapEndpoint(entry, m_targetId, m_httpType);
+    bool ret = HanamiMessaging::getInstance()->mapEndpoint(entry, m_targetId, m_httpType);
     if(ret == false)
     {
         error.addMeesage("endpoint not found for id "

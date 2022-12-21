@@ -32,7 +32,6 @@
 #include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 #include <libKitsunemimiHanamiNetwork/hanami_messaging_client.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
-#include <libKitsunemimiHanamiEndpoints/endpoint.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiCommon/files/text_file.h>
@@ -79,6 +78,11 @@ Session_Test::initTestCase()
     ErrorContainer error;
     TestBlossom* newBlossom = new TestBlossom(this);
     HanamiMessaging::getInstance()->addBlossom("test1", "test2", newBlossom);
+    HanamiMessaging::getInstance()->addEndpoint("path-test_2/test",
+                                               Kitsunemimi::Hanami::GET_TYPE,
+                                               Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                                               "test1",
+                                               "test2");
     Kitsunemimi::writeFile("/tmp/test-config.conf", getTestConfig(), error, true);
 }
 
@@ -120,8 +124,7 @@ Session_Test::runTest()
                                      &streamDataCallback,
                                      &genreicMessageCallback,
                                      error,
-                                     true,
-                                     getTestEndpoints()), true);
+                                     true), true);
     m_numberOfTests++;
     TEST_EQUAL(messaging->initialize("client",
                                      groupNames,
@@ -129,8 +132,7 @@ Session_Test::runTest()
                                      &streamDataCallback,
                                      &genreicMessageCallback,
                                      error,
-                                     true,
-                                     getTestEndpoints()), false);
+                                     true), false);
 
 
     DataMap inputValues;
@@ -202,19 +204,6 @@ Session_Test::getTestConfig()
                                "port = 12345\n"
                                "address = \"" + m_address + "\"\n";
     return config;
-}
-
-/**
- * @brief Endpoint_Test::getTestInput
- * @return
- */
-const std::string
-Session_Test::getTestEndpoints()
-{
-    const std::string endpoints = "path-test_2/test\n"
-                                  "- GET  -> blossom : test1 : test2\n"
-                                  "\n";
-    return endpoints;
 }
 
 } // namespace Hanami

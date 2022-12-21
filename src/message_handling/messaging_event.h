@@ -24,9 +24,9 @@
 #define MESSAGING_EVENT_H
 
 #include <libKitsunemimiCommon/threading/event.h>
-#include <libKitsunemimiHanamiCommon/structs.h>
 #include <libKitsunemimiCommon/logger.h>
-#include <libKitsunemimiHanamiEndpoints/endpoint.h>
+#include <libKitsunemimiHanamiCommon/structs.h>
+#include <libKitsunemimiHanamiNetwork/structs.h>
 
 namespace Kitsunemimi
 {

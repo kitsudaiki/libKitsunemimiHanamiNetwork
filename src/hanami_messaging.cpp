@@ -29,7 +29,6 @@
 
 #include <libKitsunemimiHanamiCommon/config.h>
 #include <libKitsunemimiHanamiCommon/component_support.h>
-#include <libKitsunemimiHanamiEndpoints/endpoint.h>
 #include <libKitsunemimiHanamiNetwork/hanami_messaging_client.h>
 #include <libKitsunemimiHanamiNetwork/blossom.h>
 
@@ -106,43 +105,6 @@ HanamiMessaging::fillSupportOverview()
     if(GET_STRING_CONFIG("inori", "address", success) != "") {
         supportedComponents->support[INORI] = true;
     }
-}
-
-/**
- * @brief initalize endpoints
- *
- * @param error reference for error-output
- * @param predefinedEndpoints optional string with a predefined endpoint-file for testing
- *
- * @return true, if successful, else false
- */
-bool
-HanamiMessaging::initEndpoints(ErrorContainer &error,
-                               const std::string &predefinedEndpoints)
-{
-    bool success = false;
-    Endpoint* endpoints = Endpoint::getInstance();
-
-    // read endpoints
-    std::string endpointContent = predefinedEndpoints;
-    if(endpointContent == "")
-    {
-        const std::string endpointPath = GET_STRING_CONFIG("DEFAULT", "endpoints", success);
-        if(Kitsunemimi::readFile(endpointContent, endpointPath, error) == false)
-        {
-            LOG_ERROR(error);
-            return false;
-        }
-    }
-
-    // parse endpoints
-    if(endpoints->parse(endpointContent, error) == false)
-    {
-        LOG_ERROR(error);
-        return false;
-    }
-
-    return true;
 }
 
 /**
@@ -313,8 +275,7 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
                                                           const uint64_t,
                                                           const uint64_t),
                             ErrorContainer &error,
-                            const bool createServer,
-                            const std::string &predefinedEndpoints)
+                            const bool createServer)
 {
     // precheck to avoid double-initializing
     if(m_isInit) {
@@ -355,14 +316,6 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
         if(success == false)
         {
             error.addMeesage("Failed to get server-address from config.");
-            LOG_ERROR(error);
-            return false;
-        }
-
-        // init endpoints
-        if(initEndpoints(error, predefinedEndpoints) == false)
-        {
-            error.addMeesage("Failed to initialize endpoints.");
             LOG_ERROR(error);
             return false;
         }
@@ -784,6 +737,89 @@ HanamiMessaging::triggerBlossom(DataMap &result,
     // TODO: override only with the output-values to avoid unnecessary conflicts
     result.clear();
     overrideItems(result, *output, ALL);
+
+    return true;
+}
+
+/**
+ * @brief map the endpoint to the real target
+ *
+ * @param result reference to the result to identify the target
+ * @param id request-id
+ * @param type requested http-request-type
+ *
+ * @return false, if mapping failes, else true
+ */
+bool
+HanamiMessaging::mapEndpoint(EndpointEntry &result,
+                             const std::string &id,
+                             const HttpRequestType type)
+{
+    std::map<std::string, std::map<HttpRequestType, EndpointEntry>>::const_iterator id_it;
+    id_it = endpointRules.find(id);
+
+    if(id_it != endpointRules.end())
+    {
+        std::map<HttpRequestType, EndpointEntry>::const_iterator type_it;
+        type_it = id_it->second.find(type);
+
+        if(type_it != id_it->second.end())
+        {
+            result.type = type_it->second.type;
+            result.group = type_it->second.group;
+            result.name = type_it->second.name;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @brief add new custom-endpoint without the parser
+ *
+ * @param id identifier for the new entry
+ * @param httpType http-type (get, post, put, delete)
+ * @param sakuraType sakura-type (tree or blossom)
+ * @param group blossom-group
+ * @param name tree- or blossom-id
+ *
+ * @return false, if id together with http-type is already registered, else true
+ */
+bool
+HanamiMessaging::addEndpoint(const std::string &id,
+                             const HttpRequestType &httpType,
+                             const SakuraObjectType &sakuraType,
+                             const std::string &group,
+                             const std::string &name)
+{
+    EndpointEntry newEntry;
+    newEntry.type = sakuraType;
+    newEntry.group = group;
+    newEntry.name = name;
+
+    // search for id
+    std::map<std::string, std::map<HttpRequestType, EndpointEntry>>::iterator id_it;
+    id_it = endpointRules.find(id);
+    if(id_it != endpointRules.end())
+    {
+        // search for http-type
+        std::map<HttpRequestType, EndpointEntry>::iterator type_it;
+        type_it = id_it->second.find(httpType);
+        if(type_it != id_it->second.end()) {
+            return false;
+        }
+
+        // add new
+        id_it->second.emplace(httpType, newEntry);
+    }
+    else
+    {
+        // add new
+        std::map<HttpRequestType, EndpointEntry> typeEntry;
+        typeEntry.emplace(httpType, newEntry);
+        endpointRules.emplace(id, typeEntry);
+    }
 
     return true;
 }

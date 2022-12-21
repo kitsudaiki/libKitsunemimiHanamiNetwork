@@ -25,6 +25,8 @@
 
 #include <libKitsunemimiJson/json_item.h>
 
+#include <libKitsunemimiHanamiCommon/enums.h>
+
 namespace Kitsunemimi
 {
 namespace Hanami
@@ -105,6 +107,15 @@ struct FieldDef
           fieldType(fieldType),
           isRequired(isRequired),
           comment(comment) { }
+};
+
+//--------------------------------------------------------------------------------------------------
+
+struct EndpointEntry
+{
+    SakuraObjectType type = BLOSSOM_TYPE;
+    std::string group = "-";
+    std::string name = "";
 };
 
 //--------------------------------------------------------------------------------------------------

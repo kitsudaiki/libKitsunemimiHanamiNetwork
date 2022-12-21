@@ -8,12 +8,6 @@ CONFIG += c++17 console
 LIBS += -L../../src -lKitsunemimiHanamiNetwork
 INCLUDEPATH += $$PWD
 
-
-LIBS += -L../../../libKitsunemimiHanamiEndpoints/src -lKitsunemimiHanamiEndpoints
-LIBS += -L../../../libKitsunemimiHanamiEndpoints/src/debug -lKitsunemimiHanamiEndpoints
-LIBS += -L../../../libKitsunemimiHanamiEndpoints/src/release -lKitsunemimiHanamiEndpoints
-INCLUDEPATH += ../../../libKitsunemimiHanamiEndpoints/include
-
 LIBS += -L../../../libKitsunemimiConfig/src -lKitsunemimiConfig
 LIBS += -L../../../libKitsunemimiConfig/src/debug -lKitsunemimiConfig
 LIBS += -L../../../libKitsunemimiConfig/src/release -lKitsunemimiConfig
