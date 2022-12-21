@@ -183,5 +183,5 @@ createError(const BlossomIO &blossomIO,
                        blossomIO.blossomPath);
 }
 
-} // namespace Sakura
+} // namespace Hanami
 } // namespace Kitsunemimi

@@ -236,5 +236,5 @@ checkType(DataItem* item,
     return false;
 }
 
-} // namespace Sakura
+} // namespace Hanami
 } // namespace Kitsunemimi

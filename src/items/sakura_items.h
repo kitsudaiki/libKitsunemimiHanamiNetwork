@@ -228,7 +228,7 @@ public:
     SakuraItem* childs;
 };
 
-} // namespace Sakura
+} // namespace Hanami
 } // namespace Kitsunemimi
 
 #endif // KITSUNEMIMI_SAKURA_LANG_SAKURA_ITEMS_H

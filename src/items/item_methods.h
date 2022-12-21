@@ -62,7 +62,7 @@ void createError(const BlossomIO &blossomIO,
                  ErrorContainer &error,
                  const std::string &possibleSolution = "");
 
-} // namespace Sakura
+} // namespace Hanami
 } // namespace Kitsunemimi
 
 #endif // KITSUNEMIMI_SAKURA_LANG_ITEM_METHODS_H

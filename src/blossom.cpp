@@ -486,5 +486,5 @@ Blossom::getCompareMap(std::map<std::string, FieldDef::IO_ValueType> &compareMap
     }
 }
 
-} // namespace Sakura
+} // namespace Hanami
 } // namespace Kitsunemimi

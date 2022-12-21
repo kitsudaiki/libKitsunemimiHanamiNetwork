@@ -45,7 +45,7 @@ bool checkBlossomValues(const std::map<std::string, FieldDef> &defs,
 bool checkType(DataItem* item,
                const FieldType fieldType);
 
-} // namespace Sakura
+} // namespace Hanami
 } // namespace Kitsunemimi
 
 #endif // KITSUNEMIMI_SAKURA_LANG_RUNTIME_VALIDATION_H

@@ -64,5 +64,5 @@ BlossomItem::copy()
     return newItem;
 }
 
-} // namespace Sakura
+} // namespace Hanami
 } // namespace Kitsunemimi

@@ -170,7 +170,7 @@ private:
     void fillDefaultValues(DataMap &values);
 };
 
-} // namespace Sakura
+} // namespace Hanami
 } // namespace Kitsunemimi
 
 #endif // KITSUNEMIMI_SAKURA_LANG_BLOSSOM_H

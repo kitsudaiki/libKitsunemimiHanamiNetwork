@@ -71,7 +71,7 @@ private:
     void clearChildMap();
 };
 
-} // namespace Sakura
+} // namespace Hanami
 } // namespace Kitsunemimi
 
 #endif // KITSUNEMIMI_SAKURA_LANG_VALUE_ITEM_MAP_H
