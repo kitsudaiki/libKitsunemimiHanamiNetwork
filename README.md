@@ -37,8 +37,6 @@ libKitsunemimiCrypto | develop |  https://github.com/kitsudaiki/libKitsunemimiCr
 libKitsunemimiJwt | develop |  https://github.com/kitsudaiki/libKitsunemimiJwt.git
 libKitsunemimiSakuraNetwork | develop |  https://github.com/kitsudaiki/libKitsunemimiSakuraNetwork.git
 libKitsunemimiHanamiCommon | develop |  https://github.com/kitsudaiki/libKitsunemimiHanamiCommon.git
-libKitsunemimiHanamiEndpoints | develop |  https://github.com/kitsudaiki/libKitsunemimiHanamiEndpoints.git
-
 
 
 HINT: These Kitsunemimi-Libraries will be downloaded and build automatically with the build-script below.
