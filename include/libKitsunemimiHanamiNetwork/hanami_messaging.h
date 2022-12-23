@@ -31,8 +31,6 @@
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
 
-#include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
-
 #include <libKitsunemimiCommon/logger.h>
 
 namespace Kitsunemimi
@@ -47,6 +45,7 @@ class SessionController;
 }
 namespace Hanami
 {
+class Blossom;
 class HanamiMessagingClient;
 
 class HanamiMessaging
@@ -70,13 +69,38 @@ public:
                                                   const uint64_t,
                                                   const uint64_t),
                     ErrorContainer &error,
-                    const bool createServer = true,
-                    const std::string &predefinedEndpoints = "");
+                    const bool createServer = true);
     bool addServer(const std::string &serverAddress,
                    ErrorContainer &error,
                    const uint16_t port = 0,
                    const std::string &certFilePath = "",
                    const std::string &keyFilePath = "");
+
+    // blossoms
+    bool triggerBlossom(DataMap& result,
+                        const std::string &blossomName,
+                        const std::string &blossomGroupName,
+                        const DataMap &context,
+                        const DataMap &initialValues,
+                        Hanami::BlossomStatus &status,
+                        ErrorContainer &error);
+    bool doesBlossomExist(const std::string &groupName,
+                          const std::string &itemName);
+    bool addBlossom(const std::string &groupName,
+                    const std::string &itemName,
+                    Hanami::Blossom *newBlossom);
+    Hanami::Blossom* getBlossom(const std::string &groupName,
+                                const std::string &itemName);
+
+    // endpoints
+    bool mapEndpoint(EndpointEntry &result,
+                     const std::string &id,
+                     const HttpRequestType type);
+    bool addEndpoint(const std::string &id,
+                     const HttpRequestType &httpType,
+                     const SakuraObjectType &sakuraType,
+                     const std::string &group,
+                     const std::string &name);
 
     HanamiMessagingClient* createTemporaryClient(const std::string &remoteIdentifier,
                                                  const std::string &target,
@@ -117,6 +141,8 @@ public:
                                   const uint64_t,
                                   const uint64_t);
 
+    std::map<std::string, std::map<HttpRequestType, EndpointEntry>> endpointRules;
+
 private:
     HanamiMessaging();
 
@@ -132,11 +158,10 @@ private:
     void fillSupportOverview();
     bool initClients(const std::vector<std::string> &configGroups,
                      ErrorContainer &error);
-    bool initEndpoints(ErrorContainer &error,
-                       const std::string &predefinedEndpoints);
 
     static HanamiMessaging* m_messagingController;
-    void createBlossomDocu(Sakura::Blossom* blossom, std::string &docu);
+    void createBlossomDocu(Hanami::Blossom* blossom, std::string &docu);
+    std::map<std::string, std::map<std::string, Hanami::Blossom*>> m_registeredBlossoms;
 };
 
 }  // namespace Hanami

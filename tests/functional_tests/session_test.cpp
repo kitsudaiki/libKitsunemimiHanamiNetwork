@@ -26,19 +26,15 @@
 
 #include <libKitsunemimiConfig/config_handler.h>
 
-#include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
-#include <libKitsunemimiSakuraLang/blossom.h>
+#include <libKitsunemimiHanamiNetwork/blossom.h>
 #include <libKitsunemimiSakuraNetwork/session.h>
 
 #include <libKitsunemimiHanamiNetwork/hanami_messaging.h>
 #include <libKitsunemimiHanamiNetwork/hanami_messaging_client.h>
 #include <libKitsunemimiHanamiCommon/structs.h>
-#include <libKitsunemimiHanamiEndpoints/endpoint.h>
 
 #include <libKitsunemimiHanamiCommon/enums.h>
 #include <libKitsunemimiCommon/files/text_file.h>
-
-using Kitsunemimi::Sakura::SakuraLangInterface;
 
 namespace Kitsunemimi
 {
@@ -81,8 +77,12 @@ Session_Test::initTestCase()
 
     ErrorContainer error;
     TestBlossom* newBlossom = new TestBlossom(this);
-    SakuraLangInterface::getInstance()->addBlossom("test1", "test2", newBlossom);
-    SakuraLangInterface::getInstance()->addTree("test_tree", getTestTree(), error);
+    HanamiMessaging::getInstance()->addBlossom("test1", "test2", newBlossom);
+    HanamiMessaging::getInstance()->addEndpoint("path-test_2/test",
+                                               Kitsunemimi::Hanami::GET_TYPE,
+                                               Kitsunemimi::Hanami::BLOSSOM_TYPE,
+                                               "test1",
+                                               "test2");
     Kitsunemimi::writeFile("/tmp/test-config.conf", getTestConfig(), error, true);
 }
 
@@ -124,8 +124,7 @@ Session_Test::runTest()
                                      &streamDataCallback,
                                      &genreicMessageCallback,
                                      error,
-                                     true,
-                                     getTestEndpoints()), true);
+                                     true), true);
     m_numberOfTests++;
     TEST_EQUAL(messaging->initialize("client",
                                      groupNames,
@@ -133,8 +132,7 @@ Session_Test::runTest()
                                      &streamDataCallback,
                                      &genreicMessageCallback,
                                      error,
-                                     true,
-                                     getTestEndpoints()), false);
+                                     true), false);
 
 
     DataMap inputValues;
@@ -153,17 +151,7 @@ Session_Test::runTest()
 
     ResponseMessage response;
     RequestMessage request;
-    request.id = "path/test2";
-    request.httpType = GET_TYPE;
-    request.inputValues = inputValues.toString();
-    m_numberOfTests++;
     HanamiMessagingClient* client = messaging->getOutgoingClient("target");
-    TEST_EQUAL(client->triggerSakuraFile(response, request, error),  true);
-    m_numberOfTests++;
-    TEST_EQUAL(response.type, 0);
-    m_numberOfTests++;
-    TEST_EQUAL(response.responseContent, "{\"test_output\":42}");
-
 
     request.id = "path-test_2/test";
     request.httpType = GET_TYPE;
@@ -193,31 +181,9 @@ Session_Test::runTest()
 
     // check that were no tests silently skipped
     m_numberOfTests++;
-    TEST_EQUAL(m_numberOfTests, 13);
+    TEST_EQUAL(m_numberOfTests, 9);
 
     std::cout<<"finish"<<std::endl;
-}
-
-/**
- * @brief Session_Test::getTestTree
- * @return
- */
-const std::string
-Session_Test::getTestTree()
-{
-    const std::string tree = "[\"test\"]\n"
-                             "(\"tree-comment\")\n"
-                             "\n"
-                             "- input = ?[int]\n"
-                             "  (\"test-comment1\")\n"
-                             "- test_output = >> [int]\n"
-                             "  (\"test-comment3\")\n"
-                             "\n"
-                             "test1(\"this is a test\")\n"
-                             "->test2:\n"
-                             "   - input = input\n"
-                             "   - output >> test_output\n";
-    return tree;
 }
 
 /**
@@ -238,23 +204,6 @@ Session_Test::getTestConfig()
                                "port = 12345\n"
                                "address = \"" + m_address + "\"\n";
     return config;
-}
-
-/**
- * @brief Endpoint_Test::getTestInput
- * @return
- */
-const std::string
-Session_Test::getTestEndpoints()
-{
-    const std::string endpoints = "path/test2\n"
-                                  "- GET -> tree : test_tree\n"
-                                  "\n"
-                                  "path-test_2/test\n"
-                                  "- GET  -> blossom : test1 : test2\n"
-                                  "- POST -> tree : group1 : test_list2_blossom\n"
-                                  "\n";
-    return endpoints;
 }
 
 } // namespace Hanami

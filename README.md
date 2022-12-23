@@ -29,7 +29,6 @@ Repository-Name | Version-Tag | Download-Path
 --- | --- | ---
 libKitsunemimiCommon | develop |  https://github.com/kitsudaiki/libKitsunemimiCommon.git
 libKitsunemimiJson | develop |  https://github.com/kitsudaiki/libKitsunemimiJson.git
-libKitsunemimiJinja2 | develop |  https://github.com/kitsudaiki/libKitsunemimiJinja2.git
 libKitsunemimiIni | develop |  https://github.com/kitsudaiki/libKitsunemimiIni.git
 libKitsunemimiNetwork | develop |  https://github.com/kitsudaiki/libKitsunemimiNetwork.git
 libKitsunemimiArgs | develop |  https://github.com/kitsudaiki/libKitsunemimiArgs.git
@@ -37,10 +36,7 @@ libKitsunemimiConfig | develop |  https://github.com/kitsudaiki/libKitsunemimiCo
 libKitsunemimiCrypto | develop |  https://github.com/kitsudaiki/libKitsunemimiCrypto.git
 libKitsunemimiJwt | develop |  https://github.com/kitsudaiki/libKitsunemimiJwt.git
 libKitsunemimiSakuraNetwork | develop |  https://github.com/kitsudaiki/libKitsunemimiSakuraNetwork.git
-libKitsunemimiSakuraLang | develop |  https://github.com/kitsudaiki/libKitsunemimiSakuraLang.git
 libKitsunemimiHanamiCommon | develop |  https://github.com/kitsudaiki/libKitsunemimiHanamiCommon.git
-libKitsunemimiHanamiEndpoints | develop |  https://github.com/kitsudaiki/libKitsunemimiHanamiEndpoints.git
-
 
 
 HINT: These Kitsunemimi-Libraries will be downloaded and build automatically with the build-script below.

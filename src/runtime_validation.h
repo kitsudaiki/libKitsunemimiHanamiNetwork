@@ -1,11 +1,11 @@
 /**
- * @file        test_blossom.h
+ * @file        runtime_validation.h
  *
  * @author      Tobias Anker <tobias.anker@kitsunemimi.moe>
  *
  * @copyright   Apache License Version 2.0
  *
- *      Copyright 2020 Tobias Anker
+ *      Copyright 2019 Tobias Anker
  *
  *      Licensed under the Apache License, Version 2.0 (the "License");
  *      you may not use this file except in compliance with the License.
@@ -20,34 +20,32 @@
  *      limitations under the License.
  */
 
-#ifndef TEST_BLOSSOM_H
-#define TEST_BLOSSOM_H
+#ifndef KITSUNEMIMI_SAKURA_LANG_RUNTIME_VALIDATION_H
+#define KITSUNEMIMI_SAKURA_LANG_RUNTIME_VALIDATION_H
 
+#include <regex>
+
+#include <libKitsunemimiCommon/items/data_items.h>
+#include <libKitsunemimiCommon/logger.h>
+
+#include <items/value_items.h>
 #include <libKitsunemimiHanamiNetwork/blossom.h>
 
 namespace Kitsunemimi
 {
 namespace Hanami
 {
-class Session_Test;
+class ValueItemMap;
 
-class TestBlossom
-        : public Kitsunemimi::Hanami::Blossom
-{
-public:
-    TestBlossom(Session_Test* sessionTest);
+bool checkBlossomValues(const std::map<std::string, FieldDef> &defs,
+                        const DataMap &values,
+                        const FieldDef::IO_ValueType ioType,
+                        std::string &errorMessage);
 
-protected:
-    bool runTask(Hanami::BlossomIO &blossomIO,
-                 const DataMap &context,
-                 Hanami::BlossomStatus &status,
-                 ErrorContainer &);
+bool checkType(DataItem* item,
+               const FieldType fieldType);
 
-private:
-    Session_Test* m_sessionTest = nullptr;
-};
+} // namespace Hanami
+} // namespace Kitsunemimi
 
-}  // namespace Hanami
-}  // namespace Kitsunemimi
-
-#endif // TEST_BLOSSOM_H
+#endif // KITSUNEMIMI_SAKURA_LANG_RUNTIME_VALIDATION_H

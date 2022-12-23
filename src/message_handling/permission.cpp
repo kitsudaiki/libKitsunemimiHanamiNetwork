@@ -27,8 +27,7 @@
 #include <libKitsunemimiHanamiNetwork/hanami_messaging_client.h>
 
 #include <libKitsunemimiSakuraNetwork/session.h>
-#include <libKitsunemimiSakuraLang/blossom.h>
-#include <libKitsunemimiSakuraLang/sakura_lang_interface.h>
+#include <libKitsunemimiHanamiNetwork/blossom.h>
 
 #include <libKitsunemimiCrypto/common.h>
 #include <libKitsunemimiJson/json_item.h>
@@ -54,7 +53,7 @@ namespace Hanami
 bool
 checkPermission(DataMap &context,
                 const std::string &token,
-                Sakura::BlossomStatus &status,
+                Hanami::BlossomStatus &status,
                 const bool skipPermission,
                 Kitsunemimi::ErrorContainer &error)
 {
@@ -111,7 +110,7 @@ checkPermission(DataMap &context,
 bool
 getPermission(Json::JsonItem &parsedResult,
               const std::string &token,
-              Sakura::BlossomStatus &status,
+              Hanami::BlossomStatus &status,
               ErrorContainer &error)
 {
     Kitsunemimi::Hanami::ResponseMessage responseMsg;

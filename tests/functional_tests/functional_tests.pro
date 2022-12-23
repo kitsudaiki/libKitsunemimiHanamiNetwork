@@ -8,17 +8,6 @@ CONFIG += c++17 console
 LIBS += -L../../src -lKitsunemimiHanamiNetwork
 INCLUDEPATH += $$PWD
 
-
-LIBS += -L../../../libKitsunemimiHanamiEndpoints/src -lKitsunemimiHanamiEndpoints
-LIBS += -L../../../libKitsunemimiHanamiEndpoints/src/debug -lKitsunemimiHanamiEndpoints
-LIBS += -L../../../libKitsunemimiHanamiEndpoints/src/release -lKitsunemimiHanamiEndpoints
-INCLUDEPATH += ../../../libKitsunemimiHanamiEndpoints/include
-
-LIBS += -L../../../libKitsunemimiSakuraLang/src -lKitsunemimiSakuraLang
-LIBS += -L../../../libKitsunemimiSakuraLang/src/debug -lKitsunemimiSakuraLang
-LIBS += -L../../../libKitsunemimiSakuraLang/src/release -lKitsunemimiSakuraLang
-INCLUDEPATH += ../../../libKitsunemimiSakuraLang/include
-
 LIBS += -L../../../libKitsunemimiConfig/src -lKitsunemimiConfig
 LIBS += -L../../../libKitsunemimiConfig/src/debug -lKitsunemimiConfig
 LIBS += -L../../../libKitsunemimiConfig/src/release -lKitsunemimiConfig
@@ -38,11 +27,6 @@ LIBS += -L../../../libKitsunemimiNetwork/src -lKitsunemimiNetwork
 LIBS += -L../../../libKitsunemimiNetwork/src/debug -lKitsunemimiNetwork
 LIBS += -L../../../libKitsunemimiNetwork/src/release -lKitsunemimiNetwork
 INCLUDEPATH += ../../../libKitsunemimiNetwork/include
-
-LIBS += -L../../../libKitsunemimiJinja2/src -lKitsunemimiJinja2
-LIBS += -L../../../libKitsunemimiJinja2/src/debug -lKitsunemimiJinja2
-LIBS += -L../../../libKitsunemimiJinja2/src/release -lKitsunemimiJinja2
-INCLUDEPATH += ../../../libKitsunemimiJinja2/include
 
 LIBS += -L../../../libKitsunemimiJwt/src -lKitsunemimiJwt
 LIBS += -L../../../libKitsunemimiJwt/src/debug -lKitsunemimiJwt

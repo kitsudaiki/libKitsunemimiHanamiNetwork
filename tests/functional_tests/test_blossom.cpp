@@ -33,17 +33,17 @@ namespace Hanami
 {
 
 TestBlossom::TestBlossom(Session_Test* sessionTest)
-    : Kitsunemimi::Sakura::Blossom("this is a test-blossom")
+    : Kitsunemimi::Hanami::Blossom("this is a test-blossom")
 {
     m_sessionTest = sessionTest;
-    registerInputField("input", Kitsunemimi::Sakura::SAKURA_INT_TYPE, true, "test-intput");
-    registerOutputField("output", Kitsunemimi::Sakura::SAKURA_INT_TYPE, "test-output");
+    registerInputField("input", Kitsunemimi::Hanami::SAKURA_INT_TYPE, true, "test-intput");
+    registerOutputField("output", Kitsunemimi::Hanami::SAKURA_INT_TYPE, "test-output");
 }
 
 bool
-TestBlossom::runTask(Sakura::BlossomIO &blossomIO,
+TestBlossom::runTask(Hanami::BlossomIO &blossomIO,
                      const DataMap &,
-                     Sakura::BlossomStatus &status,
+                     Hanami::BlossomStatus &status,
                      ErrorContainer &)
 {
     LOG_DEBUG("TestBlossom");
