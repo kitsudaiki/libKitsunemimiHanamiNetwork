@@ -45,10 +45,6 @@ jobs:
       image: registry.gitlab.com/kitsudaiki/kitsunemimi-ci-docker-images/normal-tests:1.2.0
     name: functional-test-job
     steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@v3
-      - name: "Check directory"
-        run: ls -l ./
       - name: "update package-list"
         run: apt-get update
       - name: "install missing packages"

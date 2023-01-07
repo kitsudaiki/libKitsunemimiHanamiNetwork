@@ -29,9 +29,8 @@
 
 namespace Kitsunemimi
 {
-namespace Json {
 class JsonItem;
-}
+
 namespace Sakura {
 class Session;
 }
@@ -67,13 +66,13 @@ private:
                              const uint64_t blockerId,
                              ErrorContainer &error);
     bool trigger(DataMap &resultingItems,
-                 Json::JsonItem &inputValues,
+                 JsonItem &inputValues,
                  Kitsunemimi::Hanami::BlossomStatus &status,
                  const EndpointEntry &endpoint,
                  ErrorContainer &error);
 
     void sendErrorMessage(const DataMap &context,
-                          const Json::JsonItem &inputValues,
+                          const JsonItem &inputValues,
                           const std::string &errorMessage);
 };
 

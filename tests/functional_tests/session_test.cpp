@@ -113,7 +113,7 @@ void
 Session_Test::runTest()
 {
     ErrorContainer error;
-    Config::initConfig("/tmp/test-config.conf", error);
+    initConfig("/tmp/test-config.conf", error);
     std::vector<std::string> groupNames = {"target"};
     HanamiMessaging* messaging = HanamiMessaging::getInstance();
 

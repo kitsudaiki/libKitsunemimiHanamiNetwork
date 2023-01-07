@@ -29,9 +29,8 @@
 
 namespace Kitsunemimi
 {
-namespace Json {
 class JsonItem;
-}
+
 namespace Hanami
 {
 struct BlossomStatus;
@@ -42,7 +41,7 @@ bool checkPermission(DataMap &context,
                      const bool skipPermission,
                      Kitsunemimi::ErrorContainer &error);
 
-bool getPermission(Json::JsonItem &parsedResult,
+bool getPermission(JsonItem &parsedResult,
                    const std::string &token,
                    Kitsunemimi::Hanami::BlossomStatus &status,
                    Kitsunemimi::ErrorContainer &error);
