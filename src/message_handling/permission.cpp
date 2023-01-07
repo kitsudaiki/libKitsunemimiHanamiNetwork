@@ -57,7 +57,7 @@ checkPermission(DataMap &context,
                 const bool skipPermission,
                 Kitsunemimi::ErrorContainer &error)
 {
-    Kitsunemimi::Json::JsonItem parsedResult;
+    JsonItem parsedResult;
 
     // only get token content without validation, if misaki is not supported
     if(skipPermission)
@@ -66,7 +66,7 @@ checkPermission(DataMap &context,
             return true;
         }
 
-        if(Kitsunemimi::Jwt::getJwtTokenPayload(parsedResult, token, error) == false)
+        if(getJwtTokenPayload(parsedResult, token, error) == false)
         {
             status.statusCode = Kitsunemimi::Hanami::BAD_REQUEST_RTYPE;
             return false;
@@ -108,7 +108,7 @@ checkPermission(DataMap &context,
  * @return true, if successful, else false
  */
 bool
-getPermission(Json::JsonItem &parsedResult,
+getPermission(JsonItem &parsedResult,
               const std::string &token,
               Hanami::BlossomStatus &status,
               ErrorContainer &error)

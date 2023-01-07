@@ -291,7 +291,7 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
     this->processGenericRequest = processGenericRequest;
 
     // check if config-file already initialized
-    if(Kitsunemimi::Config::ConfigHandler::m_config == nullptr)
+    if(ConfigHandler::m_config == nullptr)
     {
         error.addMeesage("config-file not initilized");
         LOG_ERROR(error);
@@ -300,7 +300,7 @@ HanamiMessaging::initialize(const std::string &localIdentifier,
 
     // init config-options
     registerBasicConnectionConfigs(configGroups, createServer, error);
-    if(Kitsunemimi::Config::ConfigHandler::m_config->isConfigValid() == false) {
+    if(ConfigHandler::m_config->isConfigValid() == false) {
         return false;
     }
     fillSupportOverview();

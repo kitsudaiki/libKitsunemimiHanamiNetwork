@@ -125,7 +125,7 @@ MessagingEvent::sendResponseMessage(const bool success,
  */
 bool
 MessagingEvent::trigger(DataMap &resultingItems,
-                        Json::JsonItem &inputValues,
+                        JsonItem &inputValues,
                         Hanami::BlossomStatus &status,
                         const EndpointEntry &endpoint,
                         ErrorContainer &error)
@@ -183,7 +183,7 @@ MessagingEvent::processEvent()
     ErrorContainer error;
 
     // parse json-formated input values
-    Kitsunemimi::Json::JsonItem inputValues;
+    JsonItem inputValues;
     if(inputValues.parse(m_inputValues, error) == false)
     {
         LOG_ERROR(error);
@@ -253,7 +253,7 @@ MessagingEvent::processEvent()
  */
 void
 MessagingEvent::sendErrorMessage(const DataMap &context,
-                                 const Json::JsonItem &inputValues,
+                                 const JsonItem &inputValues,
                                  const std::string &errorMessage)
 {
     // check if shiori is supported

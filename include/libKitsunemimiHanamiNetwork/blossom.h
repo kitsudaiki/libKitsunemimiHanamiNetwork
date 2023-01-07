@@ -49,8 +49,8 @@ struct BlossomIO
     std::string blossomGroupType = "";
     std::vector<std::string> nameHirarchie;
 
-    Json::JsonItem output;
-    Json::JsonItem input;
+    JsonItem output;
+    JsonItem input;
 
     DataMap* parentValues = nullptr;
 
@@ -58,9 +58,9 @@ struct BlossomIO
 
     BlossomIO()
     {
-        std::map<std::string, Json::JsonItem> temp;
-        output = Json::JsonItem(temp);
-        input = Json::JsonItem(temp);
+        std::map<std::string, JsonItem> temp;
+        output = JsonItem(temp);
+        input = JsonItem(temp);
     }
 };
 
